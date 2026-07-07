@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NordicTech El Salvador | Infraestructura y Desarrollo Digital</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        nordic: {
+                            bg: '#060913',
+                            card: '#0D1425',
+                            border: '#1E293B',
+                            logoBlue: '#2A4094',
+                            logoBlueHover: '#3C56C4',
+                            textMuted: '#94A3B8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Forzamos estilos globales y blindamos los inputs contra el texto negro de navegadores -->
+    <style>
+        html,
+        body {
+            background-color: #060913 !important;
+            color: #ffffff !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Corrección estricta para asegurar visibilidad en inputs y textareas */
+        input,
+        textarea,
+        select {
+            background-color: #060913 !important;
+            color: #ffffff !important;
+            border-color: #1E293B !important;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #2A4094 !important;
+        }
+
+        /* Estilo para el texto sugerido (placeholder) */
+        input::placeholder,
+        textarea::placeholder {
+            color: #64748B !important;
+        }
+    </style>
+</head>
+
+<body class="bg-[#060913] text-white font-sans antialiased selection:bg-nordic-logoBlue selection:text-white">
+
+    <!-- CONTENEDOR MAESTRO: Asegura el fondo oscuro si el body falla en la preview -->
+    <div id="root-preview" class="bg-[#060913] text-white min-h-screen w-full relative isolation-auto">
+
+        <!-- Reflejo azul ambiental de fondo -->
+        <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-gradient-to-b from-[#2A4094]/15 via-transparent to-transparent blur-3xl pointer-events-none z-0">
+        </div>
+
+        <!-- Navbar -->
+        <header class="fixed top-0 w-full bg-[#060913]/80 backdrop-blur-md z-50 border-b border-nordic-border/40">
+            <div class="max-w-7xl bg-[#060913]/80 mx-auto px-6 h-24 flex items-center justify-between">
+
+                <!-- LOGO VECTORIAL IDENTICO A LA IMAGEN -->
+                <div class="flex flex-col items-center pt-2">
+                    
+                    <div
+                        style='font-family: "Space Grotesk", "Segoe UI", sans-serif; font-weight: bold; font-size: 24px; letter-spacing: -0.02em; color: #ffffff; text-transform: uppercase; line-height: 24px;'>
+
+                        <img src="/assets/img/Marca de agua blackoriginal.png" alt="Logo"
+                            style='display: inline-block; height: 84px; width: auto; vertical-align: middle; margin-left: 6px; border: 0;'>
+                    </div>
+                </div>
+
+                <nav
+                    class="hidden md:flex space-x-8 text-xs uppercase tracking-widest font-semibold text-nordic-textMuted">
+                    <a href="#servicios" class="hover:text-white transition-colors">Servicios</a>
+                    <!-- <a href="#infraestructura" class="hover:text-white transition-colors">Infraestructura</a> -->
+                    <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
+                </nav>
+
+                <div>
+                    <a href="/pages/Login.html"
+                        class="bg-nordic-logoBlue text-white border border-white/10 px-6 py-3 rounded-none text-xs uppercase tracking-widest font-bold hover:bg-nordic-logoBlueHover transition-all block">
+                        Portal de Clientes
+                    </a>
+                    
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="pt-40 pb-20 md:pt-52 md:pb-32 overflow-hidden relative z-10">
+            <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left z-10">
+                    <span
+                        class="inline-flex items-center px-4 py-1 rounded-none text-xs font-semibold uppercase tracking-widest bg-nordic-logoBlue/20 text-blue-400 border border-nordic-logoBlue/30">
+                        Sistemas de Alta Disponibilidad
+                    </span>
+                    <h1 class="text-4xl md:text-6xl font-display font-bold tracking-tight text-white leading-tight">
+                        Infraestructura robusta.<br>
+                        <span class="text-nordic-logoBlue">Ingeniería global.</span>
+                    </h1>
+                    <p
+                        class="text-base md:text-lg text-nordic-textMuted max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed">
+                        Elevamos los estándares tecnológicos en El Salvador. Creamos soluciones corporativas sólidas,
+                        software a medida y arquitecturas Cloud con un rendimiento absoluto y latencia mínima.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4">
+                        <a href="#contacto"
+                            class="bg-white text-nordic-bg px-8 py-4 rounded-none font-display font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-all text-center">
+                            Iniciar Proyecto
+                        </a>
+                        <a href="#servicios"
+                            class="bg-transparent text-white border border-nordic-border px-8 py-4 rounded-none font-display font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-all text-center">
+                            Nuestras Soluciones
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 flex justify-center relative">
+                    <div class="w-80 h-80 bg-nordic-logoBlue/10 rounded-full absolute blur-3xl -z-10"></div>
+
+                    <div
+                        class="bg-nordic-card border border-nordic-border p-8 rounded-none shadow-2xl max-w-sm w-full space-y-6 relative">
+                        <div class="absolute bottom-4 right-4 flex space-x-2 text-white/20">
+                            <span class="text-xl"></span>
+                            <span class="text-sm self-end"></span>
+                        </div>
+
+                        <div class="flex items-center justify-between border-b border-nordic-border pb-4">
+                            <span
+                                class="text-xs uppercase tracking-widest font-bold text-nordic-logoBlue font-display"></span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </div>
+                        <div class="space-y-3 font-mono text-xs text-slate-400">
+                            <p><span class="text-nordic-logoBlue"> .</span> </p>
+                            <p><span class="text-nordic-logoBlue"> .</span></p>
+                            <p><span class="text-nordic-logoBlue"> .</span></p>
+                        </div>
+                        <div class="pt-2">
+                            <div class="h-[1px] w-full bg-nordic-border"></div>
+                            <p class="text-[10px] text-nordic-textMuted pt-3 font-light italic">.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Servicios -->
+        <section id="servicios" class="py-24 bg-nordic-card/40 border-y border-nordic-border/60 relative z-10">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="max-w-3xl mb-20 space-y-4">
+                    <span
+                        class="text-nordic-logoBlue font-display font-bold text-xs uppercase tracking-widest block">Soluciones
+                        de IT</span>
+                    <h2 class="text-3xl md:text-4xl font-display font-bold tracking-tight">Capacidades de nivel
+                        corporativo</h2>
+                    <p class="text-nordic-textMuted font-light">Diseñamos sistemas sin fisuras estructurales,
+                        optimizados para la continuidad de las operaciones.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div
+                        class="p-8 bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/50 transition-all duration-300">
+                        <div class="text-nordic-logoBlue mb-6">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5"
+                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-display font-bold uppercase tracking-wider mb-3">Software Escalable</h3>
+                        <p class="text-nordic-textMuted text-sm font-light leading-relaxed">
+                            Desarrollo estructurado bajo metodologías ágiles y código limpio para garantizar plataformas
+                            intuitivas de alta resiliencia.
+                        </p>
+                    </div>
+
+                    <div
+                        class="p-8 bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/50 transition-all duration-300">
+                        <div class="text-nordic-logoBlue mb-6">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5"
+                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5m0-6a3 3 0 013-3m-3 3a3 3 0 100 6M1.5 11.25a3 3 0 013-3h15a3 3 0 013 3M1.5 11.25l.89-4.005a3.75 3.75 0 013.696-2.92h12.828a3.75 3.75 0 013.696 2.92l.89 4.005M6.75 12h.008v.008H6.75V12zm0 6h.008v.008H6.75V18zm6-6h.008v.008h-.008V12zm0 6h.008v.008h-.008V18zm6-6h.008v.008h-.008V12zm0 6h.008v.008h-.008V18z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-display font-bold uppercase tracking-wider mb-3">Infraestructura Cloud
+                        </h3>
+                        <p class="text-nordic-textMuted text-sm font-light leading-relaxed">
+                            Migración y despliegue en entornos de nube híbridos para reducir costes físicos,
+                            automatizando la redundancia de datos.
+                        </p>
+                    </div>
+
+                    <div
+                        class="p-8 bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/50 transition-all duration-300">
+                        <div class="text-nordic-logoBlue mb-6">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5"
+                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751A11.956 11.956 0 0112 2.714z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-display font-bold uppercase tracking-wider mb-3">Seguridad Perimetral
+                        </h3>
+                        <p class="text-nordic-textMuted text-sm font-light leading-relaxed">
+                            Aplicación de auditorías profundas y esquemas normativos estrictos para proteger activos
+                            críticos contra amenazas digitales complejos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacto Corporativo (Integrado con backend) -->
+        <section id="contacto"
+            class="py-24 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-start relative z-10">
+            <div class="lg:col-span-5 space-y-6">
+                <span
+                    class="text-nordic-logoBlue font-display font-bold text-xs uppercase tracking-widest block">Contactanos
+                    Directamente</span>
+                <h2 class="text-3xl font-display font-bold tracking-tight">Establezcamos comunicación </h2>
+                <p class="text-nordic-textMuted font-light leading-relaxed">
+                    Estamos ubicados en El Salvador brindando consultoría de sistemas avanzados para
+                    toda la región. Completa el registro de requerimientos técnicos.
+                </p>
+                <div
+                    class="pt-4 border-t border-nordic-border/60 text-xs font-mono uppercase tracking-widest text-slate-400 space-y-2">
+                    <p>NORDICTECH EL SALVADOR S.A. DE C.V.</p>
+                    <p class="text-nordic-textMuted font-sans lowercase font-light">info@nordictech-corp.com</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 bg-nordic-card border border-nordic-border p-8 md:p-10">
+                <!-- Se asigna el ID maestro para la escucha de JS -->
+                <form id="form-contacto" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest font-bold mb-2 text-slate-300">Razón
+                                Social / Nombre</label>
+                            <!-- Mapeado mediante name="nombre" -->
+                            <input type="text" name="nombre" required
+                                class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white rounded-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest font-bold mb-2 text-slate-300">Email
+                                Corporativo</label>
+                            <!-- Mapeado mediante name="email" -->
+                            <input type="email" name="email" required
+                                class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white rounded-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-xs uppercase tracking-widest font-bold mb-2 text-slate-300">Especificaciones
+                            del requerimiento</label>
+                        <!-- Mapeado mediante name="mensaje" -->
+                        <textarea rows="4" name="mensaje" required
+                            class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white resize-none rounded-none"
+                            placeholder="Indica detalladamente los alcances del proyecto que quieres realizar..."></textarea>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                            class="w-full bg-nordic-logoBlue text-white px-8 py-4 text-xs font-display font-bold uppercase tracking-widest hover:bg-nordic-logoBlueHover transition-colors">
+                            Enviar Solicitud Corporativa
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="border-t border-nordic-border/40 py-12 text-xs text-nordic-textMuted font-light relative z-10">
+            <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="flex flex-col items-start opacity-70">
+                    <p class="font-display font-bold tracking-wider text-white text-xs uppercase">NORDICTECH</p>
+                    <p class="text-[8px] tracking-[0.2em] uppercase text-nordic-textMuted">El Salvador S.A de C.V</p>
+                </div>
+                <p>&copy; 2026 NordicTech El Salvador. Todos los derechos reservados. Cumplimiento Legal y Tecnológico
+                    Garantizado.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Vinculación del script asíncrono para el procesamiento seguro de datos -->
+    <script src="/assets/js/contacto.js"></script>
+</body>
+
+</html>
