@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Clientes | NordicTech El Salvador</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        nordic: {
+                            bg: '#060913',       
+                            card: '#0D1425',     
+                            border: '#1E293B',   
+                            logoBlue: '#2A4094', 
+                            logoBlueHover: '#3C56C4',
+                            textMuted: '#94A3B8' 
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            background-color: #060913 !important;
+            color: #ffffff !important;
+            margin: 0;
+            padding: 0;
+        }
+        input, textarea, select {
+            background-color: #060913 !important;
+            color: #ffffff !important;
+            border-color: #1E293B !important;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #2A4094 !important;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #64748B !important;
+        }
+    </style>
+</head>
+<body class="bg-[#060913] text-white font-sans antialiased selection:bg-nordic-logoBlue selection:text-white">
+
+    <div class="bg-[#060913] text-white min-h-screen w-full relative flex flex-col justify-between isolation-auto">
+
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-gradient-to-b from-[#2A4094]/10 via-transparent to-transparent blur-3xl pointer-events-none z-0"></div>
+
+        <header class="fixed top-0 w-full bg-[#060913]/80 backdrop-blur-md z-50 border-b border-nordic-border/40">
+            <div class="max-w-7xl bg-[#060913]/80 mx-auto px-6 h-24 flex items-center justify-between">
+
+                <div class="flex flex-col items-center pt-2">
+                    <div style='font-family: "Space Grotesk", "Segoe UI", sans-serif; font-weight: bold; font-size: 24px; letter-spacing: -0.02em; color: #ffffff; text-transform: uppercase; line-height: 24px;'>
+                        <img src="/assets/img/Marca de agua blackoriginal.png" alt="Logo"
+                            style='display: inline-block; height: 84px; width: auto; vertical-align: middle; margin-left: 6px; border: 0;'>
+                    </div>
+                </div>
+
+                <nav class="hidden md:flex space-x-8 text-xs uppercase tracking-widest font-semibold text-nordic-textMuted">
+                    <a href="../index.html#servicios" class="hover:text-white transition-colors">Servicios</a>
+                    <a href="../index.html#contacto" class="hover:text-white transition-colors">Contacto</a>
+                </nav>
+
+                <div>
+                    <a href="#contacto" class="bg-nordic-logoBlue text-white border border-white/10 px-6 py-3 rounded-none text-xs uppercase tracking-widest font-bold hover:bg-nordic-logoBlueHover transition-all block">
+                        Portal de Clientes
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-7xl w-full mx-auto px-6 pt-36 pb-16 relative z-10">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-nordic-border/60 pb-6 mb-10 gap-4">
+                <div>
+                    <span class="text-nordic-logoBlue font-display font-bold text-[10px] uppercase tracking-widest block">Consola Autónoma</span>
+                    <h1 class="text-2xl font-display font-bold uppercase tracking-tight">Panel de Soporte Técnico</h1>
+                </div>
+                <div class="bg-nordic-card border border-nordic-border px-4 py-2 flex items-center gap-3">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                
+                <div class="lg:col-span-5 bg-nordic-card border border-nordic-border p-6 md:p-8 space-y-6">
+                    <div class="border-b border-nordic-border pb-4">
+                        <h2 class="text-lg font-display font-bold uppercase text-white tracking-wide">Crear un nuevo ticket</h2>
+                        <p class="text-xs text-nordic-textMuted font-light mt-1">Generar un nuevo ticket de soporte de alta disponibilidad.</p>
+                    </div>
+
+                    <form id="form-ticket" class="space-y-5">
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-slate-300">Título</label>
+                            <input type="text" name="titulo" required placeholder="Ej: Falla en enlace de cámara IP" 
+                                class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white rounded-none transition-colors">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-slate-300">Nivel de Prioridad</label>
+                            <select name="prioridad" class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white rounded-none transition-colors cursor-pointer">
+                                <option value="Baja" selected>Consulta General</option>
+                                <option value="Media" >Afectación Operativa</option>
+                                <option value="Alta">Caída Total de Infraestructura</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-slate-300">Descripción Técnica del Problema</label>
+                            <textarea rows="5" name="descripcion" required placeholder="Describe detalladamente los síntomas del problema, códigos de error o logs observados..." 
+                                class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white resize-none rounded-none transition-colors"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-nordic-logoBlue text-white px-6 py-4 text-xs font-display font-bold uppercase tracking-widest hover:bg-nordic-logoBlueHover transition-colors">
+                            Aperturar Ticket de Soporte
+                        </button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-7 space-y-6">
+                    
+                    <div class="flex border-b border-nordic-border/60 font-display text-xs font-bold uppercase tracking-wider bg-nordic-card border border-nordic-border p-1">
+                        <button class="flex-1 py-3 text-center bg-nordic-logoBlue text-white rounded-none transition-all">
+                            Abiertos (2)
+                        </button>
+                        <button class="flex-1 py-3 text-center text-nordic-textMuted hover:text-white transition-all">
+                            En Proceso (1)
+                        </button>
+                        <button class="flex-1 py-3 text-center text-nordic-textMuted hover:text-white transition-all">
+                            Cerrados (4)
+                        </button>
+                    </div>
+
+                    <div id="contenedor-tickets" class="space-y-4">
+                        
+                        <div class="bg-nordic-card border border-nordic-border p-5 hover:border-nordic-logoBlue/40 transition-all">
+                            <div class="flex justify-between items-start gap-4 mb-3">
+                                <div>
+                                    <span class="inline-block bg-amber-500/10 text-amber-400 text-[9px] font-bold tracking-widest px-2 py-0.5 border border-amber-500/20 uppercase mb-2">
+                                        Abierto
+                                    </span>
+                                    <h3 class="text-sm font-semibold uppercase text-white tracking-wide">Fallo de sincronización en servidor puente</h3>
+                                </div>
+                                <span class="text-[10px] font-mono text-nordic-textMuted">#TK-1024</span>
+                            </div>
+                            <p class="text-xs text-nordic-textMuted font-light leading-relaxed mb-4">
+                                El nodo secundario con OS Windows 11 Pro dejó de reportar logs hacia la consola central. Se requiere revisión de logs perimetrales.
+                            </p>
+                            <div class="flex justify-between items-center border-t border-nordic-border/60 pt-3 text-[10px] font-mono text-slate-400">
+                                <span>Prioridad: <strong class="text-rose-400">Crítica</strong></span>
+                                <span>09/07/2026</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-nordic-card border border-nordic-border p-5 hover:border-nordic-logoBlue/40 transition-all">
+                            <div class="flex justify-between items-start gap-4 mb-3">
+                                <div>
+                                    <span class="inline-block bg-blue-500/10 text-blue-400 text-[9px] font-bold tracking-widest px-2 py-0.5 border border-blue-500/20 uppercase mb-2">
+                                        En Proceso
+                                    </span>
+                                    <h3 class="text-sm font-semibold uppercase text-white tracking-wide">Migración de segmento IP - Cámaras CCTV</h3>
+                                </div>
+                                <span class="text-[10px] font-mono text-nordic-textMuted">#TK-1021</span>
+                            </div>
+                            <p class="text-xs text-nordic-textMuted font-light leading-relaxed mb-4">
+                                Solicitud de remapeo de red para los dispositivos de rango alto de la infraestructura física del cliente.
+                            </p>
+                            <div class="flex justify-between items-center border-t border-nordic-border/60 pt-3 text-[10px] font-mono text-slate-400">
+                                <span>Prioridad: <strong class="text-blue-400">Media</strong></span>
+                                <span>08/07/2026</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="border-t border-nordic-border/40 py-12 text-xs text-nordic-textMuted font-light relative z-10">
+            <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="flex flex-col items-start opacity-70">
+                    <p class="font-display font-bold tracking-wider text-white text-xs uppercase">NORDICTECH</p>
+                    <p class="text-[8px] tracking-[0.2em] uppercase text-nordic-textMuted">El Salvador S.A de C.V</p>
+                </div>
+                <p>&copy; 2026 NordicTech El Salvador. Consola de monitoreo y soporte cifrada.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="/assets/js/portal_clientes.js"></script>
+</body>
+</html>
