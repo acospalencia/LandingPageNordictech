@@ -7,7 +7,7 @@ define('LIMITE_INACTIVIDAD', 300);
 
 // 1. Validar que la sesión básica exista
 if (!isset($_SESSION['id_usuario'])) {
-    echo json_encode(['status' => 'session_expired', 'message' => 'Acceso denegado. Se requiere autenticación perimetral.']);
+    echo json_encode(['status' => 'session_expired', 'message' => 'Acceso denegado. Se requiere iniciar sesión.']);
     exit;
 }
 

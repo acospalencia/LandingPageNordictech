@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Enviamos los datos al backend de PHP
-                const response = await fetch('/assets/php/login.php', {
+                const response = await fetch('/../../assets/php/login.php', {
                     method: 'POST',
                     body: formData
                 });

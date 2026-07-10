@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo json_encode([
                         'status' => 'success',
                         'message' => 'Autenticación concedida. Bienvenido al portal de clientes.',
-                        'redirect' => '/../../pages/PortalClientes.html' // Modifica esta ruta según tu estructura final del portal
+                        'redirect' => '/../../pages/PortalClientes.html?v=' . time() // Modifica esta ruta según tu estructura final del portal
                     ]);
                     exit;
                     

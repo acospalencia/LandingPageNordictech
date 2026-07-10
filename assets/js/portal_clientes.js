@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Función principal para consumir el backend de PHP
     async function cargarTickets() {
         try {
-            const response = await fetch('/assets/php/obtener_tickets.php');
+            const response = await fetch('/../../assets/php/get_tickets.php');
             const resultado = await response.json();
 
             if (resultado.status === 'success') {
@@ -26,13 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (resultado.status === 'session_expired') {
                 // Intercepción perimetral: Sesión caducada o inexistente
                 alert('⚠️ ' + resultado.message);
-                window.location.replace('/pages/login.html'); // Redirección forzada sin retorno atrás
+                window.location.replace('/../../pages/Login.html'); // Redirección forzada sin retorno atrás
             } else {
                 alert('❌ Error: ' + resultado.message);
             }
         } catch (error) {
             console.error('Error al mapear la infraestructura de tickets:', error);
-            contenedorTickets.innerHTML = `<p class="text-xs text-rose-400 font-mono">❌ ERROR_CONECTIVIDAD: No se logró enlazar con el servidor central.</p>`;
+            contenedorTickets.innerHTML = `<p class="text-xs text-rose-400 font-mono">❌ ERROR_CONECTIVIDAD: No se logró enlazar con el servidor .</p>`;
         }
     }
 
