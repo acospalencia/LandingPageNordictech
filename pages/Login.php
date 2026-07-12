@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Si la variable de sesión existe, el usuario ya está autenticado.
+// Lo redirigimos de inmediato a su portal para que no vuelva a ver el login.
+if (isset($_SESSION['id_usuario'])) {
+    header("Location: /pages/PortalClientes.html");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
@@ -62,29 +72,30 @@
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-gradient-to-b from-[#2A4094]/10 via-transparent to-transparent blur-3xl pointer-events-none z-0"></div>
 
         <!-- Header (Idéntico a tu ejemplo) -->
-        <header class="fixed top-0 w-full bg-[#060913]/80 backdrop-blur-md z-50 border-b border-nordic-border/40">
-            <div class="max-w-7xl bg-[#060913]/80 mx-auto px-6 h-24 flex items-center justify-between">
+        <header class="fixed top-0 w-full bg-[#101729]/80 backdrop-blur-md z-50 border-b border-nordic-border/40">
+            <div class="max-w-7xl bg-[#101729]/80 mx-auto px-6 h-24 flex items-center justify-between">
 
                 <!-- LOGO VECTORIAL IDENTICO A LA IMAGEN -->
                 <div class="flex flex-col items-center pt-2">
                     
                     <div
                         style='font-family: "Space Grotesk", "Segoe UI", sans-serif; font-weight: bold; font-size: 24px; letter-spacing: -0.02em; color: #ffffff; text-transform: uppercase; line-height: 24px;'>
-
-                        <img src="/assets/img/Marca de agua blackoriginal.png" alt="Logo"
-                            style='display: inline-block; height: 84px; width: auto; vertical-align: middle; margin-left: 6px; border: 0;'>
+                        <a href="/">
+                            <img src="/assets/img/Marca de agua black.png" alt="Logo"
+                                style='display: inline-block; height: 84px; width: auto; vertical-align: middle; margin-left: 6px; border: 0;'>
+                        </a>
                     </div>
                 </div>
 
                 <nav
                     class="hidden md:flex space-x-8 text-xs uppercase tracking-widest font-semibold text-nordic-textMuted">
-                    <a href="../index.html#servicios" class="hover:text-white transition-colors">Servicios</a>
-                    <!-- <a href="#infraestructura" class="hover:text-white transition-colors">Infraestructura</a> -->
-                    <a href="../index.html#contacto" class="hover:text-white transition-colors">Contacto</a>
+                    <a href="/" class="hover:text-white transition-colors">Inicio</a>
+                    <a href="#servicios" class="hover:text-white transition-colors">Servicios</a>
+                    <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
                 </nav>
 
                 <div>
-                    <a href="#contacto"
+                    <a href="./Login.php"
                         class="bg-nordic-logoBlue text-white border border-white/10 px-6 py-3 rounded-none text-xs uppercase tracking-widest font-bold hover:bg-nordic-logoBlueHover transition-all block">
                         Portal de Clientes
                     </a>
@@ -167,6 +178,6 @@
 
     </div>
 
-    <script src="/assets/js/login.js?v=1.0.2"></script>
+    <script src="/assets/js/login.js?v=1.0.4"></script>
 </body>
 </html>

@@ -138,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
     // El "From" debe ser un correo de tu propio dominio en Bluehost para evitar caer en Spam
-    $headers .= "From: c.acosta@nordictech-corp.com" . "\r\n"; 
+    $headers .= "From: soporte@nordictech-corp.com" . "\r\n"; 
     $headers .= "Reply-To: {$email}" . "\r\n";
 
     // Ejecutar el envío usando la función nativa del servidor de Bluehost

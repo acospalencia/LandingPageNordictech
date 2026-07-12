@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (resultado.status === 'session_expired') {
                 // Intercepción perimetral: Sesión caducada o inexistente
                 alert('⚠️ ' + resultado.message);
-                window.location.replace('/../../pages/Login.html'); // Redirección forzada sin retorno atrás
+                window.location.replace('/../../pages/Login.php'); // Redirección forzada sin retorno atrás
             } else {
                 alert('❌ Error: ' + resultado.message);
             }
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     if (resultado.status === 'success') {
                         // Redirección forzada eliminando el historial
-                        window.location.replace('/pages/Login.html');
+                        window.location.replace('/pages/Login.php');
                     }
                 } catch (error) {
                     console.error('Error al intentar finalizar la sesión:', error);
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else if (resultado.status === 'session_expired') {
                     alert('⚠️ Sesión caducada: Reautentique el nodo corporativo.');
-                    window.location.replace('/pages/Login.html');
+                    window.location.replace('/pages/Login.php');
                 } else {
                     alert('❌ Error: ' + resultado.message);
                 }
