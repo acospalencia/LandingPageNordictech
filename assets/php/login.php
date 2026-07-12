@@ -1,6 +1,10 @@
 <?php
 // Iniciar sesión para mantener al usuario autenticado en el servidor
 session_start();
+if (isset($_SESSION['id_usuario'])) {
+    header("Location: /pages/portal_clientes.html");
+    exit;
+}
 header('Content-Type: application/json');
 
 // 1. Extraer credenciales desde el archivo wp-config.php de forma segura

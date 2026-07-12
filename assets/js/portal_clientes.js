@@ -85,28 +85,109 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Manejador de eventos para los filtros (Tabs)
+    // =========================================================================
+    // 3. Manejador de eventos para los filtros (Tabs) - CORREGIDO
+    // =========================================================================
     tabs.forEach(tab => {
         tab.addEventListener('click', (e) => {
-            // Remover clases activas de todos los botones
+            // Asegurar que obtenemos el botón principal y no el texto interno
+            const botonSeleccionado = e.currentTarget;
+
+            // A) Limpiar el estilo activo de TODOS los botones primero
             tabs.forEach(t => {
                 t.classList.remove('bg-[#2A4094]', 'text-white');
                 t.classList.add('text-[#94A3B8]', 'hover:text-white');
             });
 
-            // Añadir clase activa al botón presionado
-            e.target.classList.remove('text-[#94A3B8]', 'hover:text-white');
-            e.target.classList.add('bg-[#2A4094]', 'text-white');
+            // B) Aplicar el estilo activo (Fondo Azul Eléctrico) SOLO al botón presionado
+            botonSeleccionado.classList.remove('text-[#94A3B8]', 'hover:text-white');
+            botonSeleccionado.classList.add('bg-[#2A4094]', 'text-white');
 
-            // Actualizar estado del filtro
-            const textoTab = e.target.textContent.trim();
-            if (textoTab.includes('Abiertos')) estadoFiltroActual = 'Abierto';
-            if (textoTab.includes('En Proceso')) estadoFiltroActual = 'En Proceso';
-            if (textoTab.includes('Cerrados')) estadoFiltroActual = 'Cerrado';
+            // C) Extraer el texto limpio para cambiar el estado del filtro perimetral
+            const textoTab = botonSeleccionado.textContent.trim();
+            
+            if (textoTab.includes('Abiertos')) {
+                estadoFiltroActual = 'Abierto';
+            } else if (textoTab.includes('En Proceso')) {
+                estadoFiltroActual = 'En Proceso';
+            } else if (textoTab.includes('Cerrados')) {
+                estadoFiltroActual = 'Cerrado';
+            }
 
+            // D) Volver a pintar los tickets aplicando el nuevo filtro seleccionado
             renderizarTickets();
         });
     });
+
+    // =========================================================================
+    // Manejador para el botón de Cerrar Sesión
+    // =========================================================================
+    const btnLogout = document.querySelector('#btn-logout');
+    
+    if (btnLogout) {
+        btnLogout.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                try {
+                    const response = await fetch('/assets/php/logout.php');
+                    const resultado = await response.json();
+                    
+                    if (resultado.status === 'success') {
+                        // Redirección forzada eliminando el historial
+                        window.location.replace('/pages/Login.html');
+                    }
+                } catch (error) {
+                    console.error('Error al intentar finalizar la sesión:', error);
+                    alert('❌ Error de conectividad al procesar la salida.');
+                }
+            }
+        });
+    }
+
+    // =========================================================================
+    // Conexión del Formulario de Alta de Tickets (portal_clientes.html)
+    // =========================================================================
+    const formTicket = document.querySelector('#form-ticket');
+
+    if (formTicket) {
+        formTicket.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evitar recarga tradicional de página
+
+            const formData = new FormData(formTicket);
+
+            try {
+                const response = await fetch('/assets/php/crear_ticket.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.status === 'success') {
+                    alert('🎉 ' + resultado.message);
+                    
+                    formTicket.reset(); // Limpia los inputs del formulario
+                    
+                    // Invocar la función que limpia e inserta los tickets dinámicos desde la BD
+                    if (typeof cargarTickets === 'function') {
+                        await cargarTickets();
+                    } else {
+                        window.location.reload(); // Bypass por si la caché interfiere
+                    }
+                } else if (resultado.status === 'session_expired') {
+                    alert('⚠️ Sesión caducada: Reautentique el nodo corporativo.');
+                    window.location.replace('/pages/Login.html');
+                } else {
+                    alert('❌ Error: ' + resultado.message);
+                }
+
+            } catch (error) {
+                console.error('Error en el enlace asíncrono de tickets:', error);
+                alert('❌ ERROR_CONECTIVIDAD: No se pudo registrar el ticket en el cluster.');
+            }
+        });
+    }
 
     // Helper para actualizar contadores dinámicos en los botones de pestañas
     function actualizarContadoresTabs() {
