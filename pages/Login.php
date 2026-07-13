@@ -158,7 +158,7 @@ if (isset($_SESSION['id_usuario'])) {
                 <!-- Registrarte -->
                     <div class="flex items-center mt-4">
                         <label class="ml-2 block text-xs text-nordic-textMuted font-light select-none cursor-pointer hover:text-slate-300 transition-colors">
-                            No tienes cuenta? <a href="/pages/Registro.html" class="text-white underline hover:text-nordic-logoBlueHover transition-colors">Contáctanos</a>
+                            No tienes cuenta? <a href="/pages/SignIn.php" class="text-white underline hover:text-nordic-logoBlueHover transition-colors">Contáctanos</a>
                         </label>
                     </div>
 
