@@ -81,8 +81,8 @@ if (isset($_SESSION['id_usuario'])) {
                 <nav
                     class="hidden md:flex space-x-8 text-xs uppercase tracking-widest font-semibold text-nordic-textMuted">
                     <a href="/" class="hover:text-white transition-colors">Inicio</a>
-                    <a href="#servicios" class="hover:text-white transition-colors">Servicios</a>
-                    <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
+                    <a href="/#servicios" class="hover:text-white transition-colors">Servicios</a>
+                    <a href="/#contacto" class="hover:text-white transition-colors">Contacto</a>
                 </nav>
                 <a href="/pages/Login.php" class="text-xs uppercase tracking-widest font-semibold text-nordic-textMuted hover:text-white transition-colors">
                     Iniciar Sesión
@@ -129,6 +129,6 @@ if (isset($_SESSION['id_usuario'])) {
         </footer>
     </div>
 
-    <script src="/assets/js/registro.js?v=1.0.0"></script>
+    <script src="/assets/js/registro.js?v=1.0.5"></script>
 </body>
 </html>

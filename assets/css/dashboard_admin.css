@@ -1,0 +1,40 @@
+/* Sobreescritura de estilos globales para forzar la consistencia de NordicTech */
+html, body {
+    background-color: #060913 !important;
+    color: #ffffff !important;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ajustes para forzar el fondo oscuro nativo en los inputs y textareas */
+input, textarea {
+    background-color: #060913 !important;
+    color: #ffffff !important;
+    border-color: #1E293B !important;
+}
+
+input:focus, textarea:focus {
+    border-color: #2A4094 !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #64748B !important;
+}
+
+/* Diseño estilizado de barra de scroll para el Sidebar */
+.custom-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #060913;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #1E293B;
+    border-radius: 0px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #2A4094;
+}

@@ -1,0 +1,25 @@
+html, body {
+    background-color: #060913 !important;
+    color: #ffffff !important;
+    margin: 0;
+    padding: 0;
+}
+
+input, textarea, select {
+    background-color: #060913 !important;
+    color: #ffffff !important;
+    border-color: #1E293B !important;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: #2A4094 !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #64748B !important;
+}
+
+/* Transiciones suaves para los acordeones interactivos */
+.panel-detalle {
+    transition: max-height 0.25s ease-out, opacity 0.2s ease-out;
+}

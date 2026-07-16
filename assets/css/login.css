@@ -1,0 +1,20 @@
+html, body {
+    background-color: #060913 !important;
+    color: #ffffff !important;
+    margin: 0;
+    padding: 0;
+}
+
+input {
+    background-color: #060913 !important;
+    color: #ffffff !important;
+    border-color: #1E293B !important;
+}
+
+input:focus {
+    border-color: #2A4094 !important;
+}
+
+input::placeholder {
+    color: #64748B !important;
+}

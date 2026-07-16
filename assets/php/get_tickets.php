@@ -1,6 +1,9 @@
 <?php
 session_start();
 header('Content-Type: application/json');
+// Evitar que el navegador guarde en caché la lista de tickets
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
 
 // Configuración del límite de tiempo (5 minutos = 300 segundos)
 define('LIMITE_INACTIVIDAD', 300);
@@ -60,9 +63,11 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
 
+    // Traemos de forma explícita todos los estados de soporte del cliente
     $query = "SELECT id_ticket, titulo, descripcion, estado, prioridad, DATE_FORMAT(fecha_creacion, '%d/%m/%Y') as fecha 
               FROM tickets 
               WHERE id_usuario = :id_usuario 
+                AND estado IN ('Abierto', 'En Proceso', 'Resuelto', 'Cerrado')
               ORDER BY fecha_creacion DESC";
               
     $stmt = $pdo->prepare($query);
@@ -71,7 +76,7 @@ try {
 
     echo json_encode([
         'status' => 'success',
-        'nombre_usuario' => $_SESSION['nombre_usuario'],
+        'nombre_usuario' => $_SESSION['nombre_usuario'] ?? 'Cliente NordicTech',
         'tickets' => $tickets
     ]);
 

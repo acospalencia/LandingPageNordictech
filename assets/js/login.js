@@ -1,15 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const formulario = document.querySelector('#form-login');
+    const alertBox = document.querySelector('#login-alert');
     
-    if (formulario) {
+    if (formulario && alertBox) {
         formulario.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Evita que la página se recargue
+            event.preventDefault(); // Evita recarga de página
             
+            // Limpiar alertas previas
+            alertBox.classList.add('hidden');
+            alertBox.className = "mb-6 p-4 text-xs font-semibold tracking-wide border rounded-none";
+
             // Seleccionar el botón y guardar su estado original
             const boton = formulario.querySelector('button[type="submit"]');
             const textoOriginal = boton.innerHTML;
             
-            // Cambiar el estado del botón a "Enviando"
+            // Deshabilitar botón temporalmente
             boton.disabled = true;
             boton.innerHTML = `
                 <span class="flex items-center justify-center gap-2">
@@ -21,12 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </span>
             `;
 
-            // Recolectar los datos del formulario de manera dinámica
             const formData = new FormData(formulario);
 
             try {
-                // Enviamos los datos al backend de PHP
-                const response = await fetch('/../../assets/php/login.php', {
+                // Enviamos los datos al backend de PHP usando ruta absoluta
+                const response = await fetch('/assets/php/login.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -34,22 +38,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 const resultado = await response.json();
 
                 if (resultado.status === 'success') {
-                    alert('✔ ' + resultado.message);
-                    formulario.reset(); // Limpia los campos del formulario
+                    // Pintar mensaje de éxito en el contenedor estilizado
+                    alertBox.classList.add('bg-green-950/20', 'border-green-500/20', 'text-green-400');
+                    alertBox.textContent = resultado.message;
+                    alertBox.classList.remove('hidden');
+
+                    formulario.reset();
                     
-                    // Si el login es exitoso, aquí puedes redirigir al dashboard interno:
+                    // Redireccionar de inmediato si la respuesta tiene la URL de destino
                     if (resultado.redirect) {
-                        window.location.href = resultado.redirect;
+                        setTimeout(() => {
+                            window.location.href = resultado.redirect;
+                        }, 1000); // 1 segundo de retraso para que aprecien la confirmación
                     }
                 } else {
-                    alert('❌ Error: ' + resultado.message);
+                    // Pintar error en el contenedor estilizado
+                    alertBox.classList.add('bg-red-950/20', 'border-red-500/20', 'text-red-400');
+                    alertBox.textContent = resultado.message;
+                    alertBox.classList.remove('hidden');
                 }
 
             } catch (error) {
                 console.error('Error en la conexión:', error);
-                alert('❌ Ocurrió un problema de conectividad con el servidor de NordicTech.');
+                alertBox.classList.add('bg-red-950/20', 'border-red-500/20', 'text-red-400');
+                alertBox.textContent = 'Ocurrió un problema de conectividad con el servidor de NordicTech.';
+                alertBox.classList.remove('hidden');
             } finally {
-                // Restaurar el estado original del botón
+                // Restaurar botón a su estado original
                 boton.disabled = false;
                 boton.innerHTML = textoOriginal;
             }

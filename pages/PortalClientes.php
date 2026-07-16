@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// Validar que el usuario esté autenticado y posea el rol de Cliente (id_rol = 1)
+if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 1) {
+    header("Location: /pages/Login.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
@@ -7,6 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -30,25 +40,8 @@
             }
         }
     </script>
-    <style>
-        html, body {
-            background-color: #060913 !important;
-            color: #ffffff !important;
-            margin: 0;
-            padding: 0;
-        }
-        input, textarea, select {
-            background-color: #060913 !important;
-            color: #ffffff !important;
-            border-color: #1E293B !important;
-        }
-        input:focus, textarea:focus, select:focus {
-            border-color: #2A4094 !important;
-        }
-        input::placeholder, textarea::placeholder {
-            color: #64748B !important;
-        }
-    </style>
+    
+    <link rel="stylesheet" href="/assets/css/portal_clientes.css">
 </head>
 <body class="bg-[#060913] text-white font-sans antialiased selection:bg-nordic-logoBlue selection:text-white">
 
@@ -59,23 +52,18 @@
         <header class="fixed top-0 w-full bg-[#101729]/80 backdrop-blur-md z-50 border-b border-nordic-border/40">
             <div class="max-w-7xl bg-[#101729]/80 mx-auto px-6 h-24 flex items-center justify-between">
 
-                <!-- LOGO VECTORIAL IDENTICO A LA IMAGEN -->
                 <div class="flex flex-col items-center pt-2">
-                    
-                    <div
-                        style='font-family: "Space Grotesk", "Segoe UI", sans-serif; font-weight: bold; font-size: 24px; letter-spacing: -0.02em; color: #ffffff; text-transform: uppercase; line-height: 24px;'>
+                    <div style='font-family: "Space Grotesk", "Segoe UI", sans-serif; font-weight: bold; font-size: 24px; letter-spacing: -0.02em; color: #ffffff; text-transform: uppercase; line-height: 24px;'>
                         <a href="/">
-                            <img src="/assets/img/Marca de agua black.png" alt="Logo"
-                                style='display: inline-block; height: 84px; width: auto; vertical-align: middle; margin-left: 6px; border: 0;'>
+                            <img src="/assets/img/Marca de agua black.png" alt="Logo" style='display: inline-block; height: 84px; width: auto; vertical-align: middle; margin-left: 6px; border: 0;'>
                         </a>
                     </div>
                 </div>
 
-                <nav
-                    class="hidden md:flex space-x-8 text-xs uppercase tracking-widest font-semibold text-nordic-textMuted">
+                <nav class="hidden md:flex space-x-8 text-xs uppercase tracking-widest font-semibold text-nordic-textMuted">
                     <a href="/" class="hover:text-white transition-colors">Inicio</a>
-                    <a href="#servicios" class="hover:text-white transition-colors">Servicios</a>
-                    <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
+                    <a href="/#servicios" class="hover:text-white transition-colors">Servicios</a>
+                    <a href="/#contacto" class="hover:text-white transition-colors">Contacto</a>
                 </nav>
 
                 <div>
@@ -94,8 +82,11 @@
                     <h1 class="text-2xl font-display font-bold uppercase tracking-tight">Panel de Soporte Técnico</h1>
                 </div>
                 <div class="bg-nordic-card border border-nordic-border px-4 py-2 flex items-center gap-3">
+                    <span id="nodo-activo-text" class="text-xs font-mono text-nordic-textMuted">Conectando al clúster...</span>
                 </div>
             </div>
+
+            <div id="portal-alert" class="hidden mb-6 p-4 text-xs font-semibold tracking-wide border rounded-none"></div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
                 
@@ -116,7 +107,7 @@
                             <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-slate-300">Nivel de Prioridad</label>
                             <select name="prioridad" class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white rounded-none transition-colors cursor-pointer">
                                 <option value="Baja" selected>Consulta General</option>
-                                <option value="Media" >Afectación Operativa</option>
+                                <option value="Media">Afectación Operativa</option>
                                 <option value="Alta">Caída Total de Infraestructura</option>
                                 <option value="Crítica">Fallo Crítico (Crítica)</option>
                             </select>
@@ -136,58 +127,20 @@
 
                 <div class="lg:col-span-7 space-y-6">
                     
-                    <div class="flex border-b border-nordic-border/60 font-display text-xs font-bold uppercase tracking-wider bg-nordic-card border border-nordic-border p-1">
-                        <button class="flex-1 py-3 bg-[#2A4094] text-center text-white rounded-none transition-all">
-                            Abiertos 
+                    <div class="flex border border-nordic-border bg-[#080d1a] p-1 select-none">
+                        <button id="tab-Abierto" class="flex-1 py-3 text-xs font-bold uppercase tracking-wider text-center transition-all bg-[#2A4094] text-white rounded-none">
+                            Abiertos (0)
                         </button>
-                        <button class="flex-1 py-3 text-center text-nordic-textMuted hover:text-white transition-all">
-                            En Proceso 
+                        <button id="tab-EnProceso" class="flex-1 py-3 text-xs font-bold uppercase tracking-wider text-center transition-all text-nordic-textMuted hover:text-white rounded-none">
+                            En Proceso (0)
                         </button>
-                        <button class="flex-1 py-3 text-center text-nordic-textMuted hover:text-white transition-all">
-                            Cerrados 
+                        <button id="tab-Cerrado" class="flex-1 py-3 text-xs font-bold uppercase tracking-wider text-center transition-all text-nordic-textMuted hover:text-white rounded-none">
+                            Cerrados (0)
                         </button>
                     </div>
 
                     <div id="contenedor-tickets" class="space-y-4">
-                        
-                        <div class="bg-nordic-card border border-nordic-border p-5 hover:border-nordic-logoBlue/40 transition-all">
-                            <div class="flex justify-between items-start gap-4 mb-3">
-                                <div>
-                                    <span class="inline-block bg-amber-500/10 text-amber-400 text-[9px] font-bold tracking-widest px-2 py-0.5 border border-amber-500/20 uppercase mb-2">
-                                        Abierto
-                                    </span>
-                                    <h3 class="text-sm font-semibold uppercase text-white tracking-wide"></h3>
-                                </div>
-                                <span class="text-[10px] font-mono text-nordic-textMuted"></span>
-                            </div>
-                            <p class="text-xs text-nordic-textMuted font-light leading-relaxed mb-4">
-                                
-                            </p>
-                            <div class="flex justify-between items-center border-t border-nordic-border/60 pt-3 text-[10px] font-mono text-slate-400">
-                                <span>Prioridad: <strong class="text-rose-400"></strong></span>
-                                <span></span>
-                            </div>
-                        </div>
-
-                        <div class="bg-nordic-card border border-nordic-border p-5 hover:border-nordic-logoBlue/40 transition-all">
-                            <div class="flex justify-between items-start gap-4 mb-3">
-                                <div>
-                                    <span class="inline-block bg-blue-500/10 text-blue-400 text-[9px] font-bold tracking-widest px-2 py-0.5 border border-blue-500/20 uppercase mb-2">
-                                        En Proceso
-                                    </span>
-                                    <h3 class="text-sm font-semibold uppercase text-white tracking-wide"></h3>
-                                </div>
-                                <span class="text-[10px] font-mono text-nordic-textMuted"></span>
-                            </div>
-                            <p class="text-xs text-nordic-textMuted font-light leading-relaxed mb-4">
-                                
-                            </p>
-                            <div class="flex justify-between items-center border-t border-nordic-border/60 pt-3 text-[10px] font-mono text-slate-400">
-                                <span>Prioridad: <strong class="text-blue-400"></strong></span>
-                                <span></span>
-                            </div>
-                        </div>
-
+                        <div class="p-4 text-center text-xs text-nordic-textMuted font-light">Cargando flujos de incidentes...</div>
                     </div>
                 </div>
 
@@ -206,8 +159,48 @@
 
     </div>
 
-    
+    <div id="modal-logout" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm">
+        <div class="w-full max-w-sm bg-nordic-card border border-nordic-border p-6 shadow-2xl text-center space-y-5">
+            <div class="space-y-2">
+                <h3 class="text-sm font-display font-bold uppercase tracking-wider text-white">¿Finalizar Sesión?</h3>
+                <p class="text-[11px] text-nordic-textMuted">Estás a punto de cerrar tu sesión de trabajo de forma segura.</p>
+            </div>
+            <div class="flex justify-center space-x-3 pt-2">
+                <button type="button" id="btn-cancel-logout" class="px-4 py-2 text-xs uppercase tracking-widest text-nordic-textMuted hover:text-white transition-colors">
+                    Cancelar
+                </button>
+                <button type="button" id="btn-confirm-logout" class="bg-nordic-logoBlue hover:bg-nordic-logoBlueHover text-white px-5 py-2 text-xs uppercase tracking-widest font-bold transition-colors">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <script src="/assets/js/portal_clientes.js?v=1.0.4"></script>
+    <div id="modal-confirmar-cierre" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm">
+        <div class="w-full max-w-sm bg-nordic-card border border-nordic-border p-6 shadow-2xl text-center space-y-5">
+            <div class="space-y-2">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-950/30 border border-red-500/30">
+                    <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-sm font-display font-bold uppercase tracking-wider text-white">¿Confirmar Cierre del Ticket?</h3>
+                <p class="text-[11px] text-nordic-textMuted">Estás a punto de marcar este ticket como cerrado. No requerirá explicaciones adicionales.</p>
+            </div>
+
+            <input type="hidden" id="cerrar-ticket-id">
+
+            <div class="flex justify-center space-x-3 pt-2">
+                <button type="button" id="btn-cancel-cierre" class="px-4 py-2 text-xs uppercase tracking-widest text-nordic-textMuted hover:text-white transition-colors">
+                    Cancelar
+                </button>
+                <button type="button" id="btn-confirm-cierre" class="bg-red-900 border border-red-700 hover:bg-red-800 text-white px-5 py-2 text-xs uppercase tracking-widest font-bold transition-colors">
+                    Confirmar Cierre
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/portal_clientes.js?v=1.0.6"></script>
 </body>
 </html>
