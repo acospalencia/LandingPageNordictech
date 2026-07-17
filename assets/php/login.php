@@ -3,7 +3,7 @@ session_start();
 
 // Si el usuario ya está autenticado
 if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
-    $redirect = (intval($_SESSION['id_rol']) === 3) ? '/pages/Dashboard.php' : '/pages/PortalClientes.html';
+    $redirect = (intval($_SESSION['id_rol']) === 3) ? '/pages/Dashboard.php' : '/pages/PortalClientes.php';
     echo json_encode(['status' => 'success', 'message' => 'Sesión activa detectada.', 'redirect' => $redirect]);
     exit;
 }
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (intval($usuario['id_rol']) === 3) {
                         $redirectUrl = '/pages/Dashboard.php';
                     } else {
-                        $redirectUrl = '/pages/PortalClientes.html';
+                        $redirectUrl = '/pages/PortalClientes.php';
                     }
                     
                     echo json_encode([

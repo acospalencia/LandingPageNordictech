@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     let todosLosTickets = [];
-    let estadoFiltroActual = 'Abierto'; // Filtro por defecto
+    let estadoFiltroActual = 'Abierto';
 
-    // Referencias a la interfaz
     const contenedorTickets = document.querySelector('#contenedor-tickets');
     const alertBox = document.querySelector('#portal-alert');
     const tabs = {
@@ -11,22 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
         'Cerrado': document.getElementById('tab-Cerrado')
     };
 
-    // Vincular selectores de pestañas
+    // Vincular selectores de navegación por pestañas
     Object.keys(tabs).forEach(key => {
         tabs[key].addEventListener('click', () => switchTab(key));
     });
 
-    // Vincular modales internos
+    // Controladores de Modales Personalizados
     document.getElementById('btn-cancel-logout').addEventListener('click', () => toggleModal('modal-logout', false));
     document.getElementById('btn-confirm-logout').addEventListener('click', ejecutarCierreSesion);
     document.getElementById('btn-logout').addEventListener('click', () => toggleModal('modal-logout', true));
 
     document.getElementById('btn-cancel-cierre').addEventListener('click', () => toggleModal('modal-confirmar-cierre', false));
-    document.getElementById('btn-confirm-cierre').addEventListener('click', ejecutarCierreCliente);
+    document.getElementById('btn-confirm-cierre').addEventListener('click', ejecutarCierreTicketCliente);
 
-    // Sistema de Alertas internas sin Pop-ups
+    // Sistema Interno de Mensajería en Interfaz (Sin pop-ups nativos)
     function showPortalAlert(type, text) {
-        alertBox.className = "mb-6 p-4 text-xs font-semibold tracking-wide border rounded-none";
+        alertBox.className = "mb-6 p-4 text-xs font-semibold tracking-wide border rounded-none transition-all duration-300";
         if (type === 'success') {
             alertBox.classList.add('bg-green-950/20', 'border-green-500/20', 'text-green-400');
         } else {
@@ -35,20 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
         alertBox.textContent = text;
         alertBox.classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => { alertBox.classList.add('hidden'); }, 6000);
+        setTimeout(() => { alertBox.classList.add('hidden'); }, 5000);
     }
 
-    // Cambiar visibilidad de modales
     function toggleModal(modalId, show) {
         const modal = document.getElementById(modalId);
-        if (show) {
-            modal.classList.remove('hidden');
-        } else {
-            modal.classList.add('hidden');
-        }
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
     }
 
-    // 1. Obtener tickets desde la API PHP
+    // Cargar Tickets desde Base de Datos
     async function cargarTickets() {
         try {
             const response = await fetch('/assets/php/get_tickets.php');
@@ -59,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const nodoTexto = document.getElementById('nodo-activo-text');
                 if (nodoTexto && resultado.nombre_usuario) {
-                    nodoTexto.textContent = `Nodo Activo: ${resultado.nombre_usuario}`;
+                    nodoTexto.textContent = `Cliente: ${resultado.nombre_usuario}`;
                 }
 
                 renderizarTickets();
@@ -71,11 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error(error);
-            contenedorTickets.innerHTML = `<p class="text-xs text-rose-400 font-mono">❌ ERROR_CONECTIVIDAD: Enlace de datos inalcanzable.</p>`;
+            contenedorTickets.innerHTML = `<p class="text-xs text-rose-400 font-mono">❌ ERROR_CONECTIVIDAD: No se pudo establecer comunicación con el clúster.</p>`;
         }
     }
 
-    // 2. Renderizar lista con Acordeones Desplegables al dar clic
+    // Renderizar tarjetas con sistema de Acordeones
     function renderizarTickets() {
         contenedorTickets.innerHTML = '';
 
@@ -90,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ticketsFiltrados.length === 0) {
             contenedorTickets.innerHTML = `
                 <div class="bg-nordic-card border border-nordic-border p-8 text-center">
-                    <p class="text-xs text-nordic-textMuted font-light">No se registran solicitudes en estado: <strong class="text-white uppercase">${estadoFiltroActual}</strong></p>
+                    <p class="text-xs text-nordic-textMuted font-light">No hay registros bajo la categoría: <strong class="text-white uppercase">${estadoFiltroActual}</strong></p>
                 </div>
             `;
             return;
@@ -105,150 +100,148 @@ document.addEventListener('DOMContentLoaded', () => {
             if (ticket.prioridad === 'Alta') prioridadColor = "text-orange-400 font-bold";
             if (ticket.prioridad === 'Crítica') prioridadColor = "text-rose-400 font-bold animate-pulse";
 
-            const div = document.createElement('div');
-            div.className = "bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/45 transition-all cursor-pointer overflow-hidden";
+            const card = document.createElement('div');
+            card.className = "bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/60 transition-all cursor-pointer overflow-hidden select-none";
             
-            // Evento interactivo para colapsar y expandir suavemente el cuerpo al hacer clic
-            div.addEventListener('click', (e) => {
-                if (e.target.closest('.btn-cerrar-accion')) return; // Prevenir cierre si presiona el botón
+            // Lógica del Acordeón: Expandir y encoger al presionar la tarjeta
+            card.addEventListener('click', (e) => {
+                // Si el clic viene de los botones interactivos internos, no colapsar la tarjeta
+                if (e.target.closest('.action-btn')) return;
+
+                const panel = card.querySelector('.panel-detalle');
+                const flecha = card.querySelector('.flecha-desplegar');
                 
-                const panelDetalle = div.querySelector('.panel-detalle');
-                const flechaIcono = div.querySelector('.flecha-desplegar');
-                
-                if (panelDetalle.classList.contains('hidden')) {
-                    panelDetalle.classList.remove('hidden');
-                    if (flechaIcono) flechaIcono.classList.add('rotate-180');
+                if (panel.classList.contains('activo')) {
+                    panel.classList.remove('activo');
+                    if (flecha) flecha.classList.remove('rotate-180');
                 } else {
-                    panelDetalle.classList.add('hidden');
-                    if (flechaIcono) flechaIcono.classList.remove('rotate-180');
+                    // Cerrar cualquier otro acordeón abierto en la vista actual (Opcional, para limpieza visual)
+                    document.querySelectorAll('.panel-detalle.activo').forEach(p => p.classList.remove('activo'));
+                    document.querySelectorAll('.flecha-desplegar.rotate-180').forEach(f => f.classList.remove('rotate-180'));
+                    
+                    panel.classList.add('activo');
+                    if (flecha) flecha.classList.add('rotate-180');
                 }
             });
 
-            div.innerHTML = `
+            card.innerHTML = `
+                <!-- Cabecera de la Tarjeta (Siempre visible) -->
                 <div class="p-5 flex justify-between items-center gap-4">
-                    <div class="flex items-center space-x-3">
-                        <span class="inline-block ${badgeStyle} text-[9px] font-bold tracking-widest px-2 py-0.5 border uppercase">
-                            ${ticketindexToText(ticket.estado)}
+                    <div class="flex items-center space-x-3 min-w-0">
+                        <span class="inline-block ${badgeStyle} text-[9px] font-bold tracking-widest px-2 py-0.5 border uppercase shrink-0">
+                            ${ticket.estado}
                         </span>
-                        <h3 class="text-sm font-semibold uppercase text-white tracking-wide truncate max-w-xs md:max-w-md">${escapeHTML(ticket.titulo)}</h3>
+                        <h3 class="text-xs font-semibold uppercase text-white tracking-wide truncate">${escapeHTML(ticket.titulo)}</h3>
                     </div>
                     
-                    <div class="flex items-center space-x-4">
-                        <span class="text-[10px] font-mono text-nordic-textMuted">#TK-${ticket.id_ticket}</span>
+                    <div class="flex items-center space-x-4 shrink-0">
+                        <span class="text-[10px] font-mono text-nordic-textMuted hidden sm:inline">#TK-${ticket.id_ticket}</span>
                         
-                        ${ticket.estado === 'Abierto' ? `
-                            <button onclick="solicitarCierreCliente(event, ${ticket.id_ticket})" class="btn-cerrar-accion px-3 py-1.5 bg-red-950/30 hover:bg-red-950/70 border border-red-500/25 text-red-400 text-[9px] uppercase tracking-widest font-bold transition-all">
-                                Cerrar Caso
-                            </button>
-                        ` : ''}
-
-                        <svg class="flecha-desplegar h-4 w-4 text-nordic-textMuted transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <!-- Flecha de Estado del Acordeón -->
+                        <svg class="flecha-desplegar h-4 w-4 text-nordic-textMuted transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>
                 </div>
 
-                <div class="panel-detalle hidden border-t border-nordic-border/30 bg-[#060a14] p-5 space-y-4">
+                <!-- Contenido Oculto Desplegable (Acordeón) -->
+                <div class="panel-detalle border-t border-nordic-border/30 bg-[#060a14] px-5 space-y-4">
                     <div>
-                        <span class="block text-[8px] uppercase tracking-widest text-nordic-textMuted font-bold mb-1">Descripción del Incidente:</span>
-                        <p class="text-xs text-[#b4c6ef] font-light leading-relaxed whitespace-pre-wrap">${escapeHTML(ticket.descripcion)}</p>
+                        <span class="block text-[8px] uppercase tracking-widest text-nordic-textMuted font-bold mb-1">Descripción del Problema:</span>
+                        <p class="text-xs text-slate-300 font-light leading-relaxed whitespace-pre-wrap">${escapeHTML(ticket.descripcion)}</p>
                     </div>
 
+                    <!-- Bitácora de Avance (Aparece en tickets En Proceso o Cerrados si existe) -->
                     ${ticket.observacion_proceso ? `
-                        <div class="p-3 bg-nordic-card border border-blue-500/10 text-xs">
-                            <span class="block text-[8px] uppercase tracking-widest text-blue-400 font-bold mb-1">Comentario Técnico (Progreso):</span>
-                            <p class="text-slate-300 whitespace-pre-wrap">${escapeHTML(ticket.observacion_proceso)}</p>
+                        <div class="p-3 bg-[#0d162d] border border-blue-500/20 text-xs rounded-none">
+                            <span class="block text-[8px] uppercase tracking-widest text-blue-400 font-bold mb-1">Comentario de Progreso Técnico:</span>
+                            <p class="text-slate-300 font-light whitespace-pre-wrap">${escapeHTML(ticket.observacion_proceso)}</p>
                         </div>
                     ` : ''}
 
+                    <!-- Bitácora de Cierre (Aparece en tickets resueltos/cerrados) -->
                     ${ticket.observacion_cierre ? `
-                        <div class="p-3 bg-nordic-card border border-emerald-500/10 text-xs">
-                            <span class="block text-[8px] uppercase tracking-widest text-emerald-400 font-bold mb-1">Diagnóstico Final de Resolución:</span>
-                            <p class="text-slate-300 whitespace-pre-wrap">${escapeHTML(ticket.observacion_cierre)}</p>
+                        <div class="p-3 bg-[#0a1c18] border border-emerald-500/20 text-xs rounded-none">
+                            <span class="block text-[8px] uppercase tracking-widest text-emerald-400 font-bold mb-1">Resolución Final del Especialista:</span>
+                            <p class="text-slate-300 font-light whitespace-pre-wrap">${escapeHTML(ticket.observacion_cierre)}</p>
                         </div>
                     ` : ''}
 
-                    <div class="flex justify-between items-center text-[10px] font-mono text-slate-500 pt-2 border-t border-nordic-border/20">
-                        <span>Prioridad asignada: <strong class="${prioridadColor}">${ticket.prioridad}</strong></span>
-                        <span>Apertura: ${ticket.fecha}</span>
+                    <!-- Línea de Metadatos e Interacciones Finales -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] font-mono text-slate-500 pt-3 border-t border-nordic-border/20 gap-3">
+                        <div class="space-x-4">
+                            <span>Prioridad: <strong class="${prioridadColor}">${ticket.prioridad}</strong></span>
+                            <span>Apertura: ${ticket.fecha}</span>
+                        </div>
+                        
+                        <!-- El Botón de Cierre solo se añade dentro del acordeón si el estado es estrictamente Abierto -->
+                        ${ticket.estado === 'Abierto' ? `
+                            <button onclick="lanzarConfirmacionCierre(event, ${ticket.id_ticket})" class="action-btn px-4 py-2 bg-red-950/40 hover:bg-red-900 border border-red-700 text-red-300 text-[9px] uppercase tracking-widest font-bold transition-colors">
+                                Cancelar / Cerrar Ticket
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             `;
-            contenedorTickets.appendChild(div);
+            contenedorTickets.appendChild(card);
         });
     }
 
-    // 3. Control de Pestañas
+    // Cambiar de Pestaña activa
     function switchTab(estado) {
         estadoFiltroActual = estado;
-        
         Object.keys(tabs).forEach(key => {
             if (key === estado) {
-                tabs[key].className = "flex-grow py-3 text-xs font-bold uppercase tracking-wider text-center transition-all bg-[#2A4094] text-white rounded-none";
+                tabs[key].className = "flex-grow py-3 text-xs font-bold uppercase tracking-wider text-center transition-all bg-[#2A4094] text-white";
             } else {
-                tabs[key].className = "flex-grow py-3 text-xs font-bold uppercase tracking-wider text-center transition-all text-nordic-textMuted hover:text-white rounded-none";
+                tabs[key].className = "flex-grow py-3 text-xs font-bold uppercase tracking-wider text-center transition-all text-nordic-textMuted hover:text-white";
             }
         });
-
         renderizarTickets();
     }
 
-    // 4. Solicitar cierre (Inicia flujo directo)
-    window.solicitarCierreCliente = function(event, idTicket) {
-        event.stopPropagation(); // Prevenir colapso
+    // Disparar el flujo del Modal de cierre
+    window.lanzarConfirmacionCierre = function(event, idTicket) {
+        event.stopPropagation(); // Evita que el acordeón se cierre al presionar el botón
         document.getElementById('cerrar-ticket-id').value = idTicket;
         toggleModal('modal-confirmar-cierre', true);
     };
 
-    async function ejecutarCierreCliente() {
+    // Procesar la solicitud de Cierre Directo (El cliente finaliza su propio caso abierto)
+    async function ejecutarCierreTicketCliente() {
         const idTicket = document.getElementById('cerrar-ticket-id').value;
+        toggleModal('modal-confirmar-cierre', false);
 
         try {
-            // El cliente cierra el ticket directamente, enviando un mensaje predefinido automático
+            // Reutiliza el endpoint administrativo enviando la instrucción directa de finalización
             const response = await fetch('/assets/php/procesar_ticket_admin.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `id_ticket=${idTicket}&estado=Cerrado&observaciones=Caso concluido de forma anticipada directamente por confirmación del cliente.`
+                body: `id_ticket=${idTicket}&estado=Cerrado&observaciones=Ticket dado de baja y cerrado directamente desde la consola autónoma por el cliente.`
             });
             const result = await response.json();
 
             if (result.status === 'success') {
-                toggleModal('modal-confirmar-cierre', false);
-                showPortalAlert('success', 'Procedimiento concluido: Caso cerrado exitosamente.');
+                showPortalAlert('success', 'El ticket ha sido cerrado correctamente de forma inmediata.');
                 cargarTickets();
             } else {
                 showPortalAlert('error', result.message);
             }
         } catch (err) {
-            showPortalAlert('error', 'Error al procesar la solicitud de cierre con el clúster.');
+            showPortalAlert('error', 'Fallo de enlace: No se pudo despachar el cierre al clúster.');
         }
     }
 
-    // 5. Gestión del Logout
-    async function ejecutarCierreSesion() {
-        try {
-            const response = await fetch('/assets/php/logout.php');
-            const resultado = await response.json();
-            if (resultado.status === 'success') {
-                window.location.replace('/pages/Login.php');
-            }
-        } catch (error) {
-            showPortalAlert('error', 'Error de comunicación al cerrar la sesión.');
-        }
-    }
-
-    // 6. Enviar Formulario de Creación de Tickets
+    // Crear un nuevo Ticket
     const formTicket = document.querySelector('#form-ticket');
     if (formTicket) {
         formTicket.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(formTicket);
-
-            // Cambiar visual del botón a carga
             const submitBtn = formTicket.querySelector('button[type="submit"]');
-            const origText = submitBtn.innerHTML;
+            
             submitBtn.disabled = true;
-            submitBtn.textContent = 'PROCESANDO SOLICITUD...';
+            submitBtn.textContent = 'TRANSMITIENDO TICKET...';
 
             try {
                 const response = await fetch('/assets/php/crear_ticket.php', {
@@ -267,15 +260,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     showPortalAlert('error', resultado.message);
                 }
             } catch (error) {
-                showPortalAlert('error', 'Ocurrió un problema de conectividad al registrar el ticket.');
+                showPortalAlert('error', 'Error en el bus de red al intentar alojar el ticket.');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = origText;
+                submitBtn.textContent = 'Enviar Reporte al Centro de Soporte';
             }
         });
     }
 
-    // 7. Actualizar Contadores de Pestañas
+    // Terminar Sesión
+    async function ejecutarCierreSesion() {
+        try {
+            const response = await fetch('/assets/php/logout.php');
+            const resultado = await response.json();
+            if (resultado.status === 'success') {
+                window.location.replace('/pages/Login.php');
+            }
+        } catch (error) {
+            showPortalAlert('error', 'Imposible destruir el token de sesión.');
+        }
+    }
+
+    // Actualizar Contadores Vivos
     function actualizarContadoresTabs() {
         const abiertos = todosLosTickets.filter(t => t.estado === 'Abierto').length;
         const proceso = todosLosTickets.filter(t => t.estado === 'En Proceso').length;
@@ -286,21 +292,11 @@ document.addEventListener('DOMContentLoaded', () => {
         tabs['Cerrado'].textContent = `Cerrados (${cerrados})`;
     }
 
-    // Helpers
     function escapeHTML(str) {
         if (!str) return '';
-        return str.replace(/[&<>'"]/g, 
-            tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-        );
+        return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     }
 
-    function ticketindexToText(estado) {
-        if (estado === 'Cerrado' || estado === 'Resuelto') {
-            return 'Cerrado / Resuelto';
-        }
-        return estado;
-    }
-
-    // Ejecución de entrada
+    // Inicializar panel
     cargarTickets();
 });

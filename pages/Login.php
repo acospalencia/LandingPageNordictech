@@ -7,7 +7,7 @@ if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
         header("Location: /pages/Dashboard.php");
         exit;
     } else {
-        header("Location: /pages/PortalClientes.html");
+        header("Location: /pages/PortalClientes.php");
         exit;
     }
 }

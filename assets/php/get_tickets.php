@@ -63,8 +63,16 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
 
-    // Traemos de forma explícita todos los estados de soporte del cliente
-    $query = "SELECT id_ticket, titulo, descripcion, estado, prioridad, DATE_FORMAT(fecha_creacion, '%d/%m/%Y') as fecha 
+    // SE AGREGA AL SELECT: observacion_proceso y observacion_cierre para la bitácora técnica
+    $query = "SELECT 
+                id_ticket, 
+                titulo, 
+                descripcion, 
+                estado, 
+                prioridad, 
+                observacion_proceso, 
+                observacion_cierre,
+                DATE_FORMAT(fecha_creacion, '%d/%m/%Y') as fecha 
               FROM tickets 
               WHERE id_usuario = :id_usuario 
                 AND estado IN ('Abierto', 'En Proceso', 'Resuelto', 'Cerrado')
