@@ -38,3 +38,13 @@ input::placeholder, textarea::placeholder {
 .custom-scroll::-webkit-scrollbar-thumb:hover {
     background: #2A4094;
 }
+
+/* Transición fluida para la altura de los elementos del acordeón */
+.panel-detalle {
+    transition: all 0.25s ease-in-out;
+}
+
+/* Animación de rotación de la única flecha de control */
+.rotate-180 {
+    transform: rotate(180deg);
+}

@@ -1,6 +1,6 @@
 let globalClientes = [];
 let idClienteActivo = null;
-let currentTab = 'Abierto'; // Pestaña inicial
+let currentTab = 'Abierto'; 
 let ticketsCargados = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-cancel-modal').addEventListener('click', closeModal);
     document.getElementById('btn-confirm-modal').addEventListener('click', submitCloseTicket);
 
-    // Cerrar los desplegables abiertos al hacer clic fuera de ellos
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.dropdown-container')) {
             document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
@@ -112,7 +111,6 @@ async function fetchTicketsCliente(idUsuario) {
     }
 }
 
-// Actualizar contadores numéricos de las pestañas
 function updateTabCounters() {
     const abiertos = ticketsCargados.filter(t => t.estado === 'Abierto').length;
     const proceso = ticketsCargados.filter(t => t.estado === 'En Proceso').length;
@@ -123,31 +121,27 @@ function updateTabCounters() {
     document.getElementById('count-Cerrado').textContent = cerrados;
 }
 
-// Navegar entre pestañas
 function switchTab(tab) {
     currentTab = tab;
     
-    // Resetear clases de pestañas estéticas
     const tabs = ['Abierto', 'En Proceso', 'Cerrado'];
     tabs.forEach(t => {
         const key = t.replace(' ', '');
         const element = document.getElementById(`tab-${key}`);
         if (t === tab) {
-            element.className = "flex-grow py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border bg-nordic-logoBlue text-white";
+            element.className = "flex-1 py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border bg-nordic-logoBlue text-white";
         } else {
-            element.className = "flex-grow py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border text-nordic-textMuted hover:text-white";
+            element.className = "flex-1 py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border text-nordic-textMuted hover:text-white";
         }
     });
 
     renderTabTickets();
 }
 
-// Renderizar tickets de la pestaña actual con formato idéntico a la captura de pantalla
 function renderTabTickets() {
     const container = document.getElementById('tickets-list');
     container.innerHTML = '';
 
-    // Filtrar los datos correspondientes a la pestaña activa
     let filtrados = [];
     if (currentTab === 'Cerrado') {
         filtrados = ticketsCargados.filter(t => t.estado === 'Resuelto' || t.estado === 'Cerrado');
@@ -162,103 +156,143 @@ function renderTabTickets() {
 
     filtrados.forEach(ticket => {
         const div = document.createElement('div');
-        div.className = "bg-nordic-card border border-nordic-border p-6 space-y-4 relative transition-all hover:border-slate-700/60";
+        div.className = "bg-nordic-card border border-nordic-border relative transition-all hover:border-slate-700/60 cursor-pointer mb-4 select-none";
         
-        // Formatear fecha
+        div.addEventListener('click', (e) => {
+            if (e.target.closest('.dropdown-container')) return;
+
+            const panel = div.querySelector('.panel-detalle');
+            
+            if (panel.classList.contains('activo')) {
+                panel.classList.remove('activo');
+                panel.classList.add('hidden');
+            } else {
+                document.querySelectorAll('.panel-detalle.activo').forEach(p => {
+                    p.classList.remove('activo');
+                    p.classList.add('hidden');
+                });
+                
+                panel.classList.remove('hidden');
+                panel.classList.add('activo');
+            }
+        });
+
         const dateObj = new Date(ticket.fecha_creacion);
         const formattedDate = dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-        // Determinar color de la etiqueta de estado
         let badgeColor = "border-amber-500/20 bg-amber-950/20 text-amber-500";
         if (ticket.estado === 'En Proceso') badgeColor = "border-sky-500/20 bg-sky-950/20 text-sky-400";
         if (ticket.estado === 'Resuelto') badgeColor = "border-green-500/20 bg-green-950/20 text-green-400";
         if (ticket.estado === 'Cerrado') badgeColor = "border-slate-500/20 bg-slate-800/20 text-slate-400";
 
+        let actionButtonsHtml = '';
+        if (ticket.estado === 'Abierto') {
+            actionButtonsHtml = `
+                <button onclick="openModal(${ticket.id_ticket}, 'En Proceso')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-amber-400 hover:bg-nordic-bg transition-colors">
+                    Trabajar (En Proceso)
+                </button>
+                <button onclick="openModal(${ticket.id_ticket}, 'Resuelto')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-green-400 hover:bg-nordic-bg transition-colors">
+                    Resolver Ticket
+                </button>
+            `;
+        } else if (ticket.estado === 'En Proceso') {
+            actionButtonsHtml = `
+                <button onclick="openModal(${ticket.id_ticket}, 'En Proceso')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-amber-400 hover:bg-nordic-bg transition-colors">
+                    Agregar Nota de Avance
+                </button>
+                <button onclick="openModal(${ticket.id_ticket}, 'Resuelto')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-green-400 hover:bg-nordic-bg transition-colors">
+                    Resolver Ticket
+                </button>
+                <button onclick="openModal(${ticket.id_ticket}, 'Cerrado')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-red-400 hover:bg-nordic-bg transition-colors">
+                    Cerrar Ticket
+                </button>
+            `;
+        } else if (ticket.estado === 'Resuelto' || ticket.estado === 'Cerrado') {
+            actionButtonsHtml = `
+                <button onclick="openModal(${ticket.id_ticket}, 'Reabrir')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-sky-400 hover:bg-nordic-bg transition-colors">
+                    Reabrir (En Proceso)
+                </button>
+            `;
+        }
+
         div.innerHTML = `
-            <div class="flex items-start justify-between">
-                <div>
-                    <span class="px-2 py-0.5 text-[9px] uppercase font-bold tracking-widest border ${badgeColor}">
+            <div class="p-6 flex items-center justify-between gap-4">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <span class="px-2 py-0.5 text-[9px] uppercase font-bold tracking-widest border ${badgeColor} shrink-0">
                         ${ticket.estado}
                     </span>
-                    <h3 class="text-base font-display font-bold tracking-wide uppercase mt-3 text-white">
+                    <h3 class="text-sm font-display font-bold tracking-wide uppercase text-white truncate">
                         ${ticket.titulo}
                     </h3>
                 </div>
                 
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4 shrink-0">
                     <span class="text-xs font-mono text-nordic-textMuted/70">#TK-${ticket.id_ticket}</span>
                     
                     <div class="relative dropdown-container">
-                        <button onclick="toggleDropdown(event, ${ticket.id_ticket})" class="p-1.5 hover:bg-nordic-bg/80 border border-nordic-border/50 text-nordic-textMuted hover:text-white transition-colors">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <button onclick="toggleDropdown(event, ${ticket.id_ticket})" class="p-1.5 flex items-center space-x-1 hover:bg-nordic-bg/80 border border-nordic-border/50 text-nordic-textMuted hover:text-white transition-colors">
+                            <span class="text-[10px] font-bold uppercase tracking-wider pl-1 hidden sm:inline">Opciones</span>
+                            <svg class="flecha-menu h-4 w-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
                         
-                        <div id="dropdown-${ticket.id_ticket}" class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-nordic-card border border-nordic-border shadow-xl z-20 divide-y divide-nordic-border/40">
-                            ${ticket.estado === 'Abierto' ? `
-                                <button onclick="openModal(${ticket.id_ticket}, 'En Proceso')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-amber-400 hover:bg-nordic-bg transition-colors">
-                                    Trabajar (En Proceso)
-                                </button>
-                            ` : ''}
-                            ${ticket.estado === 'Abierto' || ticket.estado === 'En Proceso' ? `
-                                <button onclick="openModal(${ticket.id_ticket}, 'Resuelto')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-green-400 hover:bg-nordic-bg transition-colors">
-                                    Resolver Ticket
-                                </button>
-                                <button onclick="openModal(${ticket.id_ticket}, 'Cerrado')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-red-400 hover:bg-nordic-bg transition-colors">
-                                    Cerrar Ticket
-                                </button>
-                            ` : ''}
-                            <span class="block px-4 py-2.5 text-[10px] text-nordic-textMuted italic">Sin acciones disponibles</span>
+                        <div id="dropdown-${ticket.id_ticket}" class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-nordic-card border border-nordic-border shadow-xl z-30 divide-y divide-nordic-border/40">
+                            ${actionButtonsHtml}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <p class="text-xs text-nordic-textMuted leading-relaxed whitespace-pre-wrap">
-                ${ticket.descripcion}
-            </p>
-
-            ${ticket.observacion_proceso ? `
-                <div class="p-3 bg-nordic-bg/50 border border-nordic-border/20 text-xs">
-                    <span class="block text-[8px] uppercase tracking-widest text-amber-500 font-bold mb-1">Bitácora de Progreso:</span>
-                    <p class="text-slate-300 whitespace-pre-wrap">${ticket.observacion_proceso}</p>
+            <div class="panel-detalle hidden px-6 pb-6 space-y-4 border-t border-nordic-border/20 pt-4 bg-[#0e172a]">
+                <div>
+                    <span class="block text-[8px] uppercase tracking-widest text-nordic-textMuted font-bold mb-1">Descripción del Problema:</span>
+                    <p class="text-xs text-slate-200 leading-relaxed whitespace-pre-wrap">${ticket.descripcion}</p>
                 </div>
-            ` : ''}
 
-            ${ticket.observacion_cierre ? `
-                <div class="p-3 bg-nordic-bg/50 border border-nordic-border/20 text-xs">
-                    <span class="block text-[8px] uppercase tracking-widest text-green-400 font-bold mb-1">Bitácora de Cierre:</span>
-                    <p class="text-slate-300 whitespace-pre-wrap">${ticket.observacion_cierre}</p>
+                ${ticket.observacion_proceso ? `
+                    <div class="p-3 bg-[#060913] border border-nordic-border/40 text-xs">
+                        <span class="block text-[8px] uppercase tracking-widest text-amber-500 font-bold mb-1">Bitácora de Progreso:</span>
+                        <p class="text-slate-300 whitespace-pre-wrap">${ticket.observacion_proceso}</p>
+                    </div>
+                ` : ''}
+
+                ${ticket.observacion_cierre ? `
+                    <div class="p-3 bg-[#060913] border border-nordic-border/40 text-xs">
+                        <span class="block text-[8px] uppercase tracking-widest text-green-400 font-bold mb-1">Bitácora de Cierre / Resolución:</span>
+                        <p class="text-slate-300 whitespace-pre-wrap">${ticket.observacion_cierre}</p>
+                    </div>
+                ` : ''}
+
+                <div class="flex items-center justify-between text-[10px] text-nordic-textMuted/60 pt-1 border-t border-nordic-border/10">
+                    <span>Prioridad: <strong class="text-slate-300">${ticket.prioridad}</strong></span>
+                    <span>Generado el: ${formattedDate}</span>
                 </div>
-            ` : ''}
-
-            <div class="flex items-center justify-between text-[10px] text-nordic-textMuted/60 pt-1">
-                <span>Prioridad: <strong class="text-slate-300">${ticket.prioridad}</strong></span>
-                <span>${formattedDate}</span>
             </div>
         `;
         container.appendChild(div);
     });
 }
 
-// Control de apertura/cierre de los menús desplegables
 function toggleDropdown(event, idTicket) {
     event.stopPropagation();
     const targetMenu = document.getElementById(`dropdown-${idTicket}`);
+    const boton = event.currentTarget;
+    const flecha = boton.querySelector('.flecha-menu');
     const isHidden = targetMenu.classList.contains('hidden');
 
-    // Cerrar el resto de desplegables activos en la pantalla
     document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+    document.querySelectorAll('.flecha-menu').forEach(fl => fl.classList.remove('rotate-180'));
 
     if (isHidden) {
         targetMenu.classList.remove('hidden');
+        if (flecha) flecha.classList.add('rotate-180');
     }
 }
 
 function openModal(idTicket, targetStatus) {
-    // Cerrar menús al lanzar el modal
     document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+    document.querySelectorAll('.flecha-menu').forEach(fl => fl.classList.remove('rotate-180'));
 
     document.getElementById('modal-ticket-id').value = idTicket;
     document.getElementById('modal-target-status').value = targetStatus;
@@ -272,10 +306,10 @@ function openModal(idTicket, targetStatus) {
     document.getElementById('modal-alert').classList.add('hidden');
 
     if (targetStatus === 'En Proceso') {
-        modalTitle.textContent = "Trabajar Incidente";
-        modalSubtitle.textContent = "Agrega un comentario inicial o bitácora de red para informar al cliente que estás trabajando en ello.";
-        modalLabel.textContent = "Nota de Trabajo (Opcional)";
-        resolucionText.placeholder = "Indica los pasos iniciales a realizar...";
+        modalTitle.textContent = "Trabajar Incidente / Agregar Nota";
+        modalSubtitle.textContent = "Agrega un comentario o bitácora de red para informar de los avances lógicos o de hardware.";
+        modalLabel.textContent = "Nota de Trabajo (Obligatoria/Opcional si es el primer avance)";
+        resolucionText.placeholder = "Indica las acciones técnicas que se están realizando...";
     } else if (targetStatus === 'Resuelto') {
         modalTitle.textContent = "Resolver Incidente";
         modalSubtitle.textContent = "Escribe detalladamente el diagnóstico y solución aplicada.";
@@ -283,9 +317,14 @@ function openModal(idTicket, targetStatus) {
         resolucionText.placeholder = "Describe los cambios físicos o lógicos aplicados...";
     } else if (targetStatus === 'Cerrado') {
         modalTitle.textContent = "Cerrar Ticket";
-        modalSubtitle.textContent = "Escribe el motivo del cierre.";
+        modalSubtitle.textContent = "Escribe el motivo de la finalización definitiva del caso.";
         modalLabel.textContent = "Motivo de Cierre (Obligatorio)";
         resolucionText.placeholder = "Indica la razón de la conclusión del caso...";
+    } else if (targetStatus === 'Reabrir') {
+        modalTitle.textContent = "Reabrir Ticket";
+        modalSubtitle.textContent = "El caso volverá al estado 'En Proceso'. Las bitácoras existentes no se perderán.";
+        modalLabel.textContent = "Motivo de la Reapertura (Obligatorio)";
+        resolucionText.placeholder = "Explica por qué se reabre el ticket...";
     }
 
     document.getElementById('close-ticket-modal').classList.remove('hidden');
@@ -301,8 +340,8 @@ async function submitCloseTicket() {
     const observaciones = document.getElementById('modal-resolucion-text').value.trim();
     const modalAlert = document.getElementById('modal-alert');
 
-    if ((targetStatus === 'Resuelto' || targetStatus === 'Cerrado') && observaciones === '') {
-        modalAlert.textContent = "La bitácora técnica de resolución o cierre es obligatoria.";
+    if ((targetStatus === 'Resuelto' || targetStatus === 'Cerrado' || targetStatus === 'Reabrir') && observaciones === '') {
+        modalAlert.textContent = "Es obligatorio suministrar un comentario para esta acción.";
         modalAlert.classList.remove('hidden');
         return;
     }
@@ -327,27 +366,23 @@ async function submitCloseTicket() {
         modalAlert.textContent = "Error al intentar actualizar el estado del ticket.";
         modalAlert.classList.remove('hidden');
     }
+}
 
-    const btnLogout = document.querySelector('#btn-logout');
-    
-    if (btnLogout) {
-        btnLogout.addEventListener('click', async (e) => {
-            e.preventDefault();
-            
-            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                try {
-                    const response = await fetch('/assets/php/logout.php');
-                    const resultado = await response.json();
-                    
-                    if (resultado.status === 'success') {
-                        // Redirección forzada eliminando el historial
-                        window.location.replace('/pages/Login.php');
-                    }
-                } catch (error) {
-                    console.error('Error al intentar finalizar la sesión:', error);
-                    alert('❌ Error de conectividad al procesar la salida.');
+const btnLogout = document.querySelector('#btn-logout');
+if (btnLogout) {
+    btnLogout.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+            try {
+                const response = await fetch('/assets/php/logout.php');
+                const resultado = await response.json();
+                if (resultado.status === 'success') {
+                    window.location.replace('/pages/Login.php');
                 }
+            } catch (error) {
+                console.error('Error al intentar finalizar la sesión:', error);
+                alert('❌ Error de conectividad al procesar la salida.');
             }
-        });
-    }
+        }
+    });
 }
