@@ -21,7 +21,7 @@ if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -33,57 +33,58 @@ if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
                     },
                     colors: {
                         nordic: {
-                            bg: '#060913',       
-                            card: '#0D1425',     
-                            border: '#1E293B',   
-                            logoBlue: '#2A4094', 
+                            bg: '#060913',
+                            card: '#0D1425',
+                            border: '#1E293B',
+                            logoBlue: '#2A4094',
                             logoBlueHover: '#3C56C4',
-                            textMuted: '#94A3B8' 
+                            textMuted: '#94A3B8'
                         }
                     }
                 }
             }
         }
     </script>
-    
-    <link rel="stylesheet" href="/assets/css/login.css">
+
+    <!-- Hoja de estilos centralizada del proyecto -->
+    <link rel="stylesheet" href="/assets/css/nordictech.css">
 </head>
 <body class="bg-[#060913] text-white font-sans antialiased selection:bg-nordic-logoBlue selection:text-white">
 
-    <div class="bg-[#060913] text-white min-h-screen w-full relative flex flex-col justify-between isolation-auto">
+    <div class="nt-app-container">
 
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-gradient-to-b from-[#2A4094]/10 via-transparent to-transparent blur-3xl pointer-events-none z-0"></div>
+        <div class="nt-ambient-glow nt-ambient-glow--medium"></div>
 
-        <header class="fixed top-0 w-full bg-[#101729]/80 backdrop-blur-md z-50 border-b border-nordic-border/40">
-            <div class="max-w-7xl bg-[#101729]/80 mx-auto px-6 h-24 flex items-center justify-between">
+        <header class="nt-header">
+            <div class="nt-header__inner">
 
-                <div class="flex flex-col items-center pt-2">
-                    <div style='font-family: "Space Grotesk", "Segoe UI", sans-serif; font-weight: bold; font-size: 24px; letter-spacing: -0.02em; color: #ffffff; text-transform: uppercase; line-height: 24px;'>
+                <div class="nt-logo-wrap">
+                    <div class="nt-logo-title">
                         <a href="/">
-                            <img src="/assets/img/Marca de agua black.png" alt="Logo" style='display: inline-block; height: 84px; width: auto; vertical-align: middle; margin-left: 6px; border: 0;'>
+                            <img src="/assets/img/Marca de agua black.png" alt="Logo" class="nt-logo">
                         </a>
                     </div>
                 </div>
 
-                <nav class="hidden md:flex space-x-8 text-xs uppercase tracking-widest font-semibold text-nordic-textMuted">
-                    <a href="/" class="hover:text-white transition-colors">Inicio</a>
-                    <a href="/#servicios" class="hover:text-white transition-colors">Servicios</a>
-                    <a href="/#contacto" class="hover:text-white transition-colors">Contacto</a>
+                <nav class="nt-nav">
+                    <a href="/" class="nt-nav__link">Inicio</a>
+                    <a href="/#servicios" class="nt-nav__link">Servicios</a>
+                    <a href="/#contacto" class="nt-nav__link">Contacto</a>
                 </nav>
 
                 <div>
-                    <a href="./Login.php" class="bg-nordic-logoBlue text-white border border-white/10 px-6 py-3 rounded-none text-xs uppercase tracking-widest font-bold hover:bg-nordic-logoBlueHover transition-all block">
+                    <a href="./Login.php" class="nt-btn">
                         Portal de Clientes
                     </a>
                 </div>
             </div>
         </header>
 
-        <main class="flex-grow flex items-center justify-center pt-36 pb-16 px-6 relative z-10">
+        <main class="nt-main nt-main--centered">
             <div class="w-full max-w-md bg-nordic-card border border-nordic-border p-8 md:p-10 shadow-2xl relative">
-                
+
                 <div class="space-y-2 mb-6">
-                    <span class="text-nordic-logoBlue font-display font-bold text-[10px] uppercase tracking-widest block">
+                    <span class="nt-text-eyebrow nt-text-eyebrow--xs">
                         Autenticación Corporativa
                     </span>
                     <h1 class="text-2xl font-display font-bold tracking-tight text-white uppercase">
@@ -94,48 +95,48 @@ if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
                     </p>
                 </div>
 
-                <div id="login-alert" class="hidden mb-6 p-4 text-xs font-semibold tracking-wide border rounded-none"></div>
+                <div id="login-alert" class="nt-alert"></div>
 
-                <form id="form-login" class="space-y-6">
+                <form id="form-login" class="nt-form">
                     <div>
-                        <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-slate-300">
+                        <label class="nt-form__label nt-form__label--xs">
                             Correo Electrónico
                         </label>
                         <input type="email" name="username" required autocomplete="username" placeholder="tucorreo@gmail.com"
-                            class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white rounded-none transition-colors">
+                            class="nt-form__input">
                     </div>
 
                     <div>
                         <div class="flex justify-between items-center mb-2">
-                            <label class="block text-[10px] uppercase tracking-widest font-bold text-slate-300">
+                            <label class="nt-form__label nt-form__label--xs nt-form__label--no-margin">
                                 Contraseña
                             </label>
                         </div>
                         <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••••••"
-                            class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white rounded-none transition-colors">
+                            class="nt-form__input">
                     </div>
 
                     <div>
-                        <button type="submit" class="w-full bg-nordic-logoBlue text-white px-8 py-4 text-xs font-display font-bold uppercase tracking-widest hover:bg-nordic-logoBlueHover transition-colors">
+                        <button type="submit" class="nt-btn nt-btn--full font-display">
                             Iniciar sesion
                         </button>
                     </div>
                 </form>
 
-                <div class="flex items-center mt-4">
+                <div class="nt-form--inline">
                     <label class="ml-2 block text-xs text-nordic-textMuted font-light select-none cursor-pointer hover:text-slate-300 transition-colors">
-                        No tienes cuenta? <a href="/pages/SignIn.php" class="text-white underline hover:text-nordic-logoBlueHover transition-colors">Contáctanos</a>
+                        No tienes cuenta? <a href="/pages/SignIn.php" class="nt-link">Contáctanos</a>
                     </label>
                 </div>
 
             </div>
         </main>
 
-        <footer class="border-t border-nordic-border/40 py-12 text-xs text-nordic-textMuted font-light relative z-10">
-            <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div class="flex flex-col items-start opacity-70">
-                    <p class="font-display font-bold tracking-wider text-white text-xs uppercase">NORDICTECH</p>
-                    <p class="text-[8px] tracking-[0.2em] uppercase text-nordic-textMuted">El Salvador S.A de C.V</p>
+        <footer class="nt-footer">
+            <div class="nt-footer__inner">
+                <div class="nt-footer__brand">
+                    <p class="nt-footer__brand-name">NORDICTECH</p>
+                    <p class="nt-footer__brand-sub">El Salvador S.A de C.V</p>
                 </div>
                 <p>&copy; 2026 NordicTech El Salvador. </p>
             </div>

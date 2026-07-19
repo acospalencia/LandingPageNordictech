@@ -1,0 +1,1363 @@
+/* ==========================================================================
+   NORDICTECH — HOJA DE ESTILOS CENTRALIZADA
+   --------------------------------------------------------------------------
+   Este archivo consolida el 100% de los estilos visuales del proyecto.
+   Estructura:
+   1. Variables CSS (:root)
+   2. Reset
+   3. Estilos globales
+   4. Tipografía
+   5. Layout base
+   6. Header / Navbar
+   7. Reflejo ambiental
+   8. Sidebar
+   9. Main
+   10. Cards
+   11. Botones
+   12. Formularios
+   13. Pestañas (Tabs)
+   14. Alertas
+   15. Tablas
+   16. Imágenes y logo
+   17. Modales
+   18. Acordeón / Panel detalle
+   19. Dropdown menú
+   20. Footer
+   21. Utilidades
+   22. Animaciones
+   23. Media Queries
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. VARIABLES CSS (:root)
+   ========================================================================== */
+:root {
+    /* Paleta de colores NordicTech */
+    --color-nordic-bg: #060913;
+    --color-nordic-card: #0D1425;
+    --color-nordic-border: #1E293B;
+    --color-nordic-logoBlue: #2A4094;
+    --color-nordic-logoBlueHover: #3C56C4;
+    --color-nordic-textMuted: #94A3B8;
+    --color-nordic-text: #ffffff;
+    --color-nordic-placeholder: #64748B;
+    --color-nordic-header-bg: #101729;
+    --color-nordic-tabs-bg: #080d1a;
+    --color-nordic-acordeon-bg: #0e172a;
+    --color-nordic-acordeon-bg-alt: #060a14;
+    --color-nordic-input-bg: #060913;
+
+    /* Tipografías */
+    --font-sans: "Montserrat", "Segoe UI", sans-serif;
+    --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Transiciones */
+    --transition-fast: 0.2s ease-out;
+    --transition-base: 0.25s ease-in-out;
+    --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-color: color 0.3s ease;
+}
+
+
+/* ==========================================================================
+   2. RESET
+   ========================================================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    background-color: var(--color-nordic-bg) !important;
+    color: var(--color-nordic-text) !important;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ==========================================================================
+   3. ESTILOS GLOBALES
+   ========================================================================== */
+body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    isolation: auto;
+    background-color: var(--color-nordic-bg);
+    color: var(--color-nordic-text);
+}
+
+
+/* ==========================================================================
+   4. TIPOGRAFÍA
+   ========================================================================== */
+.font-display {
+    font-family: var(--font-display);
+}
+
+.font-sans {
+    font-family: var(--font-sans);
+}
+
+.font-mono {
+    font-family: var(--font-mono);
+}
+
+::selection {
+    background-color: var(--color-nordic-logoBlue);
+    color: var(--color-nordic-text);
+}
+
+
+/* ==========================================================================
+   5. LAYOUT BASE
+   ========================================================================== */
+.nt-app-container {
+    background-color: var(--color-nordic-bg);
+    color: var(--color-nordic-text);
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    isolation: auto;
+}
+
+.nt-section {
+    position: relative;
+    z-index: 10;
+}
+
+.nt-divider {
+    border-top: 1px solid rgba(30, 41, 59, 0.4); /* nordic-border/40 */
+}
+
+
+/* ==========================================================================
+   6. HEADER / NAVBAR
+   ========================================================================== */
+.nt-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(16, 23, 41, 0.8); /* nordic-header-bg/80 */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 50;
+    border-bottom: 1px solid rgba(30, 41, 59, 0.4); /* nordic-border/40 */
+}
+
+.nt-header__inner {
+    max-width: 80rem; /* 7xl */
+    background-color: rgba(16, 23, 41, 0.8);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    height: 6rem; /* h-24 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nt-nav {
+    display: none;
+    gap: 2rem; /* space-x-8 */
+    font-size: 0.75rem; /* text-xs */
+    text-transform: uppercase;
+    letter-spacing: 0.1em; /* tracking-widest */
+    font-weight: 600;
+    color: var(--color-nordic-textMuted);
+}
+
+.nt-nav__link {
+    transition: var(--transition-color);
+    text-decoration: none;
+}
+
+.nt-nav__link:hover {
+    color: var(--color-nordic-text);
+}
+
+
+/* ==========================================================================
+   7. REFLEJO AMBIENTAL
+   ========================================================================== */
+.nt-ambient-glow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 80rem;
+    pointer-events: none;
+    z-index: 0;
+    background-image: linear-gradient(to bottom, rgba(42, 64, 148, 0.1), transparent);
+    filter: blur(48px); /* blur-3xl */
+}
+
+.nt-ambient-glow--hero {
+    height: 600px;
+    background-image: linear-gradient(to bottom, rgba(42, 64, 148, 0.15), transparent);
+}
+
+.nt-ambient-glow--medium {
+    height: 500px;
+}
+
+.nt-ambient-glow--short {
+    height: 400px;
+}
+
+
+/* ==========================================================================
+   8. SIDEBAR
+   ========================================================================== */
+.nt-sidebar {
+    width: 20rem; /* w-80 */
+    background-color: var(--color-nordic-card);
+    border-right: 1px solid var(--color-nordic-border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 6rem; /* top-24 coincide con altura header */
+    bottom: 0;
+    z-index: 30;
+}
+
+.nt-sidebar__search {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-nordic-border);
+}
+
+.nt-sidebar__list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    border-top: 1px solid var(--color-nordic-border);
+}
+
+.nt-sidebar__list-item {
+    padding: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid rgba(30, 41, 59, 0.3);
+}
+
+.nt-sidebar__list-item:hover {
+    background-color: rgba(13, 20, 37, 0.6);
+}
+
+.nt-sidebar__list-item--active {
+    background-color: rgba(42, 64, 148, 0.2);
+    border-left: 4px solid var(--color-nordic-logoBlue);
+}
+
+.nt-sidebar__list-empty {
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--color-nordic-textMuted);
+    font-weight: 300;
+}
+
+
+/* ==========================================================================
+   9. MAIN
+   ========================================================================== */
+.nt-main {
+    flex-grow: 1;
+    position: relative;
+    z-index: 10;
+}
+
+.nt-main--with-sidebar {
+    padding-left: 20rem; /* pl-80 */
+    min-height: 100vh;
+    background-color: transparent;
+}
+
+.nt-main__inner {
+    max-width: 64rem; /* 5xl */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 3rem 2rem 4rem 2rem; /* pt-12 pb-16 px-8 */
+}
+
+.nt-main--centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9rem 1.5rem 4rem 1.5rem; /* pt-36 pb-16 px-6 */
+}
+
+.nt-main--portal {
+    max-width: 80rem;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 9rem 1.5rem 4rem 1.5rem;
+}
+
+
+/* ==========================================================================
+   10. CARDS
+   ========================================================================== */
+.nt-card {
+    background-color: var(--color-nordic-card);
+    border: 1px solid var(--color-nordic-border);
+    border-radius: 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.nt-card--hoverable:hover {
+    border-color: rgba(42, 64, 148, 0.5);
+}
+
+.nt-card--clickable {
+    cursor: pointer;
+    overflow: hidden;
+    user-select: none;
+}
+
+.nt-card--clickable:hover {
+    border-color: rgba(42, 64, 148, 0.6);
+}
+
+.nt-card--shadow {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+}
+
+.nt-card--ticket-admin {
+    background-color: var(--color-nordic-card);
+    border: 1px solid var(--color-nordic-border);
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    user-select: none;
+}
+
+.nt-card--ticket-admin:hover {
+    border-color: rgba(100, 116, 139, 0.6);
+}
+
+.nt-card--empty {
+    border: 1px dashed var(--color-nordic-border);
+    text-align: center;
+    padding: 6rem 1rem; /* py-24 */
+}
+
+.nt-card--empty p {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-nordic-textMuted);
+}
+
+.nt-card-header {
+    padding: 1.5rem; /* p-6 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.nt-card-header--compact {
+    padding: 1.25rem; /* p-5 */
+}
+
+
+/* ==========================================================================
+   11. BOTONES
+   ========================================================================== */
+.nt-btn {
+    background-color: var(--color-nordic-logoBlue);
+    color: var(--color-nordic-text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1.5rem; /* px-6 py-3 */
+    font-size: 0.75rem; /* text-xs */
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    font-family: inherit;
+}
+
+.nt-btn:hover {
+    background-color: var(--color-nordic-logoBlueHover);
+}
+
+.nt-btn--block {
+    width: 100%;
+}
+
+.nt-btn--lg {
+    padding: 1rem 2rem; /* px-8 py-4 */
+}
+
+.nt-btn--sm {
+    padding: 0.5rem 1.25rem; /* px-5 py-2 */
+}
+
+.nt-btn--ghost {
+    background-color: transparent;
+    color: var(--color-nordic-text);
+    border: 1px solid var(--color-nordic-border);
+}
+
+.nt-btn--ghost:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nt-btn--white {
+    background-color: var(--color-nordic-text);
+    color: var(--color-nordic-bg);
+}
+
+.nt-btn--white:hover {
+    background-color: #e2e8f0; /* slate-200 */
+}
+
+.nt-btn--danger {
+    background-color: #7f1d1d; /* red-900 */
+    border-color: #b91c1c; /* red-700 */
+    color: var(--color-nordic-text);
+}
+
+.nt-btn--danger:hover {
+    background-color: #991b1b; /* red-800 */
+}
+
+.nt-btn--danger-outline {
+    background-color: rgba(127, 29, 29, 0.4); /* red-950/40 */
+    border: 1px solid #b91c1c;
+    color: #fca5a5; /* red-300 */
+    padding: 0.5rem 1rem;
+    font-size: 0.5625rem; /* text-[9px] */
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.nt-btn--danger-outline:hover {
+    background-color: #7f1d1d;
+}
+
+.nt-btn--tab {
+    flex: 1;
+    padding: 0.75rem 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    color: var(--color-nordic-textMuted);
+}
+
+.nt-btn--tab:hover {
+    color: var(--color-nordic-text);
+}
+
+.nt-btn--tab-active {
+    background-color: var(--color-nordic-logoBlue);
+    color: var(--color-nordic-text);
+}
+
+.nt-btn--text {
+    background-color: transparent;
+    border: none;
+    color: var(--color-nordic-textMuted);
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.nt-btn--text:hover {
+    color: var(--color-nordic-text);
+}
+
+.nt-btn--full {
+    width: 100%;
+    padding: 1rem 2rem;
+}
+
+.nt-link {
+    color: var(--color-nordic-text);
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.nt-link:hover {
+    color: var(--color-nordic-logoBlueHover);
+}
+
+/* Ajustes puntuales de un solo uso (overrides específicos) */
+.nt-card--hero-terminal {
+    padding: 2rem;
+}
+
+.nt-text-eyebrow--spaced {
+    margin-bottom: 0.25rem;
+}
+
+.nt-btn--mt-form {
+    margin-top: 1.5rem;
+}
+
+.nt-form__label--no-margin {
+    margin-bottom: 0;
+}
+
+.nt-flex-between--wrap {
+    padding-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+
+/* ==========================================================================
+   12. FORMULARIOS
+   ========================================================================== */
+.nt-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* space-y-6 */
+}
+
+.nt-form--compact {
+    gap: 1.25rem; /* space-y-5 */
+}
+
+.nt-form--tight {
+    gap: 1rem; /* space-y-4 */
+}
+
+.nt-form__group {
+    display: flex;
+    flex-direction: column;
+}
+
+.nt-form__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem; /* sm:grid-cols-2 gap-6 */
+}
+
+.nt-form__label {
+    display: block;
+    font-size: 0.625rem; /* text-[10px] */
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #cbd5e1; /* slate-300 */
+}
+
+.nt-form__label--xs {
+    font-size: 0.75rem; /* text-xs */
+}
+
+.nt-form__input,
+.nt-form__textarea,
+.nt-form__select {
+    width: 100%;
+    background-color: var(--color-nordic-input-bg) !important;
+    color: var(--color-nordic-text) !important;
+    border: 1px solid var(--color-nordic-border) !important;
+    padding: 0.75rem 1rem; /* px-4 py-3 */
+    font-size: 0.875rem; /* text-sm */
+    font-family: inherit;
+    border-radius: 0;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.nt-form__input--compact,
+.nt-form__textarea--compact {
+    padding: 0.5rem 0.75rem; /* px-3 py-2 */
+}
+
+.nt-form__input:focus,
+.nt-form__textarea:focus,
+.nt-form__select:focus {
+    border-color: var(--color-nordic-logoBlue) !important;
+}
+
+.nt-form__input::placeholder,
+.nt-form__textarea::placeholder {
+    color: var(--color-nordic-placeholder) !important;
+}
+
+.nt-form__textarea {
+    resize: none;
+}
+
+.nt-form__select {
+    cursor: pointer;
+}
+
+.nt-form__footer {
+    margin-top: 1.5rem;
+}
+
+.nt-form__footer--tight {
+    margin-top: 1rem;
+}
+
+.nt-form--inline {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+
+/* ==========================================================================
+   13. PESTAÑAS (TABS)
+   ========================================================================== */
+.nt-tabs {
+    display: flex;
+    border: 1px solid var(--color-nordic-border);
+    background-color: var(--color-nordic-tabs-bg);
+    padding: 0.25rem; /* p-1 */
+    user-select: none;
+}
+
+.nt-tabs__btn {
+    flex-grow: 1;
+    padding: 0.75rem 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    color: var(--color-nordic-textMuted);
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.nt-tabs__btn:hover {
+    color: var(--color-nordic-text);
+}
+
+.nt-tabs__btn--active {
+    background-color: var(--color-nordic-logoBlue);
+    color: var(--color-nordic-text);
+}
+
+
+/* ==========================================================================
+   14. ALERTAS
+   ========================================================================== */
+.nt-alert {
+    margin-bottom: 1.5rem; /* mb-6 */
+    padding: 1rem; /* p-4 */
+    font-size: 0.75rem; /* text-xs */
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    border: 1px solid;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.nt-alert--visible {
+    display: block;
+}
+
+.nt-alert--success {
+    background-color: rgba(20, 83, 45, 0.2); /* green-950/20 */
+    border-color: rgba(34, 197, 94, 0.2); /* green-500/20 */
+    color: #4ade80; /* green-400 */
+}
+
+.nt-alert--error {
+    background-color: rgba(127, 29, 29, 0.2); /* red-950/20 */
+    border-color: rgba(239, 68, 68, 0.2); /* red-500/20 */
+    color: #f87171; /* red-400 */
+}
+
+.nt-alert--small {
+    font-size: 0.6875rem; /* text-[11px] */
+    padding: 0.75rem; /* p-3 */
+}
+
+
+/* ==========================================================================
+   15. TABLAS
+   ========================================================================== */
+.nt-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--color-nordic-text);
+    font-size: 0.875rem;
+}
+
+.nt-table th,
+.nt-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-nordic-border);
+    text-align: left;
+}
+
+.nt-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-nordic-textMuted);
+    font-weight: 700;
+    background-color: var(--color-nordic-card);
+}
+
+.nt-table tr:hover {
+    background-color: rgba(13, 20, 37, 0.6);
+}
+
+
+/* ==========================================================================
+   16. IMÁGENES Y LOGO
+   ========================================================================== */
+.nt-logo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.5rem;
+}
+
+.nt-logo-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: -0.02em;
+    color: var(--color-nordic-text);
+    text-transform: uppercase;
+    line-height: 24px;
+}
+
+.nt-logo {
+    display: inline-block;
+    height: 84px;
+    width: auto;
+    vertical-align: middle;
+    margin-left: 6px;
+    border: 0;
+}
+
+.nt-logo--no-offset {
+    margin-left: 0;
+}
+
+.nt-img {
+    max-width: 100%;
+    height: auto;
+}
+
+
+/* ==========================================================================
+   17. MODALES
+   ========================================================================== */
+.nt-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.8); /* bg-black/80 */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: none;
+}
+
+.nt-modal-backdrop--darker {
+    background-color: rgba(0, 0, 0, 0.85); /* bg-black/85 */
+}
+
+.nt-modal-backdrop--visible {
+    display: flex;
+}
+
+.nt-modal {
+    width: 100%;
+    background-color: var(--color-nordic-card);
+    border: 1px solid var(--color-nordic-border);
+    padding: 1.5rem; /* p-6 */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border-radius: 0;
+}
+
+.nt-modal--sm {
+    max-width: 24rem; /* max-w-sm */
+}
+
+.nt-modal--md {
+    max-width: 28rem; /* max-w-md */
+}
+
+.nt-modal--centered {
+    text-align: center;
+}
+
+.nt-modal__header {
+    border-bottom: 1px solid var(--color-nordic-border);
+    padding-bottom: 0.75rem;
+}
+
+.nt-modal__title {
+    font-size: 0.875rem; /* text-sm */
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-nordic-text);
+}
+
+.nt-modal__subtitle {
+    font-size: 0.6875rem; /* text-[11px] */
+    color: var(--color-nordic-textMuted);
+    margin-top: 0.25rem;
+}
+
+.nt-modal__icon-wrap {
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+    width: 3rem;
+    border-radius: 9999px;
+    background-color: rgba(127, 29, 29, 0.3);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.nt-modal__icon {
+    height: 1.5rem;
+    width: 1.5rem;
+    color: #f87171; /* red-400 */
+}
+
+.nt-modal__body {
+    margin-top: 1rem;
+}
+
+.nt-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem; /* space-x-3 */
+    padding-top: 0.5rem;
+}
+
+.nt-modal__actions--center {
+    justify-content: center;
+}
+
+.nt-modal__actions--stack {
+    flex-direction: column;
+}
+
+
+/* ==========================================================================
+   18. ACORDEÓN / PANEL DETALLE
+   ========================================================================== */
+.nt-panel-detalle {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.25s ease-out,
+                padding 0.3s ease;
+}
+
+.nt-panel-detalle.activo {
+    max-height: 1000px;
+    opacity: 1;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+}
+
+.nt-panel-detalle--admin {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-bottom: 1.5rem;
+    background-color: var(--color-nordic-acordeon-bg);
+    border-top: 1px solid rgba(30, 41, 59, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.nt-panel-detalle--cliente {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-bottom: 1.25rem;
+    background-color: var(--color-nordic-acordeon-bg-alt);
+    border-top: 1px solid rgba(30, 41, 59, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.nt-flecha {
+    transition: transform 0.3s ease;
+}
+
+.nt-flecha.rotate-180 {
+    transform: rotate(180deg);
+}
+
+
+/* ==========================================================================
+   19. DROPDOWN MENU
+   ========================================================================== */
+.nt-dropdown {
+    position: relative;
+}
+
+.nt-dropdown__toggle {
+    padding: 0.375rem; /* p-1.5 */
+    display: flex;
+    align-items: center;
+    gap: 0.25rem; /* space-x-1 */
+    background-color: transparent;
+    border: 1px solid rgba(30, 41, 59, 0.5);
+    color: var(--color-nordic-textMuted);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.nt-dropdown__toggle:hover {
+    background-color: rgba(6, 9, 19, 0.8);
+    color: var(--color-nordic-text);
+}
+
+.nt-dropdown__label {
+    font-size: 0.625rem; /* text-[10px] */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-left: 0.25rem;
+}
+
+.nt-dropdown__menu {
+    position: absolute;
+    right: 0;
+    margin-top: 0.5rem;
+    width: 12rem; /* w-48 */
+    background-color: var(--color-nordic-card);
+    border: 1px solid var(--color-nordic-border);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    z-index: 30;
+    border-radius: 0;
+    display: none;
+    overflow: hidden;
+}
+
+.nt-dropdown__menu--visible {
+    display: block;
+}
+
+.nt-dropdown__item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.625rem 1rem; /* px-4 py-2.5 */
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(30, 41, 59, 0.4);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-family: inherit;
+}
+
+.nt-dropdown__item:last-child {
+    border-bottom: none;
+}
+
+.nt-dropdown__item:hover {
+    background-color: var(--color-nordic-bg);
+}
+
+.nt-dropdown__item--amber {
+    color: #fbbf24; /* amber-400 */
+}
+
+.nt-dropdown__item--green {
+    color: #4ade80; /* green-400 */
+}
+
+.nt-dropdown__item--red {
+    color: #f87171; /* red-400 */
+}
+
+.nt-dropdown__item--sky {
+    color: #38bdf8; /* sky-400 */
+}
+
+
+/* ==========================================================================
+   20. FOOTER
+   ========================================================================== */
+.nt-footer {
+    border-top: 1px solid rgba(30, 41, 59, 0.4);
+    padding: 3rem 0; /* py-12 */
+    font-size: 0.75rem;
+    color: var(--color-nordic-textMuted);
+    font-weight: 300;
+    position: relative;
+    z-index: 10;
+}
+
+.nt-footer--compact {
+    padding: 2rem 0; /* py-8 */
+    text-align: center;
+}
+
+.nt-footer__inner {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.nt-footer__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    opacity: 0.7;
+}
+
+.nt-footer__brand-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-nordic-text);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.nt-footer__brand-sub {
+    font-size: 0.5rem; /* text-[8px] */
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-nordic-textMuted);
+}
+
+
+/* ==========================================================================
+   21. UTILIDADES
+   ========================================================================== */
+.nt-text-eyebrow {
+    color: var(--color-nordic-logoBlue);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: block;
+}
+
+.nt-text-eyebrow--xs {
+    font-size: 0.625rem; /* text-[10px] */
+}
+
+.nt-text-muted {
+    color: var(--color-nordic-textMuted);
+}
+
+.nt-text-white {
+    color: var(--color-nordic-text);
+}
+
+.nt-text-blue {
+    color: #60a5fa; /* blue-400 */
+}
+
+.nt-text-amber {
+    color: #fbbf24; /* amber-400 */
+    font-weight: 700;
+}
+
+.nt-text-rose {
+    color: #fb7185; /* rose-400 */
+    font-weight: 700;
+}
+
+.nt-text-orange {
+    color: #fb923c; /* orange-400 */
+    font-weight: 700;
+}
+
+.nt-text-emerald {
+    color: #34d399; /* emerald-400 */
+}
+
+.nt-text-sky {
+    color: #38bdf8; /* sky-400 */
+}
+
+.nt-text-slate {
+    color: #cbd5e1; /* slate-300 */
+}
+
+.nt-text-slate-200 {
+    color: #e2e8f0;
+}
+
+.nt-text-slate-300 {
+    color: #cbd5e1;
+}
+
+.nt-text-slate-400 {
+    color: #94a3b8;
+}
+
+.nt-text-slate-500 {
+    color: #64748b;
+}
+
+.nt-text-mono {
+    font-family: var(--font-mono);
+}
+
+.nt-text-mono-id {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--color-nordic-textMuted);
+}
+
+.nt-text-meta {
+    font-size: 0.625rem; /* text-[10px] */
+    color: var(--color-nordic-textMuted);
+    margin-top: 0.25rem;
+}
+
+.nt-text-meta-60 {
+    opacity: 0.6;
+}
+
+.nt-text-italic {
+    font-style: italic;
+}
+
+.nt-text-light {
+    font-weight: 300;
+}
+
+.nt-text-bold {
+    font-weight: 700;
+}
+
+.nt-text-semibold {
+    font-weight: 600;
+}
+
+.nt-uppercase {
+    text-transform: uppercase;
+}
+
+.nt-tracking-widest {
+    letter-spacing: 0.1em;
+}
+
+.nt-tracking-wider {
+    letter-spacing: 0.05em;
+}
+
+.nt-tracking-tight {
+    letter-spacing: -0.025em;
+}
+
+.nt-divider-bottom {
+    border-bottom: 1px solid var(--color-nordic-border);
+}
+
+.nt-divider-bottom-soft {
+    border-bottom: 1px solid rgba(30, 41, 59, 0.6); /* nordic-border/60 */
+}
+
+.nt-divider-top-soft {
+    border-top: 1px solid rgba(30, 41, 59, 0.6);
+}
+
+.nt-divider-top-soft-20 {
+    border-top: 1px solid rgba(30, 41, 59, 0.2);
+}
+
+.nt-divider-top-soft-10 {
+    border-top: 1px solid rgba(30, 41, 59, 0.1);
+}
+
+.nt-divider-top-soft-30 {
+    border-top: 1px solid rgba(30, 41, 59, 0.3);
+}
+
+.nt-divider-top-dotted {
+    border-top: 1px dashed var(--color-nordic-border);
+}
+
+.nt-divider-thin {
+    height: 1px;
+    width: 100%;
+    background-color: var(--color-nordic-border);
+}
+
+.nt-bg-soft {
+    background-color: rgba(13, 20, 37, 0.4); /* nordic-card/40 */
+}
+
+.nt-bg-darker {
+    background-color: rgba(6, 9, 19, 0.6);
+}
+
+.nt-pulse {
+    animation: nt-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.nt-pulse-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: #10b981; /* emerald-500 */
+    animation: nt-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.nt-blob {
+    position: absolute;
+    width: 20rem; /* w-80 */
+    height: 20rem; /* h-80 */
+    background-color: rgba(42, 64, 148, 0.1); /* logoBlue/10 */
+    border-radius: 9999px;
+    filter: blur(48px);
+    z-index: -10;
+}
+
+.nt-link-button {
+    background-color: transparent;
+    color: var(--color-nordic-textMuted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.nt-link-button:hover {
+    color: var(--color-nordic-text);
+}
+
+
+/* ==========================================================================
+   22. ANIMACIONES
+   ========================================================================== */
+@keyframes nt-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes nt-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes nt-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.nt-animate-fade-in {
+    animation: nt-fade-in 0.2s ease-out forwards;
+}
+
+.nt-animate-spin {
+    animation: nt-spin 1s linear infinite;
+}
+
+.nt-animate-pulse {
+    animation: nt-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+
+/* ==========================================================================
+   23. MEDIA QUERIES
+   ========================================================================== */
+
+/* Tablets y dispositivos medianos */
+@media (min-width: 640px) {
+    .nt-nav {
+        display: flex;
+    }
+
+    .nt-footer__inner {
+        flex-direction: row;
+    }
+
+    .nt-form__row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Escritorio */
+@media (min-width: 768px) {
+    .nt-nav {
+        display: flex;
+    }
+}
+
+/* Escritorio grande */
+@media (min-width: 1024px) {
+    .nt-nav {
+        display: flex;
+    }
+}

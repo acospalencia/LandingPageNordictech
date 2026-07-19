@@ -35,36 +35,8 @@
             }
         }
     </script>
-    <!-- Forzamos estilos globales y blindamos los inputs contra el texto negro de navegadores -->
-    <style>
-        html,
-        body {
-            background-color: #060913 !important;
-            color: #ffffff !important;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Corrección estricta para asegurar visibilidad en inputs y textareas */
-        input,
-        textarea,
-        select {
-            background-color: #060913 !important;
-            color: #ffffff !important;
-            border-color: #1E293B !important;
-        }
-
-        input:focus,
-        textarea:focus {
-            border-color: #2A4094 !important;
-        }
-
-        /* Estilo para el texto sugerido (placeholder) */
-        input::placeholder,
-        textarea::placeholder {
-            color: #64748B !important;
-        }
-    </style>
+    <!-- Hoja de estilos centralizada del proyecto -->
+    <link rel="stylesheet" href="/assets/css/nordictech.css">
 </head>
 
 <body class="bg-[#060913] text-white font-sans antialiased selection:bg-nordic-logoBlue selection:text-white">
@@ -73,36 +45,29 @@
     <div id="root-preview" class="bg-[#060913] text-white min-h-screen w-full relative isolation-auto">
 
         <!-- Reflejo azul ambiental de fondo -->
-        <div
-            class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-gradient-to-b from-[#2A4094]/15 via-transparent to-transparent blur-3xl pointer-events-none z-0">
-        </div>
+        <div class="nt-ambient-glow nt-ambient-glow--hero"></div>
 
         <!-- Navbar -->
-        <header class="fixed top-0 w-full bg-[#101729]/80 backdrop-blur-md z-50 border-b border-nordic-border/40">
-            <div class="max-w-7xl bg-[#101729]/80 mx-auto px-6 h-24 flex items-center justify-between">
+        <header class="nt-header">
+            <div class="nt-header__inner">
 
                 <!-- LOGO VECTORIAL IDENTICO A LA IMAGEN -->
-                <div class="flex flex-col items-center pt-2">
-
-                    <div
-                        style='font-family: "Space Grotesk", "Segoe UI", sans-serif; font-weight: bold; font-size: 24px; letter-spacing: -0.02em; color: #ffffff; text-transform: uppercase; line-height: 24px;'>
+                <div class="nt-logo-wrap">
+                    <div class="nt-logo-title">
                         <a href="/">
-                            <img src="/assets/img/Marca de agua black.png" alt="Logo"
-                                style='display: inline-block; height: 84px; width: auto; vertical-align: middle; margin-left: 6px; border: 0;'>
+                            <img src="/assets/img/Marca de agua black.png" alt="Logo" class="nt-logo">
                         </a>
                     </div>
                 </div>
 
-                <nav
-                    class="hidden md:flex space-x-8 text-xs uppercase tracking-widest font-semibold text-nordic-textMuted">
-                    <a href="/" class="hover:text-white transition-colors">Inicio</a>
-                    <a href="#servicios" class="hover:text-white transition-colors">Servicios</a>
-                    <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
+                <nav class="nt-nav">
+                    <a href="/" class="nt-nav__link">Inicio</a>
+                    <a href="#servicios" class="nt-nav__link">Servicios</a>
+                    <a href="#contacto" class="nt-nav__link">Contacto</a>
                 </nav>
 
                 <div>
-                    <a href="/pages/Login.php"
-                        class="bg-nordic-logoBlue text-white border border-white/10 px-6 py-3 rounded-none text-xs uppercase tracking-widest font-bold hover:bg-nordic-logoBlueHover transition-all block">
+                    <a href="/pages/Login.php" class="nt-btn">
                         Portal de Clientes
                     </a>
 
@@ -130,21 +95,21 @@
                     </p>
                     <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4">
                         <a href="#contacto"
-                            class="bg-white text-nordic-bg px-8 py-4 rounded-none font-display font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-all text-center">
+                            class="nt-btn nt-btn--white nt-btn--lg font-display font-bold">
                             Iniciar Proyecto
                         </a>
                         <a href="#servicios"
-                            class="bg-transparent text-white border border-nordic-border px-8 py-4 rounded-none font-display font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-all text-center">
+                            class="nt-btn nt-btn--ghost nt-btn--lg font-display font-bold">
                             Nuestras Soluciones
                         </a>
                     </div>
                 </div>
 
                 <div class="lg:col-span-5 flex justify-center relative">
-                    <div class="w-80 h-80 bg-nordic-logoBlue/10 rounded-full absolute blur-3xl -z-10"></div>
+                    <div class="nt-blob"></div>
 
                     <div
-                        class="bg-nordic-card border border-nordic-border p-8 rounded-none shadow-2xl max-w-sm w-full space-y-6 relative">
+                        class="nt-card nt-card--hero-terminal nt-card--shadow max-w-sm w-full space-y-6 relative">
                         <div class="absolute bottom-4 right-4 flex space-x-2 text-white/20">
                             <span class="text-xl"></span>
                             <span class="text-sm self-end"></span>
@@ -153,7 +118,7 @@
                         <div class="flex items-center justify-between border-b border-nordic-border pb-4">
                             <span
                                 class="text-xs uppercase tracking-widest font-bold text-nordic-logoBlue font-display"></span>
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="nt-pulse-dot"></span>
                         </div>
                         <div class="space-y-3 font-mono text-xs text-slate-400">
                             <p><span class="text-nordic-logoBlue"> .</span> </p>
@@ -161,7 +126,7 @@
                             <p><span class="text-nordic-logoBlue"> .</span></p>
                         </div>
                         <div class="pt-2">
-                            <div class="h-[1px] w-full bg-nordic-border"></div>
+                            <div class="nt-divider-thin"></div>
                             <p class="text-[10px] text-nordic-textMuted pt-3 font-light italic">.</p>
                         </div>
                     </div>
@@ -175,7 +140,7 @@
             <div class="max-w-7xl mx-auto px-6">
                 <div class="max-w-3xl mb-20 space-y-4">
                     <span
-                        class="text-nordic-logoBlue font-display font-bold text-xs uppercase tracking-widest block">Soluciones
+                        class="nt-text-eyebrow">Soluciones
                         de IT</span>
                     <h2 class="text-3xl md:text-4xl font-display font-bold tracking-tight">Capacidades de nivel
                         corporativo</h2>
@@ -245,7 +210,7 @@
             class="py-24 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-start relative z-10">
             <div class="lg:col-span-5 space-y-6">
                 <span
-                    class="text-nordic-logoBlue font-display font-bold text-xs uppercase tracking-widest block">Contactanos
+                    class="nt-text-eyebrow">Contactanos
                     Directamente</span>
                 <h2 class="text-3xl font-display font-bold tracking-tight">Establezcamos comunicación </h2>
                 <p class="text-nordic-textMuted font-light leading-relaxed">
@@ -261,37 +226,37 @@
 
             <div class="lg:col-span-7 bg-nordic-card border border-nordic-border p-8 md:p-10">
                 <!-- Se asigna el ID maestro para la escucha de JS -->
-                <form id="form-contacto" class="space-y-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <form id="form-contacto" class="nt-form">
+                    <div class="nt-form__row">
                         <div>
-                            <label class="block text-xs uppercase tracking-widest font-bold mb-2 text-slate-300">Razón
+                            <label class="nt-form__label nt-form__label--xs">Razón
                                 Social / Nombre</label>
                             <!-- Mapeado mediante name="nombre" -->
                             <input type="text" name="nombre" required
-                                class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white rounded-none">
+                                class="nt-form__input">
                         </div>
                         <div>
-                            <label class="block text-xs uppercase tracking-widest font-bold mb-2 text-slate-300">Email
+                            <label class="nt-form__label nt-form__label--xs">Email
                                 Corporativo</label>
                             <!-- Mapeado mediante name="email" -->
                             <input type="email" name="email" required
-                                class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white rounded-none">
+                                class="nt-form__input">
                         </div>
                     </div>
 
                     <div>
                         <label
-                            class="block text-xs uppercase tracking-widest font-bold mb-2 text-slate-300">Especificaciones
+                            class="nt-form__label nt-form__label--xs">Especificaciones
                             del requerimiento</label>
                         <!-- Mapeado mediante name="mensaje" -->
                         <textarea rows="4" name="mensaje" required
-                            class="w-full bg-nordic-bg border border-nordic-border px-4 py-3 focus:outline-none focus:border-nordic-logoBlue text-sm text-white resize-none rounded-none"
+                            class="nt-form__textarea"
                             placeholder="Indica detalladamente los alcances del proyecto que quieres realizar..."></textarea>
                     </div>
 
                     <div>
                         <button type="submit"
-                            class="w-full bg-nordic-logoBlue text-white px-8 py-4 text-xs font-display font-bold uppercase tracking-widest hover:bg-nordic-logoBlueHover transition-colors">
+                            class="nt-btn nt-btn--full font-display">
                             Enviar Solicitud Corporativa
                         </button>
                     </div>
@@ -300,11 +265,11 @@
         </section>
 
         <!-- Footer -->
-        <footer class="border-t border-nordic-border/40 py-12 text-xs text-nordic-textMuted font-light relative z-10">
-            <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div class="flex flex-col items-start opacity-70">
-                    <p class="font-display font-bold tracking-wider text-white text-xs uppercase">NORDICTECH</p>
-                    <p class="text-[8px] tracking-[0.2em] uppercase text-nordic-textMuted">El Salvador S.A de C.V</p>
+        <footer class="nt-footer">
+            <div class="nt-footer__inner">
+                <div class="nt-footer__brand">
+                    <p class="nt-footer__brand-name">NORDICTECH</p>
+                    <p class="nt-footer__brand-sub">El Salvador S.A de C.V</p>
                 </div>
                 <p>&copy; 2026 NordicTech El Salvador. Todos los derechos reservados. Cumplimiento Legal y Tecnológico
                     Garantizado.</p>
