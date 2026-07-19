@@ -11,38 +11,14 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap"
         rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        nordic: {
-                            bg: '#060913',
-                            card: '#0D1425',
-                            border: '#1E293B',
-                            logoBlue: '#2A4094',
-                            logoBlueHover: '#3C56C4',
-                            textMuted: '#94A3B8'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <!-- Hoja de estilos centralizada del proyecto -->
     <link rel="stylesheet" href="/assets/css/nordictech.css">
 </head>
 
-<body class="bg-[#060913] text-white font-sans antialiased selection:bg-nordic-logoBlue selection:text-white">
+<body>
 
     <!-- CONTENEDOR MAESTRO: Asegura el fondo oscuro si el body falla en la preview -->
-    <div id="root-preview" class="bg-[#060913] text-white min-h-screen w-full relative isolation-auto">
+    <div id="root-preview" class="nt-app-container">
 
         <!-- Reflejo azul ambiental de fondo -->
         <div class="nt-ambient-glow nt-ambient-glow--hero"></div>
@@ -76,58 +52,56 @@
         </header>
 
         <!-- Hero Section -->
-        <section class="pt-40 pb-20 md:pt-52 md:pb-32 overflow-hidden relative z-10">
-            <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <section class="nt-section nt-pt-40 nt-pb-20 nt-overflow-hidden nt-relative">
+            <div class="nt-container nt-grid-cols-12">
 
-                <div class="lg:col-span-7 space-y-6 text-center lg:text-left z-10">
-                    <span
-                        class="inline-flex items-center px-4 py-1 rounded-none text-xs font-semibold uppercase tracking-widest bg-nordic-logoBlue/20 text-blue-400 border border-nordic-logoBlue/30">
+                <div class="nt-col-span-7 nt-col-7-stack nt-z-10">
+                    <span class="nt-section__eyebrow-pill">
                         Sistemas de Alta Disponibilidad
                     </span>
-                    <h1 class="text-4xl md:text-6xl font-display font-bold tracking-tight text-white leading-tight">
+                    <h1 class="nt-section__title">
                         Infraestructura robusta.<br>
-                        <span class="text-nordic-logoBlue">Ingeniería global.</span>
+                        <span class="nt-text-blue">Ingeniería global.</span>
                     </h1>
-                    <p
-                        class="text-base md:text-lg text-nordic-textMuted max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed">
+                    <p class="nt-section__lead nt-text-lg">
                         Elevamos los estándares tecnológicos en El Salvador. Creamos soluciones corporativas sólidas,
                         software a medida y arquitecturas Cloud con un rendimiento absoluto y latencia mínima.
                     </p>
-                    <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4">
+                    <div class="nt-flex-cta">
                         <a href="#contacto"
-                            class="nt-btn nt-btn--white nt-btn--lg font-display font-bold">
+                            class="nt-btn nt-btn--white nt-btn--lg nt-font-display nt-font-bold">
                             Iniciar Proyecto
                         </a>
                         <a href="#servicios"
-                            class="nt-btn nt-btn--ghost nt-btn--lg font-display font-bold">
+                            class="nt-btn nt-btn--ghost nt-btn--lg nt-font-display nt-font-bold">
                             Nuestras Soluciones
                         </a>
                     </div>
                 </div>
 
-                <div class="lg:col-span-5 flex justify-center relative">
+                <div class="nt-col-span-5 nt-col-5-center">
                     <div class="nt-blob"></div>
 
                     <div
-                        class="nt-card nt-card--hero-terminal nt-card--shadow max-w-sm w-full space-y-6 relative">
-                        <div class="absolute bottom-4 right-4 flex space-x-2 text-white/20">
-                            <span class="text-xl"></span>
-                            <span class="text-sm self-end"></span>
+                        class="nt-card nt-card--hero-terminal nt-card--shadow nt-max-w-sm nt-w-full nt-stack-6 nt-relative">
+                        <div class="nt-blob__icons">
+                            <span class="nt-text-xl"></span>
+                            <span class="nt-text-sm"></span>
                         </div>
 
-                        <div class="flex items-center justify-between border-b border-nordic-border pb-4">
+                        <div class="nt-flex-between--wrap nt-pb-4 nt-divider-bottom">
                             <span
-                                class="text-xs uppercase tracking-widest font-bold text-nordic-logoBlue font-display"></span>
+                                class="nt-text-xs nt-uppercase nt-tracking-widest nt-font-bold nt-text-icon"></span>
                             <span class="nt-pulse-dot"></span>
                         </div>
-                        <div class="space-y-3 font-mono text-xs text-slate-400">
-                            <p><span class="text-nordic-logoBlue"> .</span> </p>
-                            <p><span class="text-nordic-logoBlue"> .</span></p>
-                            <p><span class="text-nordic-logoBlue"> .</span></p>
+                        <div class="nt-stack-3 nt-font-mono nt-text-xs nt-text-slate-400">
+                            <p><span class="nt-text-icon"> .</span> </p>
+                            <p><span class="nt-text-icon"> .</span></p>
+                            <p><span class="nt-text-icon"> .</span></p>
                         </div>
-                        <div class="pt-2">
+                        <div class="nt-pt-2">
                             <div class="nt-divider-thin"></div>
-                            <p class="text-[10px] text-nordic-textMuted pt-3 font-light italic">.</p>
+                            <p class="nt-text-2xs nt-text-muted nt-pt-3 nt-text-light nt-text-italic">.</p>
                         </div>
                     </div>
                 </div>
@@ -136,67 +110,64 @@
         </section>
 
         <!-- Servicios -->
-        <section id="servicios" class="py-24 bg-nordic-card/40 border-y border-nordic-border/60 relative z-10">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="max-w-3xl mb-20 space-y-4">
+        <section id="servicios" class="nt-section nt-section-bg-soft nt-py-24 nt-relative">
+            <div class="nt-container">
+                <div class="nt-max-w-3xl nt-mb-20 nt-stack-4">
                     <span
                         class="nt-text-eyebrow">Soluciones
                         de IT</span>
-                    <h2 class="text-3xl md:text-4xl font-display font-bold tracking-tight">Capacidades de nivel
+                    <h2 class="nt-section__title">Capacidades de nivel
                         corporativo</h2>
-                    <p class="text-nordic-textMuted font-light">Diseñamos sistemas sin fisuras estructurales,
+                    <p class="nt-section__lead">Diseñamos sistemas sin fisuras estructurales,
                         optimizados para la continuidad de las operaciones.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div
-                        class="p-8 bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/50 transition-all duration-300">
-                        <div class="text-nordic-logoBlue mb-6">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5"
+                <div class="nt-grid-cols-3">
+                    <div class="nt-service-card">
+                        <div class="nt-service-card__icon">
+                            <svg class="nt-icon--8" fill="none" stroke="currentColor" stroke-width="1.5"
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z">
                                 </path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-display font-bold uppercase tracking-wider mb-3">Software Escalable</h3>
-                        <p class="text-nordic-textMuted text-sm font-light leading-relaxed">
+                        <h3 class="nt-service-card__title">Software Escalable</h3>
+                        <p class="nt-service-card__body">
                             Desarrollo estructurado bajo metodologías ágiles y código limpio para garantizar plataformas
                             intuitivas de alta resiliencia.
                         </p>
                     </div>
 
-                    <div
-                        class="p-8 bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/50 transition-all duration-300">
-                        <div class="text-nordic-logoBlue mb-6">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5"
+                    <div class="nt-service-card">
+                        <div class="nt-service-card__icon">
+                            <svg class="nt-icon--8" fill="none" stroke="currentColor" stroke-width="1.5"
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5m0-6a3 3 0 013-3m-3 3a3 3 0 100 6M1.5 11.25a3 3 0 013-3h15a3 3 0 013 3M1.5 11.25l.89-4.005a3.75 3.75 0 013.696-2.92h12.828a3.75 3.75 0 013.696 2.92l.89 4.005M6.75 12h.008v.008H6.75V12zm0 6h.008v.008H6.75V18zm6-6h.008v.008h-.008V12zm0 6h.008v.008h-.008V18zm6-6h.008v.008h-.008V12zm0 6h.008v.008h-.008V18z">
                                 </path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-display font-bold uppercase tracking-wider mb-3">Infraestructura Cloud
+                        <h3 class="nt-service-card__title">Infraestructura Cloud
                         </h3>
-                        <p class="text-nordic-textMuted text-sm font-light leading-relaxed">
+                        <p class="nt-service-card__body">
                             Migración y despliegue en entornos de nube híbridos para reducir costes físicos,
                             automatizando la redundancia de datos.
                         </p>
                     </div>
 
-                    <div
-                        class="p-8 bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/50 transition-all duration-300">
-                        <div class="text-nordic-logoBlue mb-6">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5"
+                    <div class="nt-service-card">
+                        <div class="nt-service-card__icon">
+                            <svg class="nt-icon--8" fill="none" stroke="currentColor" stroke-width="1.5"
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751A11.956 11.956 0 0112 2.714z">
                                 </path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-display font-bold uppercase tracking-wider mb-3">Seguridad Perimetral
+                        <h3 class="nt-service-card__title">Seguridad Perimetral
                         </h3>
-                        <p class="text-nordic-textMuted text-sm font-light leading-relaxed">
+                        <p class="nt-service-card__body">
                             Aplicación de auditorías profundas y esquemas normativos estrictos para proteger activos
                             críticos contra amenazas digitales complejos.
                         </p>
@@ -207,24 +178,24 @@
 
         <!-- Contacto Corporativo (Integrado con backend) -->
         <section id="contacto"
-            class="py-24 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-start relative z-10">
-            <div class="lg:col-span-5 space-y-6">
+            class="nt-section nt-py-24 nt-container nt-grid-cols-12 nt-items-start nt-relative">
+            <div class="nt-col-span-5 nt-stack-6">
                 <span
                     class="nt-text-eyebrow">Contactanos
                     Directamente</span>
-                <h2 class="text-3xl font-display font-bold tracking-tight">Establezcamos comunicación </h2>
-                <p class="text-nordic-textMuted font-light leading-relaxed">
+                <h2 class="nt-section__title nt-section__title--sm">Establezcamos comunicación </h2>
+                <p class="nt-section__lead">
                     Estamos ubicados en El Salvador brindando consultoría de sistemas avanzados para
                     toda la región. Completa el registro de requerimientos técnicos.
                 </p>
                 <div
-                    class="pt-4 border-t border-nordic-border/60 text-xs font-mono uppercase tracking-widest text-slate-400 space-y-2">
+                    class="nt-pt-4 nt-divider-top-soft nt-text-xs nt-font-mono nt-uppercase nt-tracking-widest nt-text-slate-400 nt-stack-2">
                     <p>NORDICTECH EL SALVADOR S.A. DE C.V.</p>
-                    <p class="text-nordic-textMuted font-sans lowercase font-light">info@nordictech-corp.com</p>
+                    <p class="nt-section__divider--main">info@nordictech-corp.com</p>
                 </div>
             </div>
 
-            <div class="lg:col-span-7 bg-nordic-card border border-nordic-border p-8 md:p-10">
+            <div class="nt-col-span-7 nt-card nt-card--form">
                 <!-- Se asigna el ID maestro para la escucha de JS -->
                 <form id="form-contacto" class="nt-form">
                     <div class="nt-form__row">
@@ -256,7 +227,7 @@
 
                     <div>
                         <button type="submit"
-                            class="nt-btn nt-btn--full font-display">
+                            class="nt-btn nt-btn--full nt-font-display">
                             Enviar Solicitud Corporativa
                         </button>
                     </div>
@@ -279,7 +250,7 @@
     </div>
 
     <!-- Vinculación del script asíncrono para el procesamiento seguro de datos -->
-    <script src="/assets/js/contacto.js?v=1.0.4"></script>
+    <script src="/assets/js/contacto.js?v=1.1.0"></script>
 </body>
 
 </html>

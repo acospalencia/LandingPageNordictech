@@ -14,33 +14,10 @@ if (isset($_SESSION['id_usuario'])) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        nordic: {
-                            bg: '#060913',
-                            card: '#0D1425',
-                            border: '#1E293B',
-                            logoBlue: '#2A4094',
-                            logoBlueHover: '#3C56C4',
-                            textMuted: '#94A3B8'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <!-- Hoja de estilos centralizada del proyecto -->
     <link rel="stylesheet" href="/assets/css/nordictech.css">
 </head>
-<body class="bg-[#060913] text-white font-sans antialiased selection:bg-nordic-logoBlue selection:text-white">
+<body>
 
     <div class="nt-app-container">
 
@@ -70,11 +47,11 @@ if (isset($_SESSION['id_usuario'])) {
         </header>
 
         <main class="nt-main nt-main--centered">
-            <div class="max-w-md w-full bg-nordic-card border border-nordic-border p-8 space-y-6 shadow-2xl">
-                <div class="border-b border-nordic-border pb-4 text-center">
+            <div class="nt-max-w-md nt-w-full nt-card nt-card--form nt-stack-6 nt-card--shadow">
+                <div class="nt-divider-bottom nt-pb-4 nt-text-center">
                     <span class="nt-text-eyebrow nt-text-eyebrow--xs nt-text-eyebrow--spaced">Solicitud de Acceso</span>
-                    <h1 class="text-xl font-display font-bold uppercase tracking-wide">Crear cuenta corporativa</h1>
-                    <p class="text-xs text-nordic-textMuted font-light mt-1">Tu cuenta requerirá aprobación manual del staff técnico.</p>
+                    <h1 class="nt-text-xl nt-font-display nt-font-bold nt-uppercase nt-tracking-wide">Crear cuenta corporativa</h1>
+                    <p class="nt-text-xs nt-text-muted nt-text-light nt-mt-1">Tu cuenta requerirá aprobación manual del staff técnico.</p>
                 </div>
 
                 <form id="form-registro" class="nt-form nt-form--tight">
@@ -96,7 +73,7 @@ if (isset($_SESSION['id_usuario'])) {
                             class="nt-form__input">
                     </div>
 
-                    <button type="submit" class="nt-btn nt-btn--full nt-btn--mt-form font-display">
+                    <button type="submit" class="nt-btn nt-btn--full nt-btn--mt-form nt-font-display">
                         Registrar Solicitud
                     </button>
                 </form>
@@ -108,6 +85,6 @@ if (isset($_SESSION['id_usuario'])) {
         </footer>
     </div>
 
-    <script src="/assets/js/registro.js?v=1.0.5"></script>
+    <script src="/assets/js/registro.js?v=1.1.0"></script>
 </body>
 </html>

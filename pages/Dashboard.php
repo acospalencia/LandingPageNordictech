@@ -18,35 +18,10 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        nordic: {
-                            bg: '#060913',
-                            card: '#0D1425',
-                            border: '#1E293B',
-                            logoBlue: '#2A4094',
-                            logoBlueHover: '#3C56C4',
-                            textMuted: '#94A3B8'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
     <!-- Hoja de estilos centralizada del proyecto -->
     <link rel="stylesheet" href="/assets/css/nordictech.css">
 </head>
-<body class="bg-[#060913] text-white font-sans antialiased selection:bg-nordic-logoBlue selection:text-white">
+<body>
 
     <div class="nt-app-container">
 
@@ -77,12 +52,12 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
         </header>
 
         <!-- Distribución del Contenido Principal (Main + Sidebar) -->
-        <div class="flex pt-24 min-h-screen overflow-hidden relative z-10">
+        <div class="nt-dashboard-layout">
 
             <!-- PANEL LATERAL DE CLIENTES (OPERADORES) -->
             <aside class="nt-sidebar">
                 <div class="nt-sidebar__search">
-                    <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-nordic-textMuted">Filtrar Clientes</label>
+                    <label class="nt-block nt-text-2xs nt-uppercase nt-tracking-widest nt-font-bold nt-mb-2 nt-text-muted">Filtrar Clientes</label>
                     <input type="text" id="search-input" placeholder="Nombre, correo o empresa..."
                         class="nt-form__input nt-form__input--compact">
                 </div>
@@ -102,13 +77,13 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                     <div class="nt-divider-bottom-soft nt-flex-between--wrap">
                         <div>
                             <span class="nt-text-eyebrow nt-text-eyebrow--xs">Consola de Soporte</span>
-                            <h1 id="active-client-name" class="text-2xl font-display font-bold uppercase tracking-tight">Selecciona un cliente</h1>
-                            <p id="active-client-meta" class="text-xs text-nordic-textMuted font-light mt-1">Selecciona un elemento de la lista para auditar sus tickets de soporte.</p>
+                            <h1 id="active-client-name" class="nt-text-2xl nt-font-display nt-font-bold nt-uppercase nt-tracking-tight">Selecciona un cliente</h1>
+                            <p id="active-client-meta" class="nt-text-xs nt-text-muted nt-text-light nt-mt-1">Selecciona un elemento de la lista para auditar sus tickets de soporte.</p>
                         </div>
                     </div>
 
                     <!-- CONTENEDOR DE TICKETS -->
-                    <div id="tickets-container" class="hidden space-y-6">
+                    <div id="tickets-container" class="nt-hidden nt-space-y-6">
 
                         <!-- PESTAÑAS DE CONTROL DE ESTADO (Con padding p-1 idéntico al portal) -->
                         <div class="nt-tabs">
@@ -124,7 +99,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                         </div>
 
                         <!-- AQUÍ SE INYECTAN LAS CARDS CON EL DISEÑO DEL PORTAL DE CLIENTES -->
-                        <div id="tickets-list" class="space-y-4"></div>
+                        <div id="tickets-list" class="nt-space-y-4"></div>
                     </div>
 
                     <!-- MENSAJE DE ESPERA POR DEFECTO -->
@@ -151,7 +126,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
 
     <!-- MODAL DE ACCIONES Y BITÁCORAS -->
     <div id="close-ticket-modal" class="nt-modal-backdrop nt-modal-backdrop--darker">
-        <div class="nt-modal nt-modal--md space-y-4">
+        <div class="nt-modal nt-modal--md nt-stack-4">
             <div class="nt-modal__header">
                 <h3 id="modal-title-text" class="nt-modal__title">Actualizar Ticket</h3>
                 <p id="modal-subtitle-text" class="nt-modal__subtitle">Suministra la información técnica correspondiente.</p>
@@ -178,6 +153,6 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
         </div>
     </div>
 
-    <script src="/assets/js/dashboard_admin.js?v=1.0.6"></script>
+    <script src="/assets/js/dashboard_admin.js?v=1.1.0"></script>
 </body>
 </html>
