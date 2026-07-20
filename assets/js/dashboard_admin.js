@@ -1,35 +1,35 @@
 let globalClientes = [];
 let idClienteActivo = null;
-let currentTab = 'Abierto';
+let currentTab = 'Abierto'; 
 let ticketsCargados = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchClientes();
-
+    
     document.getElementById('search-input').addEventListener('input', filtrarClientes);
     document.getElementById('btn-cancel-modal').addEventListener('click', closeModal);
     document.getElementById('btn-confirm-modal').addEventListener('click', submitCloseTicket);
 
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.nt-dropdown-js')) {
-            document.querySelectorAll('.nt-dropdown-js__menu').forEach(menu => menu.classList.add('nt-hidden'));
+        if (!e.target.closest('.dropdown-container')) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
         }
     });
 });
 
 function showAlert(type, text) {
     const container = document.getElementById('alert-container');
-    container.className = "nt-alert";
-
+    container.className = "mb-6 p-4 text-xs font-semibold tracking-wide border rounded-none";
+    
     if (type === 'success') {
-        container.classList.add('nt-alert--success', 'nt-alert--visible');
+        container.classList.add('bg-green-950/20', 'border-green-500/20', 'text-green-400');
     } else {
-        container.classList.add('nt-alert--error', 'nt-alert--visible');
+        container.classList.add('bg-red-950/20', 'border-red-500/20', 'text-red-400');
     }
     container.textContent = text;
-    container.classList.remove('nt-hidden');
-
-    setTimeout(() => { container.classList.add('nt-hidden'); }, 5000);
+    container.classList.remove('hidden');
+    
+    setTimeout(() => { container.classList.add('hidden'); }, 5000);
 }
 
 async function fetchClientes() {
@@ -52,28 +52,21 @@ function renderClientesList(lista) {
     listContainer.innerHTML = '';
 
     if (lista.length === 0) {
-        listContainer.innerHTML = '<div class="nt-sidebar__list-empty">Sin coincidencias</div>';
+        listContainer.innerHTML = '<div class="p-4 text-center text-xs text-nordic-textMuted">Sin coincidencias</div>';
         return;
     }
 
     lista.forEach(cliente => {
         const isSelected = cliente.id_usuario == idClienteActivo;
         const div = document.createElement('div');
-        if (isSelected) {
-            div.className = "nt-sidebar__list-item nt-sidebar__list-item--active";
-        } else {
-            div.className = "nt-sidebar__list-item";
-        }
+        div.className = `p-4 cursor-pointer transition-colors ${isSelected ? 'bg-nordic-logoBlue/20 border-l-4 border-nordic-logoBlue' : 'hover:bg-nordic-card/60'}`;
         div.onclick = () => selectCliente(cliente);
-        const empresaTag = cliente.codigo_empresa
-            ? `<span class="nt-badge nt-badge--neutral nt-badge--small">${cliente.codigo_empresa}</span>`
-            : '';
         div.innerHTML = `
-            <div class="nt-flex-row-2">
-                <p class="nt-text-xs nt-font-bold nt-uppercase nt-tracking-wider nt-text-white nt-truncate">${cliente.nombre}</p>
-                ${empresaTag}
+            <div class="flex justify-between items-start">
+                <p class="text-xs font-bold uppercase tracking-wider text-white truncate">${cliente.nombre}</p>
+                ${cliente.codigo_empresa ? `<span class="text-[8px] px-1.5 py-0.5 bg-nordic-border text-slate-300 font-mono">${cliente.codigo_empresa}</span>` : ''}
             </div>
-            <p class="nt-text-2xs nt-text-muted nt-truncate nt-mt-1">${cliente.email}</p>
+            <p class="text-[10px] text-nordic-textMuted truncate mt-1">${cliente.email}</p>
         `;
         listContainer.appendChild(div);
     });
@@ -81,8 +74,8 @@ function renderClientesList(lista) {
 
 function filtrarClientes(e) {
     const query = e.target.value.toLowerCase();
-    const filtrados = globalClientes.filter(c =>
-        c.nombre.toLowerCase().includes(query) ||
+    const filtrados = globalClientes.filter(c => 
+        c.nombre.toLowerCase().includes(query) || 
         c.email.toLowerCase().includes(query) ||
         (c.codigo_empresa && c.codigo_empresa.toLowerCase().includes(query))
     );
@@ -93,9 +86,9 @@ function selectCliente(cliente) {
     idClienteActivo = cliente.id_usuario;
     document.getElementById('active-client-name').textContent = cliente.nombre;
     document.getElementById('active-client-meta').textContent = `ID Operador: ${cliente.id_usuario} | ${cliente.email} ${cliente.codigo_empresa ? `| Ref: ${cliente.codigo_empresa}` : ''}`;
-
-    document.getElementById('no-client-selected').classList.add('nt-hidden');
-    document.getElementById('tickets-container').classList.remove('nt-hidden');
+    
+    document.getElementById('no-client-selected').classList.add('hidden');
+    document.getElementById('tickets-container').classList.remove('hidden');
 
     renderClientesList(globalClientes);
     fetchTicketsCliente(cliente.id_usuario);
@@ -105,7 +98,7 @@ async function fetchTicketsCliente(idUsuario) {
     try {
         const response = await fetch(`/assets/php/get_admin_data.php?action=get_tickets&id_usuario=${idUsuario}`);
         const result = await response.json();
-
+        
         if (result.status === 'success') {
             ticketsCargados = result.data;
             updateTabCounters();
@@ -130,27 +123,19 @@ function updateTabCounters() {
 
 function switchTab(tab) {
     currentTab = tab;
-
+    
     const tabs = ['Abierto', 'En Proceso', 'Cerrado'];
     tabs.forEach(t => {
         const key = t.replace(' ', '');
         const element = document.getElementById(`tab-${key}`);
         if (t === tab) {
-            element.className = "nt-tabs__btn nt-tabs__btn--active";
+            element.className = "flex-1 py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border bg-nordic-logoBlue text-white";
         } else {
-            element.className = "nt-tabs__btn";
+            element.className = "flex-1 py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border text-nordic-textMuted hover:text-white";
         }
     });
 
     renderTabTickets();
-}
-
-function getBadgeClass(estado) {
-    if (estado === 'Abierto') return 'nt-badge nt-badge--abierto';
-    if (estado === 'En Proceso') return 'nt-badge nt-badge--en-proceso';
-    if (estado === 'Resuelto') return 'nt-badge nt-badge--resuelto';
-    if (estado === 'Cerrado') return 'nt-badge nt-badge--cerrado';
-    return 'nt-badge nt-badge--neutral';
 }
 
 function renderTabTickets() {
@@ -165,29 +150,29 @@ function renderTabTickets() {
     }
 
     if (filtrados.length === 0) {
-        container.innerHTML = `<div class="nt-ticket-card__empty">No se encontraron tickets en esta categoría</div>`;
+        container.innerHTML = `<div class="p-8 text-center text-xs text-nordic-textMuted border border-nordic-border/20">No se encontraron tickets en esta categoría</div>`;
         return;
     }
 
     filtrados.forEach(ticket => {
         const div = document.createElement('div');
-        div.className = "nt-ticket-card nt-ticket-card--admin";
-
+        div.className = "bg-nordic-card border border-nordic-border relative transition-all hover:border-slate-700/60 cursor-pointer mb-4 select-none";
+        
         div.addEventListener('click', (e) => {
-            if (e.target.closest('.nt-dropdown-js')) return;
+            if (e.target.closest('.dropdown-container')) return;
 
             const panel = div.querySelector('.panel-detalle');
-
+            
             if (panel.classList.contains('activo')) {
                 panel.classList.remove('activo');
-                panel.classList.add('nt-hidden');
+                panel.classList.add('hidden');
             } else {
                 document.querySelectorAll('.panel-detalle.activo').forEach(p => {
                     p.classList.remove('activo');
-                    p.classList.add('nt-hidden');
+                    p.classList.add('hidden');
                 });
-
-                panel.classList.remove('nt-hidden');
+                
+                panel.classList.remove('hidden');
                 panel.classList.add('activo');
             }
         });
@@ -195,87 +180,92 @@ function renderTabTickets() {
         const dateObj = new Date(ticket.fecha_creacion);
         const formattedDate = dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-        const badgeClass = getBadgeClass(ticket.estado);
+        let badgeColor = "border-amber-500/20 bg-amber-950/20 text-amber-500";
+        if (ticket.estado === 'En Proceso') badgeColor = "border-sky-500/20 bg-sky-950/20 text-sky-400";
+        if (ticket.estado === 'Resuelto') badgeColor = "border-green-500/20 bg-green-950/20 text-green-400";
+        if (ticket.estado === 'Cerrado') badgeColor = "border-slate-500/20 bg-slate-800/20 text-slate-400";
 
         let actionButtonsHtml = '';
         if (ticket.estado === 'Abierto') {
             actionButtonsHtml = `
-                <button onclick="openModal(${ticket.id_ticket}, 'En Proceso')" class="nt-dropdown-js__item nt-dropdown-js__item--amber">
+                <button onclick="openModal(${ticket.id_ticket}, 'En Proceso')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-amber-400 hover:bg-nordic-bg transition-colors">
                     Trabajar (En Proceso)
                 </button>
-                <button onclick="openModal(${ticket.id_ticket}, 'Resuelto')" class="nt-dropdown-js__item nt-dropdown-js__item--green">
+                <button onclick="openModal(${ticket.id_ticket}, 'Resuelto')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-green-400 hover:bg-nordic-bg transition-colors">
                     Resolver Ticket
                 </button>
             `;
         } else if (ticket.estado === 'En Proceso') {
             actionButtonsHtml = `
-                <button onclick="openModal(${ticket.id_ticket}, 'En Proceso')" class="nt-dropdown-js__item nt-dropdown-js__item--amber">
+                <button onclick="openModal(${ticket.id_ticket}, 'En Proceso')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-amber-400 hover:bg-nordic-bg transition-colors">
                     Agregar Nota de Avance
                 </button>
-                <button onclick="openModal(${ticket.id_ticket}, 'Resuelto')" class="nt-dropdown-js__item nt-dropdown-js__item--green">
+                <button onclick="openModal(${ticket.id_ticket}, 'Resuelto')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-green-400 hover:bg-nordic-bg transition-colors">
                     Resolver Ticket
                 </button>
-                <button onclick="openModal(${ticket.id_ticket}, 'Cerrado')" class="nt-dropdown-js__item nt-dropdown-js__item--red">
+                <button onclick="openModal(${ticket.id_ticket}, 'Cerrado')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-red-400 hover:bg-nordic-bg transition-colors">
                     Cerrar Ticket
                 </button>
             `;
         } else if (ticket.estado === 'Resuelto' || ticket.estado === 'Cerrado') {
             actionButtonsHtml = `
-                <button onclick="openModal(${ticket.id_ticket}, 'Reabrir')" class="nt-dropdown-js__item nt-dropdown-js__item--sky">
+                <button onclick="openModal(${ticket.id_ticket}, 'Reabrir')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-sky-400 hover:bg-nordic-bg transition-colors">
                     Reabrir (En Proceso)
                 </button>
             `;
         }
 
         div.innerHTML = `
-            <div class="nt-ticket-card__header">
-                <div class="nt-flex-row-2 nt-min-w-0">
-                    <span class="nt-badge ${badgeClass} nt-badge--inline">${ticket.estado}</span>
-                    <h3 class="nt-ticket-card__title">
+            <div class="p-6 flex items-center justify-between gap-4">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <span class="px-2 py-0.5 text-[9px] uppercase font-bold tracking-widest border ${badgeColor} shrink-0">
+                        ${ticket.estado}
+                    </span>
+                    <h3 class="text-sm font-display font-bold tracking-wide uppercase text-white truncate">
                         ${ticket.titulo}
                     </h3>
                 </div>
-
-                <div class="nt-flex-row-2 nt-shrink-0">
-                    <span class="nt-ticket-card__id">#TK-${ticket.id_ticket}</span>
-
-                    <div class="nt-dropdown-js">
-                        <button onclick="toggleDropdown(event, ${ticket.id_ticket})" class="nt-dropdown-js__toggle">
-                            <span class="nt-text-2xs nt-font-bold nt-uppercase nt-tracking-wider nt-ml-1">Opciones</span>
-                            <svg class="nt-dropdown-js__arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                
+                <div class="flex items-center space-x-4 shrink-0">
+                    <span class="text-xs font-mono text-nordic-textMuted/70">#TK-${ticket.id_ticket}</span>
+                    
+                    <div class="relative dropdown-container">
+                        <button onclick="toggleDropdown(event, ${ticket.id_ticket})" class="p-1.5 flex items-center space-x-1 hover:bg-nordic-bg/80 border border-nordic-border/50 text-nordic-textMuted hover:text-white transition-colors">
+                            <span class="text-[10px] font-bold uppercase tracking-wider pl-1 hidden sm:inline">Opciones</span>
+                            <svg class="flecha-menu h-4 w-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-
-                        <div id="dropdown-${ticket.id_ticket}" class="nt-dropdown-js__menu nt-hidden">
+                        
+                        <div id="dropdown-${ticket.id_ticket}" class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-nordic-card border border-nordic-border shadow-xl z-30 divide-y divide-nordic-border/40">
                             ${actionButtonsHtml}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="nt-hidden panel-detalle nt-stack-4 nt-px-6 nt-pb-6 nt-divider-top-soft-20 nt-pt-4 nt-panel-detalle--admin">
+            <div class="panel-detalle hidden px-6 pb-6 space-y-4 border-t border-nordic-border/20 pt-4 bg-[#0e172a]">
                 <div>
-                    <span class="nt-ticket-card__meta">Descripción del Problema:</span>
-                    <p class="nt-ticket-card__body">${ticket.descripcion}</p>
+                    <span class="block text-[8px] uppercase tracking-widest text-nordic-textMuted font-bold mb-1">Descripción del Problema:</span>
+                    <p class="text-xs text-slate-200 leading-relaxed whitespace-pre-wrap">${ticket.descripcion}</p>
                 </div>
 
                 ${ticket.observacion_proceso ? `
-                    <div class="nt-ticket-card__log">
-                        <span class="nt-ticket-card__meta nt-ticket-card__log--title-admin-progreso">Bitácora de Progreso:</span>
-                        <p class="nt-text-slate-300 nt-text-xs nt-text-light nt-text-pre-wrap">${ticket.observacion_proceso}</p>
+                    <div class="p-3 bg-[#060913] border border-nordic-border/40 text-xs">
+                        <span class="block text-[8px] uppercase tracking-widest text-amber-500 font-bold mb-1">Bitácora de Progreso:</span>
+                        <p class="text-slate-300 whitespace-pre-wrap">${ticket.observacion_proceso}</p>
                     </div>
                 ` : ''}
 
                 ${ticket.observacion_cierre ? `
-                    <div class="nt-ticket-card__log">
-                        <span class="nt-ticket-card__meta nt-ticket-card__log--title-cierre">Bitácora de Cierre / Resolución:</span>
-                        <p class="nt-text-slate-300 nt-text-xs nt-text-light nt-text-pre-wrap">${ticket.observacion_cierre}</p>
+                    <div class="p-3 bg-[#060913] border border-nordic-border/40 text-xs">
+                        <span class="block text-[8px] uppercase tracking-widest text-green-400 font-bold mb-1">Bitácora de Cierre / Resolución:</span>
+                        <p class="text-slate-300 whitespace-pre-wrap">${ticket.observacion_cierre}</p>
                     </div>
                 ` : ''}
 
-                <div class="nt-ticket-card__footer">
-                    <span>Prioridad: <strong class="nt-ticket-card__strong">${ticket.prioridad}</strong></span>
+                <div class="flex items-center justify-between text-[10px] text-nordic-textMuted/60 pt-1 border-t border-nordic-border/10">
+                    <span>Prioridad: <strong class="text-slate-300">${ticket.prioridad}</strong></span>
                     <span>Generado el: ${formattedDate}</span>
                 </div>
             </div>
@@ -288,32 +278,32 @@ function toggleDropdown(event, idTicket) {
     event.stopPropagation();
     const targetMenu = document.getElementById(`dropdown-${idTicket}`);
     const boton = event.currentTarget;
-    const flecha = boton.querySelector('.nt-dropdown-js__arrow');
-    const isHidden = targetMenu.classList.contains('nt-hidden');
+    const flecha = boton.querySelector('.flecha-menu');
+    const isHidden = targetMenu.classList.contains('hidden');
 
-    document.querySelectorAll('.nt-dropdown-js__menu').forEach(menu => menu.classList.add('nt-hidden'));
-    document.querySelectorAll('.nt-dropdown-js__arrow').forEach(fl => fl.classList.remove('nt-dropdown-js__arrow--rotated'));
+    document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+    document.querySelectorAll('.flecha-menu').forEach(fl => fl.classList.remove('rotate-180'));
 
     if (isHidden) {
-        targetMenu.classList.remove('nt-hidden');
-        if (flecha) flecha.classList.add('nt-dropdown-js__arrow--rotated');
+        targetMenu.classList.remove('hidden');
+        if (flecha) flecha.classList.add('rotate-180');
     }
 }
 
 function openModal(idTicket, targetStatus) {
-    document.querySelectorAll('.nt-dropdown-js__menu').forEach(menu => menu.classList.add('nt-hidden'));
-    document.querySelectorAll('.nt-dropdown-js__arrow').forEach(fl => fl.classList.remove('nt-dropdown-js__arrow--rotated'));
+    document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+    document.querySelectorAll('.flecha-menu').forEach(fl => fl.classList.remove('rotate-180'));
 
     document.getElementById('modal-ticket-id').value = idTicket;
     document.getElementById('modal-target-status').value = targetStatus;
-
+    
     const resolucionText = document.getElementById('modal-resolucion-text');
     const modalTitle = document.getElementById('modal-title-text');
     const modalSubtitle = document.getElementById('modal-subtitle-text');
     const modalLabel = document.getElementById('modal-label-text');
-
+    
     resolucionText.value = '';
-    document.getElementById('modal-alert').classList.add('nt-hidden');
+    document.getElementById('modal-alert').classList.add('hidden');
 
     if (targetStatus === 'En Proceso') {
         modalTitle.textContent = "Trabajar Incidente / Agregar Nota";
@@ -337,11 +327,11 @@ function openModal(idTicket, targetStatus) {
         resolucionText.placeholder = "Explica por qué se reabre el ticket...";
     }
 
-    document.getElementById('close-ticket-modal').classList.add('nt-modal-backdrop--visible');
+    document.getElementById('close-ticket-modal').classList.remove('hidden');
 }
 
 function closeModal() {
-    document.getElementById('close-ticket-modal').classList.remove('nt-modal-backdrop--visible');
+    document.getElementById('close-ticket-modal').classList.add('hidden');
 }
 
 async function submitCloseTicket() {
@@ -352,7 +342,7 @@ async function submitCloseTicket() {
 
     if ((targetStatus === 'Resuelto' || targetStatus === 'Cerrado' || targetStatus === 'Reabrir') && observaciones === '') {
         modalAlert.textContent = "Es obligatorio suministrar un comentario para esta acción.";
-        modalAlert.classList.remove('nt-hidden');
+        modalAlert.classList.remove('hidden');
         return;
     }
 
@@ -363,18 +353,18 @@ async function submitCloseTicket() {
             body: `id_ticket=${idTicket}&estado=${targetStatus}&observaciones=${encodeURIComponent(observaciones)}`
         });
         const result = await response.json();
-
+        
         if (result.status === 'success') {
             closeModal();
             showAlert('success', result.message);
             fetchTicketsCliente(idClienteActivo);
         } else {
             modalAlert.textContent = result.message;
-            modalAlert.classList.remove('nt-hidden');
+            modalAlert.classList.remove('hidden');
         }
     } catch (err) {
         modalAlert.textContent = "Error al intentar actualizar el estado del ticket.";
-        modalAlert.classList.remove('nt-hidden');
+        modalAlert.classList.remove('hidden');
     }
 }
 

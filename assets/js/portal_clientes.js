@@ -25,25 +25,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sistema Interno de Mensajería en Interfaz (Sin pop-ups nativos)
     function showPortalAlert(type, text) {
-        alertBox.className = "nt-alert";
+        alertBox.className = "mb-6 p-4 text-xs font-semibold tracking-wide border rounded-none transition-all duration-300";
         if (type === 'success') {
-            alertBox.classList.add('nt-alert--success', 'nt-alert--visible');
+            alertBox.classList.add('bg-green-950/20', 'border-green-500/20', 'text-green-400');
         } else {
-            alertBox.classList.add('nt-alert--error', 'nt-alert--visible');
+            alertBox.classList.add('bg-red-950/20', 'border-red-500/20', 'text-red-400');
         }
         alertBox.textContent = text;
-        alertBox.classList.remove('nt-hidden');
+        alertBox.classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => { alertBox.classList.add('nt-hidden'); }, 5000);
+        setTimeout(() => { alertBox.classList.add('hidden'); }, 5000);
     }
 
     function toggleModal(modalId, show) {
         const modal = document.getElementById(modalId);
-        if (show) {
-            modal.classList.add('nt-modal-backdrop--visible');
-        } else {
-            modal.classList.remove('nt-modal-backdrop--visible');
-        }
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
     }
 
     // Cargar Tickets desde Base de Datos
@@ -54,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (resultado.status === 'success') {
                 todosLosTickets = resultado.tickets;
-
+                
                 const nodoTexto = document.getElementById('nodo-activo-text');
                 if (nodoTexto && resultado.nombre_usuario) {
                     nodoTexto.textContent = `Cliente: ${resultado.nombre_usuario}`;
@@ -69,21 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error(error);
-            contenedorTickets.innerHTML = `<p class="nt-error-msg">❌ ERROR_CONECTIVIDAD: No se pudo establecer comunicación con el clúster.</p>`;
+            contenedorTickets.innerHTML = `<p class="text-xs text-rose-400 font-mono">❌ ERROR_CONECTIVIDAD: No se pudo establecer comunicación con el clúster.</p>`;
         }
-    }
-
-    function getBadgeClass(estado) {
-        if (estado === 'Abierto') return 'nt-badge nt-badge--abierto';
-        if (estado === 'En Proceso') return 'nt-badge nt-badge--en-proceso';
-        if (estado === 'Resuelto' || estado === 'Cerrado') return 'nt-badge nt-badge--resuelto';
-        return 'nt-badge nt-badge--cerrado';
-    }
-
-    function getPriorityClass(prioridad) {
-        if (prioridad === 'Alta') return 'nt-ticket-card__priority--alta';
-        if (prioridad === 'Crítica') return 'nt-ticket-card__priority--critica';
-        return 'nt-text-slate-400';
     }
 
     // Renderizar tarjetas con sistema de Acordeones
@@ -100,20 +84,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (ticketsFiltrados.length === 0) {
             contenedorTickets.innerHTML = `
-                <div class="nt-card nt-card--ticket-empty">
-                    <p class="nt-text-xs nt-text-muted nt-text-light">No hay registros bajo la categoría: <strong class="nt-text-white nt-uppercase">${estadoFiltroActual}</strong></p>
+                <div class="bg-nordic-card border border-nordic-border p-8 text-center">
+                    <p class="text-xs text-nordic-textMuted font-light">No hay registros bajo la categoría: <strong class="text-white uppercase">${estadoFiltroActual}</strong></p>
                 </div>
             `;
             return;
         }
 
         ticketsFiltrados.forEach(ticket => {
-            const badgeClass = getBadgeClass(ticket.estado);
-            const prioridadClass = getPriorityClass(ticket.prioridad);
+            let badgeStyle = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+            if (ticket.estado === 'En Proceso') badgeStyle = "bg-blue-500/10 text-blue-400 border-blue-500/20";
+            if (ticket.estado === 'Resuelto' || ticket.estado === 'Cerrado') badgeStyle = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+
+            let prioridadColor = "text-slate-400";
+            if (ticket.prioridad === 'Alta') prioridadColor = "text-orange-400 font-bold";
+            if (ticket.prioridad === 'Crítica') prioridadColor = "text-rose-400 font-bold animate-pulse";
 
             const card = document.createElement('div');
-            card.className = "nt-ticket-card nt-ticket-card--cliente";
-
+            card.className = "bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/60 transition-all cursor-pointer overflow-hidden select-none";
+            
             // Lógica del Acordeón: Expandir y encoger al presionar la tarjeta
             card.addEventListener('click', (e) => {
                 // Si el clic viene de los botones interactivos internos, no colapsar la tarjeta
@@ -121,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const panel = card.querySelector('.panel-detalle');
                 const flecha = card.querySelector('.flecha-desplegar');
-
+                
                 if (panel.classList.contains('activo')) {
                     panel.classList.remove('activo');
                     if (flecha) flecha.classList.remove('rotate-180');
@@ -129,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Cerrar cualquier otro acordeón abierto en la vista actual (Opcional, para limpieza visual)
                     document.querySelectorAll('.panel-detalle.activo').forEach(p => p.classList.remove('activo'));
                     document.querySelectorAll('.flecha-desplegar.rotate-180').forEach(f => f.classList.remove('rotate-180'));
-
+                    
                     panel.classList.add('activo');
                     if (flecha) flecha.classList.add('rotate-180');
                 }
@@ -137,57 +126,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
             card.innerHTML = `
                 <!-- Cabecera de la Tarjeta (Siempre visible) -->
-                <div class="nt-ticket-card__header">
-                    <div class="nt-flex-row-2 nt-min-w-0">
-                        <span class="nt-badge ${badgeClass} nt-badge--small nt-badge--inline">
+                <div class="p-5 flex justify-between items-center gap-4">
+                    <div class="flex items-center space-x-3 min-w-0">
+                        <span class="inline-block ${badgeStyle} text-[9px] font-bold tracking-widest px-2 py-0.5 border uppercase shrink-0">
                             ${ticket.estado}
                         </span>
-                        <h3 class="nt-text-xs nt-font-semibold nt-uppercase nt-text-white nt-tracking-wide nt-truncate">${escapeHTML(ticket.titulo)}</h3>
+                        <h3 class="text-xs font-semibold uppercase text-white tracking-wide truncate">${escapeHTML(ticket.titulo)}</h3>
                     </div>
-
-                    <div class="nt-flex-row-2 nt-shrink-0">
-                        <span class="nt-ticket-card__id">#TK-${ticket.id_ticket}</span>
-
+                    
+                    <div class="flex items-center space-x-4 shrink-0">
+                        <span class="text-[10px] font-mono text-nordic-textMuted hidden sm:inline">#TK-${ticket.id_ticket}</span>
+                        
                         <!-- Flecha de Estado del Acordeón -->
-                        <svg class="flecha-desplegar nt-icon--sm nt-text-muted nt-flecha" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg class="flecha-desplegar h-4 w-4 text-nordic-textMuted transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>
                 </div>
 
                 <!-- Contenido Oculto Desplegable (Acordeón) -->
-                <div class="nt-hidden panel-detalle nt-divider-top-soft-30 nt-px-5 nt-stack-4 nt-panel-detalle--cliente">
+                <div class="panel-detalle border-t border-nordic-border/30 bg-[#060a14] px-5 space-y-4">
                     <div>
-                        <span class="nt-ticket-card__meta">Descripción del Problema:</span>
-                        <p class="nt-text-slate-300 nt-text-xs nt-text-light nt-leading-relaxed nt-text-pre-wrap">${escapeHTML(ticket.descripcion)}</p>
+                        <span class="block text-[8px] uppercase tracking-widest text-nordic-textMuted font-bold mb-1">Descripción del Problema:</span>
+                        <p class="text-xs text-slate-300 font-light leading-relaxed whitespace-pre-wrap">${escapeHTML(ticket.descripcion)}</p>
                     </div>
 
                     <!-- Bitácora de Avance (Aparece en tickets En Proceso o Cerrados si existe) -->
                     ${ticket.observacion_proceso ? `
-                        <div class="nt-ticket-card__log nt-ticket-card__log--proceso">
-                            <span class="nt-ticket-card__meta nt-text-sky">Comentario de Progreso Técnico:</span>
-                            <p class="nt-text-slate-300 nt-text-xs nt-text-light nt-text-pre-wrap">${escapeHTML(ticket.observacion_proceso)}</p>
+                        <div class="p-3 bg-[#0d162d] border border-blue-500/20 text-xs rounded-none">
+                            <span class="block text-[8px] uppercase tracking-widest text-blue-400 font-bold mb-1">Comentario de Progreso Técnico:</span>
+                            <p class="text-slate-300 font-light whitespace-pre-wrap">${escapeHTML(ticket.observacion_proceso)}</p>
                         </div>
                     ` : ''}
 
                     <!-- Bitácora de Cierre (Aparece en tickets resueltos/cerrados) -->
                     ${ticket.observacion_cierre ? `
-                        <div class="nt-ticket-card__log nt-ticket-card__log--cierre">
-                            <span class="nt-ticket-card__meta nt-text-emerald">Resolución Final del Especialista:</span>
-                            <p class="nt-text-slate-300 nt-text-xs nt-text-light nt-text-pre-wrap">${escapeHTML(ticket.observacion_cierre)}</p>
+                        <div class="p-3 bg-[#0a1c18] border border-emerald-500/20 text-xs rounded-none">
+                            <span class="block text-[8px] uppercase tracking-widest text-emerald-400 font-bold mb-1">Resolución Final del Especialista:</span>
+                            <p class="text-slate-300 font-light whitespace-pre-wrap">${escapeHTML(ticket.observacion_cierre)}</p>
                         </div>
                     ` : ''}
 
                     <!-- Línea de Metadatos e Interacciones Finales -->
-                    <div class="nt-ticket-card__footer nt-ticket-card__footer--responsive">
-                        <div class="nt-space-x-4">
-                            <span>Prioridad: <strong class="${prioridadClass}">${ticket.prioridad}</strong></span>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] font-mono text-slate-500 pt-3 border-t border-nordic-border/20 gap-3">
+                        <div class="space-x-4">
+                            <span>Prioridad: <strong class="${prioridadColor}">${ticket.prioridad}</strong></span>
                             <span>Apertura: ${ticket.fecha}</span>
                         </div>
-
+                        
                         <!-- El Botón de Cierre solo se añade dentro del acordeón si el estado es estrictamente Abierto -->
                         ${ticket.estado === 'Abierto' ? `
-                            <button onclick="lanzarConfirmacionCierre(event, ${ticket.id_ticket})" class="action-btn nt-action-btn">
+                            <button onclick="lanzarConfirmacionCierre(event, ${ticket.id_ticket})" class="action-btn px-4 py-2 bg-red-950/40 hover:bg-red-900 border border-red-700 text-red-300 text-[9px] uppercase tracking-widest font-bold transition-colors">
                                 Cancelar / Cerrar Ticket
                             </button>
                         ` : ''}
@@ -203,9 +192,9 @@ document.addEventListener('DOMContentLoaded', () => {
         estadoFiltroActual = estado;
         Object.keys(tabs).forEach(key => {
             if (key === estado) {
-                tabs[key].className = "nt-tabs__btn nt-tabs__btn--active";
+                tabs[key].className = "flex-grow py-3 text-xs font-bold uppercase tracking-wider text-center transition-all bg-[#2A4094] text-white";
             } else {
-                tabs[key].className = "nt-tabs__btn";
+                tabs[key].className = "flex-grow py-3 text-xs font-bold uppercase tracking-wider text-center transition-all text-nordic-textMuted hover:text-white";
             }
         });
         renderizarTickets();
@@ -250,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const formData = new FormData(formTicket);
             const submitBtn = formTicket.querySelector('button[type="submit"]');
-
+            
             submitBtn.disabled = true;
             submitBtn.textContent = 'TRANSMITIENDO TICKET...';
 
