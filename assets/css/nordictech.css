@@ -315,10 +315,13 @@ body {
 .nt-sidebar__backdrop {
     display: none;
     position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    top: 4.5rem; /* Altura exacta de tu header para dejar la barra superior libre */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(2px);
-    z-index: 35;
+    z-index: 30; /* Por debajo del sidebar (50) y del header */
 }
 
 .nt-sidebar__backdrop--visible {

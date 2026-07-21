@@ -1,3 +1,7 @@
+/* ==========================================================================
+   dashboard_admin.js — Production Hotfix (Global Scope & Event Delegation)
+   ========================================================================== */
+
 let globalClientes = [];
 let idClienteActivo = null;
 let currentTab = 'Abierto'; 
@@ -6,19 +10,69 @@ let ticketsCargados = [];
 document.addEventListener('DOMContentLoaded', () => {
     fetchClientes();
     
-    document.getElementById('search-input').addEventListener('input', filtrarClientes);
-    document.getElementById('btn-cancel-modal').addEventListener('click', closeModal);
-    document.getElementById('btn-confirm-modal').addEventListener('click', submitCloseTicket);
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) searchInput.addEventListener('input', filtrarClientes);
 
+    const btnCancel = document.getElementById('btn-cancel-modal');
+    if (btnCancel) btnCancel.addEventListener('click', closeModal);
+
+    const btnConfirm = document.getElementById('btn-confirm-modal');
+    if (btnConfirm) btnConfirm.addEventListener('click', submitCloseTicket);
+
+    // --- FIX 1: Event Listener para Botones de Cerrar Sesión (Desktop y Mobile) ---
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) btnLogout.addEventListener('click', ejecutarCierreSesion);
+
+    const btnLogoutMobile = document.getElementById('btn-logout-mobile');
+    if (btnLogoutMobile) btnLogoutMobile.addEventListener('click', ejecutarCierreSesion);
+
+    // --- FIX 2: Apertura y Cierre del Sidebar de Clientes ---
+    const sidebar = document.getElementById('sidebar-clientes');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
+
+    // Toggle de apertura/cierre al presionar el botón "Clientes"
+    if (btnSidebarToggle) {
+        btnSidebarToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (sidebar) sidebar.classList.toggle('nt-sidebar--open');
+            if (backdrop) backdrop.classList.toggle('nt-sidebar__backdrop--visible');
+        });
+    }
+
+    // Cerrar al hacer clic directo sobre el fondo transparente/oscuro (backdrop)
+    if (backdrop) {
+        backdrop.addEventListener('click', cerrarSidebar);
+    }
+
+    // Cierra dropdowns y sidebar al hacer clic fuera de ellos en cualquier parte de la pantalla
     document.addEventListener('click', (e) => {
+        // Cierra los menús desplegables de Opciones de tickets
         if (!e.target.closest('.dropdown-container')) {
             document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+            document.querySelectorAll('.flecha-menu').forEach(fl => fl.classList.remove('rotate-180'));
+        }
+
+        // Cierra el sidebar de clientes si está abierto y el clic fue afuera del panel y del botón
+        if (sidebar && sidebar.classList.contains('nt-sidebar--open')) {
+            if (!sidebar.contains(e.target) && (!btnSidebarToggle || !btnSidebarToggle.contains(e.target))) {
+                cerrarSidebar();
+            }
         }
     });
 });
 
+// Función para forzar la ocultación del Sidebar y Backdrop
+function cerrarSidebar() {
+    const sidebar = document.getElementById('sidebar-clientes');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) sidebar.classList.remove('nt-sidebar--open');
+    if (backdrop) backdrop.classList.remove('nt-sidebar__backdrop--visible');
+}
+
 function showAlert(type, text) {
     const container = document.getElementById('alert-container');
+    if (!container) return;
     container.className = "mb-6 p-4 text-xs font-semibold tracking-wide border rounded-none";
     
     if (type === 'success') {
@@ -49,6 +103,7 @@ async function fetchClientes() {
 
 function renderClientesList(lista) {
     const listContainer = document.getElementById('clientes-list');
+    if (!listContainer) return;
     listContainer.innerHTML = '';
 
     if (lista.length === 0) {
@@ -60,7 +115,13 @@ function renderClientesList(lista) {
         const isSelected = cliente.id_usuario == idClienteActivo;
         const div = document.createElement('div');
         div.className = `p-4 cursor-pointer transition-colors ${isSelected ? 'bg-nordic-logoBlue/20 border-l-4 border-nordic-logoBlue' : 'hover:bg-nordic-card/60'}`;
-        div.onclick = () => selectCliente(cliente);
+        
+        div.addEventListener('click', (e) => {
+            selectCliente(cliente);
+            // Oculta sidebar al seleccionar un cliente
+            cerrarSidebar();
+        });
+
         div.innerHTML = `
             <div class="flex justify-between items-start">
                 <p class="text-xs font-bold uppercase tracking-wider text-white truncate">${cliente.nombre}</p>
@@ -123,15 +184,15 @@ function updateTabCounters() {
 
 function switchTab(tab) {
     currentTab = tab;
-    
     const tabs = ['Abierto', 'En Proceso', 'Cerrado'];
     tabs.forEach(t => {
         const key = t.replace(' ', '');
         const element = document.getElementById(`tab-${key}`);
+        if (!element) return;
         if (t === tab) {
-            element.className = "flex-1 py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border bg-nordic-logoBlue text-white";
+            element.className = "flex-1 py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border bg-nordic-logoBlue text-white cursor-pointer";
         } else {
-            element.className = "flex-1 py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border text-nordic-textMuted hover:text-white";
+            element.className = "flex-1 py-4 text-xs font-bold uppercase tracking-wider text-center transition-all border-r border-nordic-border text-nordic-textMuted hover:text-white cursor-pointer";
         }
     });
 
@@ -140,6 +201,7 @@ function switchTab(tab) {
 
 function renderTabTickets() {
     const container = document.getElementById('tickets-list');
+    if (!container) return;
     container.innerHTML = '';
 
     let filtrados = [];
@@ -159,9 +221,10 @@ function renderTabTickets() {
         div.className = "bg-nordic-card border border-nordic-border relative transition-all hover:border-slate-700/60 cursor-pointer mb-4 select-none";
         
         div.addEventListener('click', (e) => {
-            if (e.target.closest('.dropdown-container')) return;
+            if (e.target.closest('.dropdown-container') || e.target.closest('.dropdown-menu')) return;
 
             const panel = div.querySelector('.panel-detalle');
+            if (!panel) return;
             
             if (panel.classList.contains('activo')) {
                 panel.classList.remove('activo');
@@ -188,28 +251,28 @@ function renderTabTickets() {
         let actionButtonsHtml = '';
         if (ticket.estado === 'Abierto') {
             actionButtonsHtml = `
-                <button onclick="openModal(${ticket.id_ticket}, 'En Proceso')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-amber-400 hover:bg-nordic-bg transition-colors">
+                <button type="button" onclick="window.handleActionClick(event, ${ticket.id_ticket}, 'En Proceso')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-amber-400 hover:bg-nordic-bg transition-colors">
                     Trabajar (En Proceso)
                 </button>
-                <button onclick="openModal(${ticket.id_ticket}, 'Resuelto')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-green-400 hover:bg-nordic-bg transition-colors">
+                <button type="button" onclick="window.handleActionClick(event, ${ticket.id_ticket}, 'Resuelto')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-green-400 hover:bg-nordic-bg transition-colors">
                     Resolver Ticket
                 </button>
             `;
         } else if (ticket.estado === 'En Proceso') {
             actionButtonsHtml = `
-                <button onclick="openModal(${ticket.id_ticket}, 'En Proceso')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-amber-400 hover:bg-nordic-bg transition-colors">
+                <button type="button" onclick="window.handleActionClick(event, ${ticket.id_ticket}, 'En Proceso')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-amber-400 hover:bg-nordic-bg transition-colors">
                     Agregar Nota de Avance
                 </button>
-                <button onclick="openModal(${ticket.id_ticket}, 'Resuelto')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-green-400 hover:bg-nordic-bg transition-colors">
+                <button type="button" onclick="window.handleActionClick(event, ${ticket.id_ticket}, 'Resuelto')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-green-400 hover:bg-nordic-bg transition-colors">
                     Resolver Ticket
                 </button>
-                <button onclick="openModal(${ticket.id_ticket}, 'Cerrado')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-red-400 hover:bg-nordic-bg transition-colors">
+                <button type="button" onclick="window.handleActionClick(event, ${ticket.id_ticket}, 'Cerrado')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-red-400 hover:bg-nordic-bg transition-colors">
                     Cerrar Ticket
                 </button>
             `;
         } else if (ticket.estado === 'Resuelto' || ticket.estado === 'Cerrado') {
             actionButtonsHtml = `
-                <button onclick="openModal(${ticket.id_ticket}, 'Reabrir')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-sky-400 hover:bg-nordic-bg transition-colors">
+                <button type="button" onclick="window.handleActionClick(event, ${ticket.id_ticket}, 'Reabrir')" class="w-full text-left px-4 py-2.5 text-xs uppercase tracking-widest font-semibold text-sky-400 hover:bg-nordic-bg transition-colors">
                     Reabrir (En Proceso)
                 </button>
             `;
@@ -230,14 +293,14 @@ function renderTabTickets() {
                     <span class="text-xs font-mono text-nordic-textMuted/70">#TK-${ticket.id_ticket}</span>
                     
                     <div class="relative dropdown-container">
-                        <button onclick="toggleDropdown(event, ${ticket.id_ticket})" class="p-1.5 flex items-center space-x-1 hover:bg-nordic-bg/80 border border-nordic-border/50 text-nordic-textMuted hover:text-white transition-colors">
+                        <button type="button" onclick="window.toggleDropdown(event, ${ticket.id_ticket})" class="p-1.5 flex items-center space-x-1 hover:bg-nordic-bg/80 border border-nordic-border/50 text-nordic-textMuted hover:text-white transition-colors">
                             <span class="text-[10px] font-bold uppercase tracking-wider pl-1 hidden sm:inline">Opciones</span>
                             <svg class="flecha-menu h-4 w-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
                         
-                        <div id="dropdown-${ticket.id_ticket}" class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-nordic-card border border-nordic-border shadow-xl z-30 divide-y divide-nordic-border/40">
+                        <div id="dropdown-${ticket.id_ticket}" class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-nordic-card border border-nordic-border shadow-xl z-50 divide-y divide-nordic-border/40">
                             ${actionButtonsHtml}
                         </div>
                     </div>
@@ -275,10 +338,14 @@ function renderTabTickets() {
 }
 
 function toggleDropdown(event, idTicket) {
-    event.stopPropagation();
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
     const targetMenu = document.getElementById(`dropdown-${idTicket}`);
-    const boton = event.currentTarget;
-    const flecha = boton.querySelector('.flecha-menu');
+    if (!targetMenu) return;
+
     const isHidden = targetMenu.classList.contains('hidden');
 
     document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
@@ -286,13 +353,30 @@ function toggleDropdown(event, idTicket) {
 
     if (isHidden) {
         targetMenu.classList.remove('hidden');
-        if (flecha) flecha.classList.add('rotate-180');
+        const parentBtn = targetMenu.previousElementSibling;
+        if (parentBtn) {
+            const flecha = parentBtn.querySelector('.flecha-menu');
+            if (flecha) flecha.classList.add('rotate-180');
+        }
     }
+}
+
+function handleActionClick(event, idTicket, targetStatus) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    openModal(idTicket, targetStatus);
 }
 
 function openModal(idTicket, targetStatus) {
     document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
-    document.querySelectorAll('.flecha-menu').forEach(fl => fl.classList.remove('rotate-180'));
+
+    const modal = document.getElementById('close-ticket-modal');
+    if (!modal) {
+        alert('Error: No se encontró el elemento modal en el DOM.');
+        return;
+    }
 
     document.getElementById('modal-ticket-id').value = idTicket;
     document.getElementById('modal-target-status').value = targetStatus;
@@ -306,32 +390,37 @@ function openModal(idTicket, targetStatus) {
     document.getElementById('modal-alert').classList.add('hidden');
 
     if (targetStatus === 'En Proceso') {
-        modalTitle.textContent = "Trabajar Incidente / Agregar Nota";
-        modalSubtitle.textContent = "Agrega un comentario o bitácora de red para informar de los avances lógicos o de hardware.";
-        modalLabel.textContent = "Nota de Trabajo (Obligatoria/Opcional si es el primer avance)";
+        if(modalTitle) modalTitle.textContent = "Trabajar Incidente / Agregar Nota";
+        if(modalSubtitle) modalSubtitle.textContent = "Agrega un comentario o bitácora de red para informar de los avances.";
+        if(modalLabel) modalLabel.textContent = "Nota de Trabajo";
         resolucionText.placeholder = "Indica las acciones técnicas que se están realizando...";
     } else if (targetStatus === 'Resuelto') {
-        modalTitle.textContent = "Resolver Incidente";
-        modalSubtitle.textContent = "Escribe detalladamente el diagnóstico y solución aplicada.";
-        modalLabel.textContent = "Reporte de Resolución (Obligatorio)";
+        if(modalTitle) modalTitle.textContent = "Resolver Incidente";
+        if(modalSubtitle) modalSubtitle.textContent = "Escribe detalladamente el diagnóstico y solución aplicada.";
+        if(modalLabel) modalLabel.textContent = "Reporte de Resolución (Obligatorio)";
         resolucionText.placeholder = "Describe los cambios físicos o lógicos aplicados...";
     } else if (targetStatus === 'Cerrado') {
-        modalTitle.textContent = "Cerrar Ticket";
-        modalSubtitle.textContent = "Escribe el motivo de la finalización definitiva del caso.";
-        modalLabel.textContent = "Motivo de Cierre (Obligatorio)";
+        if(modalTitle) modalTitle.textContent = "Cerrar Ticket";
+        if(modalSubtitle) modalSubtitle.textContent = "Escribe el motivo de la finalización definitiva del caso.";
+        if(modalLabel) modalLabel.textContent = "Motivo de Cierre (Obligatorio)";
         resolucionText.placeholder = "Indica la razón de la conclusión del caso...";
     } else if (targetStatus === 'Reabrir') {
-        modalTitle.textContent = "Reabrir Ticket";
-        modalSubtitle.textContent = "El caso volverá al estado 'En Proceso'. Las bitácoras existentes no se perderán.";
-        modalLabel.textContent = "Motivo de la Reapertura (Obligatorio)";
+        if(modalTitle) modalTitle.textContent = "Reabrir Ticket";
+        if(modalSubtitle) modalSubtitle.textContent = "El caso volverá al estado 'En Proceso'.";
+        if(modalLabel) modalLabel.textContent = "Motivo de la Reapertura (Obligatorio)";
         resolucionText.placeholder = "Explica por qué se reabre el ticket...";
     }
 
-    document.getElementById('close-ticket-modal').classList.remove('hidden');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
 }
 
 function closeModal() {
-    document.getElementById('close-ticket-modal').classList.add('hidden');
+    const modal = document.getElementById('close-ticket-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
 }
 
 async function submitCloseTicket() {
@@ -368,21 +457,24 @@ async function submitCloseTicket() {
     }
 }
 
-const btnLogout = document.querySelector('#btn-logout');
-if (btnLogout) {
-    btnLogout.addEventListener('click', async (e) => {
-        e.preventDefault();
-        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-            try {
-                const response = await fetch('/assets/php/logout.php');
-                const resultado = await response.json();
-                if (resultado.status === 'success') {
-                    window.location.replace('/pages/Login.php');
-                }
-            } catch (error) {
-                console.error('Error al intentar finalizar la sesión:', error);
-                alert('❌ Error de conectividad al procesar la salida.');
-            }
+// Terminar Sesión
+async function ejecutarCierreSesion() {
+    try {
+        const response = await fetch('/assets/php/logout.php');
+        const resultado = await response.json();
+        if (resultado.status === 'success') {
+            window.location.replace('/pages/Login.php');
         }
-    });
+    } catch (error) {
+        showAlert('error', 'Imposible destruir el token de sesión.');
+    }
 }
+
+// ASIGNACIÓN EXPLÍCITA AL OBJETO WINDOW (Global Scope)
+window.toggleDropdown = toggleDropdown;
+window.handleActionClick = handleActionClick;
+window.switchTab = switchTab;
+window.closeModal = closeModal;
+window.submitCloseTicket = submitCloseTicket;
+window.ejecutarCierreSesion = ejecutarCierreSesion;
+window.cerrarSidebar = cerrarSidebar;

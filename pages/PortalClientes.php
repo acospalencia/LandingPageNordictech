@@ -214,7 +214,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 1) {
         <div class="nt-modal nt-modal--sm text-center space-y-5">
             <div class="space-y-2">
                 <h3 class="nt-modal__title">¿Finalizar Sesión?</h3>
-                <p class="text-[11px] text-nordic-textMuted">Su sesión activa en la consola será destruida de forma segura.</p>
+                <p class="text-[11px] text-nordic-textMuted">¿Estas seguro de cerrar sesion?</p>
             </div>
             <div class="flex justify-center space-x-3 pt-2">
                 <button type="button" id="btn-cancel-logout" class="nt-btn--text">

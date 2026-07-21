@@ -5,8 +5,8 @@ header('Content-Type: application/json');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 
-// Configuración del límite de tiempo (5 minutos = 300 segundos)
-define('LIMITE_INACTIVIDAD', 300);
+// Configuración del límite de tiempo (60 minutos = 3600 segundos)
+define('LIMITE_INACTIVIDAD', 3600);
 
 // 1. Validar que la sesión básica exista
 if (!isset($_SESSION['id_usuario'])) {
@@ -14,7 +14,7 @@ if (!isset($_SESSION['id_usuario'])) {
     exit;
 }
 
-// 2. Control del ciclo de vida de la sesión (Expiración de 5 minutos)
+// 2. Control del ciclo de vida de la sesión (Expiración de 60 minutos)
 if (isset($_SESSION['ultimo_acceso'])) {
     $tiempo_inactivo = time() - $_SESSION['ultimo_acceso'];
     
@@ -25,7 +25,7 @@ if (isset($_SESSION['ultimo_acceso'])) {
         
         echo json_encode([
             'status' => 'session_expired', 
-            'message' => 'Conexión finalizada por inactividad. El token de seguridad expiró tras 5 minutos.'
+            'message' => 'Conexión finalizada por inactividad. El token de seguridad expiró tras 60 minutos.'
         ]);
         exit;
     }

@@ -50,7 +50,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
 
     <div class="nt-app-container">
 
-        <!-- Reflejo ambiental (Heredado exactamente del Portal de Clientes) -->
+        <!-- Reflejo ambiental -->
         <div class="nt-ambient-glow nt-ambient-glow--short"></div>
 
         <!-- Header -->
@@ -71,12 +71,15 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                 </nav>
 
                 <div class="flex items-center gap-2">
-                    <button id="btn-sidebar-toggle" class="nt-mobile-toggle" aria-label="Abrir lista de clientes" aria-expanded="false">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    <!-- CAMBIO 1: Botón de Clientes diferenciado con icono de Usuarios + texto -->
+                    <button id="btn-sidebar-toggle" class="nt-mobile-toggle flex items-center gap-1.5 px-2.5 py-1.5 border border-nordic-border rounded hover:border-nordic-logoBlue transition-colors" aria-label="Abrir lista de clientes" aria-expanded="false">
+                        <svg class="h-5 w-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
+                        <span class="text-[10px] uppercase font-bold tracking-wider hidden sm:inline text-slate-300">Clientes</span>
                     </button>
 
+                    <!-- Menú Principal Hamburguesa -->
                     <button id="mobile-toggle" class="nt-mobile-toggle" aria-label="Abrir menú" aria-expanded="false">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path id="mobile-toggle-icon" stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -98,14 +101,14 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
             </div>
         </header>
 
-        <!-- Backdrop para drawer del sidebar -->
-        <div id="sidebar-backdrop" class="nt-sidebar__backdrop"></div>
+        <!-- CAMBIO 2A: Backdrop para drawer con Z-INDEX 40 forzado -->
+        <div id="sidebar-backdrop" class=" z-[40]" style="z-index: 40 !important;"></div>
 
         <!-- Distribución del Contenido Principal (Main + Sidebar) -->
-        <div class="flex pt-[4.5rem] md:pt-24 min-h-screen overflow-hidden relative z-10">
+        <div class="flex pt-[4.5rem] md:pt-24 min-h-screen overflow-visible relative z-10">
 
-            <!-- PANEL LATERAL DE CLIENTES (OPERADORES) -->
-            <aside class="nt-sidebar" id="sidebar-clientes">
+            <!-- CAMBIO 2B: PANEL LATERAL DE CLIENTES con Z-INDEX 50 forzado (Por encima del backdrop) -->
+            <aside class="nt-sidebar z-[50]" id="sidebar-clientes" style="z-index: 50 !important;">
                 <div class="nt-sidebar__search">
                     <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-nordic-textMuted">Filtrar Clientes</label>
                     <input type="text" id="search-input" placeholder="Nombre, correo o empresa..."
@@ -135,7 +138,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                     <!-- CONTENEDOR DE TICKETS -->
                     <div id="tickets-container" class="hidden space-y-5 sm:space-y-6">
 
-                        <!-- PESTAÑAS DE CONTROL DE ESTADO (Con padding p-1 idéntico al portal) -->
+                        <!-- PESTAÑAS DE CONTROL DE ESTADO -->
                         <div class="nt-tabs flex-wrap sm:flex-nowrap">
                             <button onclick="switchTab('Abierto')" id="tab-Abierto" class="nt-tabs__btn nt-tabs__btn--active text-[10px] sm:text-xs px-2 py-2 sm:py-3 flex-1 min-w-[33%]">
                                 Abiertos (<span id="count-Abierto">0</span>)
@@ -148,7 +151,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                             </button>
                         </div>
 
-                        <!-- AQUÍ SE INYECTAN LAS CARDS CON EL DISEÑO DEL PORTAL DE CLIENTES -->
+                        <!-- AQUÍ SE INYECTAN LAS CARDS DE TICKETS -->
                         <div id="tickets-list" class="space-y-4"></div>
                     </div>
 
@@ -204,6 +207,6 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
     </div>
 
     <script src="/assets/js/dashboard_admin.js?v=1.0.6"></script>
-    <script src="/assets/js/nav.js?v=1.0.0"></script>
+    <script src="/assets/js/nav.js?v=1.0.1"></script>
 </body>
 </html>
