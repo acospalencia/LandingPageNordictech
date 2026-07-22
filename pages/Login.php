@@ -98,13 +98,13 @@ if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
 
                 <div class="space-y-2 mb-6">
                     <span class="nt-text-eyebrow nt-text-eyebrow--xs">
-                        Autenticación Corporativa
+                        Inicia sesion en tu cuenta
                     </span>
                     <h1 class="text-xl sm:text-2xl font-display font-bold tracking-tight text-white uppercase">
-                        Ingreso al Sistema
+                        Ingreso al Sistema de tickets
                     </h1>
                     <p class="text-xs text-nordic-textMuted font-light">
-                        Introduce tus credenciales autorizadas por NordicTech.
+                        Introduce tus credenciales.
                     </p>
                 </div>
 
@@ -136,9 +136,15 @@ if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
                     </div>
                 </form>
 
-                <div class="nt-form--inline">
+                <div class="nt-form--inline text-size-md">
                     <label class="ml-2 block text-xs text-nordic-textMuted font-light select-none cursor-pointer hover:text-slate-300 transition-colors">
-                        No tienes cuenta? <a href="/pages/SignIn.php" class="nt-link">Contáctanos</a>
+                        <a href="/pages/recuperar_password.php" class="nt-link">Olvide mi contraseña</a>
+                    </label>
+                </div>
+
+                <div class="nt-form--inline text-size-md">
+                    <label class="ml-2 block text-xs text-nordic-textMuted font-light select-none cursor-pointer hover:text-slate-300 transition-colors">
+                        No tienes cuenta? <a href="/pages/SignIn.php" class="nt-link">Crea tu cuenta</a>
                     </label>
                 </div>
 
