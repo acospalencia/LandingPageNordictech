@@ -1,14 +1,26 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 
-// Si el usuario ya está autenticado
+// Función auxiliar para determinar la ruta de redirección según el rol
+function obtenerRutaRedireccion($idRol) {
+    switch (intval($idRol)) {
+        case 3:
+            return '/pages/Dashboard.php';       // Administrador
+        case 2:
+            return '/pages/Tecnicos.php';        // Técnico
+        case 1:
+        default:
+            return '/pages/PortalClientes.php';   // Cliente
+    }
+}
+
+// Si el usuario ya está autenticado en sesión activa
 if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
-    $redirect = (intval($_SESSION['id_rol']) === 3) ? '/pages/Dashboard.php' : '/pages/PortalClientes.php';
+    $redirect = obtenerRutaRedireccion($_SESSION['id_rol']);
     echo json_encode(['status' => 'success', 'message' => 'Sesión activa detectada.', 'redirect' => $redirect]);
     exit;
 }
-
-header('Content-Type: application/json');
 
 // 1. Extraer credenciales desde wp-config.php de Bluehost
 $wp_config_path = __DIR__ . '/../../wp-config.php';
@@ -48,8 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
 
-        // 3. Consultar coincidencia por EMAIL o por APELLIDO
-        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, password, verificado, id_rol FROM usuarios WHERE email = :input OR apellido = :input");
+
+        // 3. Consultar coincidencia por EMAIL o por NOMBRE
+        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, password, verificado, id_rol FROM usuarios WHERE email = :input OR nombre = :input");
         $stmt->execute(['input' => $user_input]);
         $candidatos = $stmt->fetchAll();
 
@@ -73,8 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['id_rol'] = intval($usuario['id_rol']);
                 $_SESSION['ultimo_acceso'] = time();
 
-                // Definición dinámica del destino según su rol
-                $redirectUrl = (intval($usuario['id_rol']) === 3) ? '/pages/Dashboard.php' : '/pages/PortalClientes.php';
+                // Definición dinámica del destino según su rol (Admin = 3, Técnico = 2, Cliente = 1)
+                $redirectUrl = obtenerRutaRedireccion($usuario['id_rol']);
                 
                 echo json_encode([
                     'status' => 'success',
@@ -97,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
     } catch (PDOException $e) {
-        echo json_encode(['status' => 'error', 'message' => 'Error al interactuar con el sistema de base de datos.']);
+        echo json_encode(['status' => 'error', 'message' => 'Error al interactuar con el sistema de base de datos. Error PDO: ' . $e->getMessage()]);
         exit;
     }
 } else {

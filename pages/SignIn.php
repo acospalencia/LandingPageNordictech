@@ -63,7 +63,7 @@ if (isset($_SESSION['id_usuario'])) {
                     <a href="/#servicios" class="nt-nav__link">Servicios</a>
                     <a href="/#contacto" class="nt-nav__link">Contacto</a>
                 </nav>
-                <a href="/pages/Login.php" class="nt-link-button hidden sm:inline-block">
+                <a href="/pages/Login.php" class="nt-btn hidden sm:inline-block">
                     Iniciar Sesión
                 </a>
 
@@ -118,8 +118,14 @@ if (isset($_SESSION['id_usuario'])) {
             </div>
         </main>
 
-        <footer class="nt-footer nt-footer--compact">
-            <p>&copy; 2026 NordicTech El Salvador. Registro Cifrado de Nodos.</p>
+        <footer class="nt-footer">
+            <div class="nt-footer__inner">
+                <div class="nt-footer__brand">
+                    <p class="nt-footer__brand-name">NORDICTECH</p>
+                    <p class="nt-footer__brand-sub">El Salvador S.A de C.V</p>
+                </div>
+                <p>&copy; 2026 NordicTech El Salvador. </p>
+            </div>
         </footer>
     </div>
 

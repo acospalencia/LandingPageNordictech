@@ -386,13 +386,19 @@ function renderTabTickets() {
                 
                 <!-- Encabezado de la Tarjeta -->
                 <div class="flex items-center justify-between gap-4">
-                    <div class="flex items-center space-x-3 min-w-0">
+                    <div class="flex flex-wrap items-center gap-3 min-w-0">
                         <span class="px-2 py-0.5 text-[9px] uppercase font-bold tracking-widest border ${badgeColor} shrink-0">
                             ${ticket.estado}
                         </span>
                         <h3 class="text-sm font-display font-bold tracking-wide uppercase text-white truncate">
                             ${ticket.titulo}
                         </h3>
+
+                        ${ticket.nombre_tecnico ? `
+                            <span class="px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider border border-purple-500/30 bg-purple-950/40 text-purple-300 shrink-0">
+                                Tecnico asignado: ${ticket.nombre_tecnico}
+                            </span>
+                        ` : ''}
                     </div>
                     
                     <div class="flex items-center space-x-4 shrink-0">

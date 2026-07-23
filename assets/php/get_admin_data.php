@@ -45,7 +45,7 @@ try {
     } 
     
     elseif ($action === 'get_tecnicos') {
-        // Filtrar solo técnicos (id_rol = 2)
+        // Filtrar solo técnicos (id_rol = 2) - Se eliminó la columna "identificador" de aquí
         $stmt = $pdo->prepare("SELECT id_usuario, nombre, email FROM usuarios WHERE id_rol = 2 ORDER BY nombre ASC");
         $stmt->execute();
         $tecnicos = $stmt->fetchAll();
@@ -62,7 +62,26 @@ try {
             exit;
         }
 
-        $stmt = $pdo->prepare("SELECT id_ticket, titulo, descripcion, estado, prioridad, observacion_proceso, observacion_cierre, fecha_creacion, fecha_actualizacion FROM tickets WHERE id_usuario = :id ORDER BY id_ticket DESC");
+        // Se corrigió la coma sobrante después de nombre_tecnico
+        $sql = "SELECT 
+                    t.id_ticket, 
+                    t.id_tecnico, 
+                    t.id_usuario, 
+                    t.titulo, 
+                    t.descripcion, 
+                    t.estado, 
+                    t.prioridad, 
+                    t.observacion_proceso, 
+                    t.observacion_cierre, 
+                    t.fecha_creacion, 
+                    t.fecha_actualizacion,
+                    tec.nombre AS nombre_tecnico
+                FROM tickets t
+                LEFT JOIN usuarios tec ON t.id_tecnico = tec.id_usuario
+                WHERE t.id_usuario = :id 
+                ORDER BY t.id_ticket DESC";
+
+        $stmt = $pdo->prepare($sql);
         $stmt->execute([':id' => $id_usuario]);
         $tickets = $stmt->fetchAll();
 
