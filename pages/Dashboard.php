@@ -9,6 +9,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
 ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,6 +47,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
     <!-- Hoja de estilos centralizada del proyecto -->
     <link rel="stylesheet" href="/assets/css/nordictech.css">
 </head>
+
 <body class="bg-[#060913] text-white font-sans antialiased selection:bg-nordic-logoBlue selection:text-white">
 
     <div class="nt-app-container">
@@ -71,7 +73,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                 </nav>
 
                 <div class="flex items-center gap-2">
-                    <!-- CAMBIO 1: Botón de Clientes diferenciado con icono de Usuarios + texto -->
+                    <!-- Botón de Clientes con icono de Usuarios + texto -->
                     <button id="btn-sidebar-toggle" class="nt-mobile-toggle flex items-center gap-1.5 px-2.5 py-1.5 border border-nordic-border rounded hover:border-nordic-logoBlue transition-colors" aria-label="Abrir lista de clientes" aria-expanded="false">
                         <svg class="h-5 w-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -91,7 +93,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                     </button>
                 </div>
 
-                <!-- Menú móvil desplegable (oculto en lg+) -->
+                <!-- Menú móvil desplegable -->
                 <div id="mobile-menu" class="nt-mobile-menu">
                     <a href="/" class="nt-nav__link">Inicio</a>
                     <a href="/#servicios" class="nt-nav__link">Servicios</a>
@@ -101,13 +103,13 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
             </div>
         </header>
 
-        <!-- CAMBIO 2A: Backdrop para drawer con Z-INDEX 40 forzado -->
-        <div id="sidebar-backdrop" class=" z-[40]" style="z-index: 40 !important;"></div>
+        <!-- Backdrop para drawer con Z-INDEX 40 -->
+        <div id="sidebar-backdrop" class="z-[40]" style="z-index: 40 !important;"></div>
 
         <!-- Distribución del Contenido Principal (Main + Sidebar) -->
         <div class="flex pt-[4.5rem] md:pt-24 min-h-screen overflow-visible relative z-10">
 
-            <!-- CAMBIO 2B: PANEL LATERAL DE CLIENTES con Z-INDEX 50 forzado (Por encima del backdrop) -->
+            <!-- PANEL LATERAL DE CLIENTES con Z-INDEX 50 -->
             <aside class="nt-sidebar z-[50]" id="sidebar-clientes" style="z-index: 50 !important;">
                 <div class="nt-sidebar__search">
                     <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-nordic-textMuted">Filtrar Clientes</label>
@@ -120,11 +122,11 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                 </div>
             </aside>
 
-            <!-- AREA PRINCIPAL DE SEGUIMIENTO -->
+            <!-- ÁREA PRINCIPAL DE SEGUIMIENTO -->
             <main class="nt-main nt-main--with-sidebar">
                 <div class="nt-main__inner">
 
-                    <div id="alert-container" class="nt-alert"></div>
+                    <div id="alert-container" class="nt-alert hidden"></div>
 
                     <!-- ENCABEZADO DINÁMICO DEL CLIENTE SELECCIONADO -->
                     <div class="nt-divider-bottom-soft nt-flex-between--wrap">
@@ -151,7 +153,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                             </button>
                         </div>
 
-                        <!-- AQUÍ SE INYECTAN LAS CARDS DE TICKETS -->
+                        <!-- AQUÍ SE INYECTAN LAS CARDS DE TICKETS VIA JS -->
                         <div id="tickets-list" class="space-y-4"></div>
                     </div>
 
@@ -177,15 +179,15 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
 
     </div>
 
-    <!-- MODAL DE ACCIONES Y BITÁCORAS -->
-    <div id="close-ticket-modal" class="nt-modal-backdrop nt-modal-backdrop--darker">
+    <!-- MODAL DE ACCIONES Y BITÁCORAS DE ESTADO (Z-INDEX 100) -->
+    <div id="close-ticket-modal" class="nt-modal-backdrop nt-modal-backdrop--darker z-[100] hidden" style="z-index: 100 !important;">
         <div class="nt-modal nt-modal--md space-y-4">
             <div class="nt-modal__header">
                 <h3 id="modal-title-text" class="nt-modal__title">Actualizar Ticket</h3>
                 <p id="modal-subtitle-text" class="nt-modal__subtitle">Suministra la información técnica correspondiente.</p>
             </div>
 
-            <div id="modal-alert" class="nt-alert nt-alert--error nt-alert--small"></div>
+            <div id="modal-alert" class="nt-alert nt-alert--error nt-alert--small hidden"></div>
 
             <input type="hidden" id="modal-ticket-id">
             <input type="hidden" id="modal-target-status">
@@ -206,7 +208,48 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
         </div>
     </div>
 
-    <script src="/assets/js/dashboard_admin.js?v=1.0.6"></script>
+    <!-- MODAL PARA ASIGNAR TÉCNICO (Z-INDEX 100) -->
+    <div id="assign-tech-modal" class="nt-modal-backdrop nt-modal-backdrop--darker z-[100] hidden" style="z-index: 100 !important;">
+        <div class="nt-modal nt-modal--md space-y-4">
+            <div class="nt-modal__header">
+                <h3 class="nt-modal__title">Asignar Técnico al Ticket</h3>
+                <p class="nt-modal__subtitle">Selecciona el técnico especialista y proporciona las notas requeridas.</p>
+            </div>
+
+            <div id="assign-modal-alert" class="nt-alert nt-alert--error nt-alert--small hidden"></div>
+
+            <input type="hidden" id="assign-ticket-id">
+
+            <div>
+                <label class="nt-form__label nt-form__label--xs">Técnico Asignado <span class="text-red-500">*</span></label>
+                <select id="select-tecnico" class="nt-form__input nt-form__input--compact bg-[#060913] text-white border-nordic-border w-full cursor-pointer focus:border-nordic-logoBlue">
+                    <option value="">Cargando lista de técnicos...</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="nt-form__label nt-form__label--xs">1. Instrucciones Internas para el Técnico <span class="text-red-500">*</span></label>
+                <textarea id="assign-notes-tecnico" rows="3" class="nt-form__textarea nt-form__textarea--compact" placeholder="Ej. Realizar revisión técnica en sitio, verificar cableado de red y puerto del switch..."></textarea>
+            </div>
+
+            <div>
+                <label class="nt-form__label nt-form__label--xs">2. Comentario para el Cliente (Bitácora "En Proceso") <span class="text-red-500">*</span></label>
+                <textarea id="assign-notes-cliente" rows="3" class="nt-form__textarea nt-form__textarea--compact" placeholder="Ej. Su solicitud ha sido asignada a un técnico especialista y ya se encuentra en proceso de atención..."></textarea>
+            </div>
+
+            <div class="nt-modal__actions">
+                <button type="button" id="btn-cancel-assign-modal" class="nt-btn--text">
+                    Cancelar
+                </button>
+                <button type="button" id="btn-confirm-assign-modal" class="nt-btn nt-btn--sm">
+                    Confirmar Asignación
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/dashboard_admin.js?v=1.0.9"></script>
     <script src="/assets/js/nav.js?v=1.0.1"></script>
 </body>
+
 </html>

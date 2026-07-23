@@ -32,11 +32,12 @@ if (file_exists($wp_config_path)) {
 
 // 2. Procesar el envío de datos
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_input = filter_input(INPUT_POST, 'username', FILTER_VALIDATE_EMAIL);
+    // Obtenemos el valor de entrada sin forzar validación de formato de correo
+    $user_input = trim($_POST['username'] ?? '');
     $pass_input = $_POST['password'] ?? '';
 
-    if (!$user_input || empty($pass_input)) {
-        echo json_encode(['status' => 'error', 'message' => 'Por favor, rellene todos los campos con un formato de correo válido.']);
+    if (empty($user_input) || empty($pass_input)) {
+        echo json_encode(['status' => 'error', 'message' => 'Por favor, rellene todos los campos.']);
         exit;
     }
 
@@ -47,50 +48,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
 
-        // 3. Consultar usuario e inyectar el campo id_rol de la relación
-        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, password, verificado, id_rol FROM usuarios WHERE email = :email LIMIT 1");
-        $stmt->execute(['email' => $user_input]);
-        $usuario = $stmt->fetch();
+        // 3. Consultar coincidencia por EMAIL o por APELLIDO
+        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, password, verificado, id_rol FROM usuarios WHERE email = :input OR apellido = :input");
+        $stmt->execute(['input' => $user_input]);
+        $candidatos = $stmt->fetchAll();
+
+        $usuario = null;
+
+        // Validar contraseña entre las coincidencias obtenidas
+        foreach ($candidatos as $c) {
+            if (password_verify($pass_input, $c['password'])) {
+                $usuario = $c;
+                break;
+            }
+        }
 
         if ($usuario) {
-            // 4. Verificar firma de la contraseña
-            if (password_verify($pass_input, $usuario['password'])) {
+            // 4. Comprobar estado de aprobación manual
+            if (intval($usuario['verificado']) === 1) {
                 
-                // 5. Comprobar estado de aprobación manual
-                if (intval($usuario['verificado']) === 1) {
-                    
-                    // Inicializar variables seguras de sesión en servidor
-                    $_SESSION['id_usuario'] = $usuario['id_usuario'];
-                    $_SESSION['nombre_usuario'] = $usuario['nombre'];
-                    $_SESSION['id_rol'] = intval($usuario['id_rol']);
-                    $_SESSION['ultimo_acceso'] = time();
+                // Inicializar variables seguras de sesión
+                $_SESSION['id_usuario'] = $usuario['id_usuario'];
+                $_SESSION['nombre_usuario'] = $usuario['nombre'];
+                $_SESSION['id_rol'] = intval($usuario['id_rol']);
+                $_SESSION['ultimo_acceso'] = time();
 
-                    // Definición dinámica del destino según su nivel de privilegios
-                    if (intval($usuario['id_rol']) === 3) {
-                        $redirectUrl = '/pages/Dashboard.php';
-                    } else {
-                        $redirectUrl = '/pages/PortalClientes.php';
-                    }
-                    
-                    echo json_encode([
-                        'status' => 'success',
-                        'message' => 'Autenticación concedida. Accediendo al sistema.',
-                        'redirect' => $redirectUrl
-                    ]);
-                    exit;
-                    
-                } else {
-                    echo json_encode([
-                        'status' => 'error',
-                        'message' => 'Tu cuenta aún no ha sido aprobada. El equipo técnico de soporte debe verificar tu solicitud.'
-                    ]);
-                    exit;
-                }
+                // Definición dinámica del destino según su rol
+                $redirectUrl = (intval($usuario['id_rol']) === 3) ? '/pages/Dashboard.php' : '/pages/PortalClientes.php';
+                
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Autenticación concedida. Accediendo al sistema.',
+                    'redirect' => $redirectUrl
+                ]);
+                exit;
                 
             } else {
-                echo json_encode(['status' => 'error', 'message' => 'Las credenciales introducidas son incorrectas.']);
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Tu cuenta aún no ha sido aprobada. El equipo técnico de soporte debe verificar tu solicitud.'
+                ]);
                 exit;
             }
+            
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Las credenciales introducidas son incorrectas.']);
             exit;
@@ -102,4 +102,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Método de petición no permitido.']);
-}   
+}

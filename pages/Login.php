@@ -115,7 +115,7 @@ if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
                         <label class="nt-form__label nt-form__label--xs">
                             Correo Electrónico
                         </label>
-                        <input type="email" name="username" required autocomplete="username" placeholder="tucorreo@gmail.com"
+                        <input type="text" name="username" required autocomplete="username" placeholder="tucorreo@gmail.com"
                             class="nt-form__input">
                     </div>
 

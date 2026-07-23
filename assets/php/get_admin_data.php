@@ -14,32 +14,46 @@ $action = $_GET['action'] ?? '';
 $wp_config_path = __DIR__ . '/../../wp-config.php';
 if (file_exists($wp_config_path)) {
     $config_content = file_get_contents($wp_config_path);
-    preg_match("/define\(\s*['\"]DB_NAME['\"]\s*,\s*['\"](.*)['\"]\s*\);/", $config_content, $db_name);
-    preg_match("/define\(\s*['\"]DB_USER['\"]\s*,\s*['\"](.*)['\"]\s*\);/", $config_content, $db_user);
-    preg_match("/define\(\s*['\"]DB_PASSWORD['\"]\s*,\s*['\"](.*)['\"]\s*\);/", $config_content, $db_password);
-    preg_match("/define\(\s*['\"]DB_HOST['\"]\s*,\s*['\"](.*)['\"]\s*\);/", $config_content, $db_host);
+    preg_match("/define\(\s*['\"]DB_NAME['\"]\s*,\s*['\"](.*?)['\"]\s*\);/", $config_content, $db_name);
+    preg_match("/define\(\s*['\"]DB_USER['\"]\s*,\s*['\"](.*?)['\"]\s*\);/", $config_content, $db_user);
+    preg_match("/define\(\s*['\"]DB_PASSWORD['\"]\s*,\s*['\"](.*?)['\"]\s*\);/", $config_content, $db_password);
+    preg_match("/define\(\s*['\"]DB_HOST['\"]\s*,\s*['\"](.*?)['\"]\s*\);/", $config_content, $db_host);
 
-    $database = $db_name[1] ?? '';
-    $username = $db_user[1] ?? '';
-    $password_db = $db_password[1] ?? '';
-    $host     = $db_host[1] ?? 'localhost';
+    $database    = isset($db_name[1]) ? trim($db_name[1]) : '';
+    $username    = isset($db_user[1]) ? trim($db_user[1]) : '';
+    $password_db = isset($db_password[1]) ? trim($db_password[1]) : '';
+    $host        = isset($db_host[1]) ? trim($db_host[1]) : 'localhost';
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Error: Archivo de configuración inalcanzable.']);
+    exit;
 }
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$database;charset=utf8mb4", $username, $password_db, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
 
     if ($action === 'get_clientes') {
-        // Filtrar solo usuarios cuyo id_rol sea exactamente 1 (Cliente)
+        // Filtrar solo clientes (id_rol = 1)
         $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, codigo_empresa FROM usuarios WHERE id_rol = 1 ORDER BY nombre ASC");
         $stmt->execute();
-        $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $clientes = $stmt->fetchAll();
 
         echo json_encode(['status' => 'success', 'data' => $clientes]);
         exit;
     } 
     
+    elseif ($action === 'get_tecnicos') {
+        // Filtrar solo técnicos (id_rol = 2)
+        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email FROM usuarios WHERE id_rol = 2 ORDER BY nombre ASC");
+        $stmt->execute();
+        $tecnicos = $stmt->fetchAll();
+
+        echo json_encode(['status' => 'success', 'data' => $tecnicos]);
+        exit;
+    }
+
     elseif ($action === 'get_tickets') {
         $id_usuario = intval($_GET['id_usuario'] ?? 0);
         
@@ -48,16 +62,22 @@ try {
             exit;
         }
 
-        // Obtener la bitácora completa de tickets de este cliente
         $stmt = $pdo->prepare("SELECT id_ticket, titulo, descripcion, estado, prioridad, observacion_proceso, observacion_cierre, fecha_creacion, fecha_actualizacion FROM tickets WHERE id_usuario = :id ORDER BY id_ticket DESC");
         $stmt->execute([':id' => $id_usuario]);
-        $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $tickets = $stmt->fetchAll();
 
         echo json_encode(['status' => 'success', 'data' => $tickets]);
+        exit;
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Acción no especificada o no válida.']);
         exit;
     }
 
 } catch (PDOException $e) {
-    echo json_encode(['status' => 'error', 'message' => 'Fallo de consulta de red.']);
+    echo json_encode([
+        'status'  => 'error', 
+        'message' => 'Fallo de consulta de red.',
+        'debug'   => $e->getMessage()
+    ]);
     exit;
 }
