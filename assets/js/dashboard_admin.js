@@ -48,6 +48,11 @@ function calcularTiempoResolucion(fechaCreacionStr, fechaActualizacionStr, estad
     return formatearDiferenciaTiempo(cierre - inicio);
 }
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+}
+
 /* ==========================================================================
    EVENTOS INICIALES DEL DOM
    ========================================================================== */
@@ -380,6 +385,9 @@ function renderTabTickets() {
         const tiempoCreacion = calcularTiempoDesdeCreacion(ticket.fecha_creacion);
         const tiempoActividad = calcularTiempoUltimaActividad(ticket.fecha_actualizacion);
         const tiempoCierre = calcularTiempoResolucion(ticket.fecha_creacion, ticket.fecha_actualizacion, ticket.estado);
+        const categoriaTicket = ticket.categoria === 'Otro' && ticket.otra_categoria
+            ? `Otro: ${ticket.otra_categoria}`
+            : (ticket.categoria || 'Sin categoría');
 
         div.innerHTML = `
             <div class="p-5 flex flex-col gap-3">
@@ -481,7 +489,10 @@ function renderTabTickets() {
                 ` : ''}
 
                 <div class="flex items-center justify-between text-[10px] text-nordic-textMuted/60 pt-1 border-t border-nordic-border/10">
-                    <span>Prioridad: <strong class="text-slate-300">${ticket.prioridad}</strong></span>
+                    <div class="flex flex-wrap gap-x-4 gap-y-1">
+                        <span>Categoría: <strong class="text-blue-400">${escapeHTML(categoriaTicket)}</strong></span>
+                        <span>Prioridad: <strong class="text-slate-300">${ticket.prioridad}</strong></span>
+                    </div>
                     <span>Generado el: ${formattedDate}</span>
                 </div>
             </div>

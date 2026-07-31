@@ -70,6 +70,8 @@ try {
                 descripcion, 
                 estado, 
                 prioridad, 
+                categoria,
+                otra_categoria,
                 observacion_proceso, 
                 observacion_cierre,
                 DATE_FORMAT(fecha_creacion, '%d/%m/%Y') as fecha 

@@ -150,6 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (ticket.prioridad === 'Alta') prioridadColor = "text-orange-400 font-bold";
             if (ticket.prioridad === 'Crítica') prioridadColor = "text-rose-400 font-bold animate-pulse";
 
+            const categoriaTicket = ticket.categoria === 'Otro' && ticket.otra_categoria
+                ? `Otro: ${ticket.otra_categoria}`
+                : (ticket.categoria || 'Sin categoría');
+
             const card = document.createElement('div');
             card.className = "bg-nordic-card border border-nordic-border hover:border-nordic-logoBlue/60 transition-all cursor-pointer overflow-hidden select-none mb-4";
             
@@ -214,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] font-mono text-slate-500 pt-3 border-t border-nordic-border/20 gap-3">
                         <div class="space-x-4">
+                            <span>Categoría: <strong class="text-blue-400">${escapeHTML(categoriaTicket)}</strong></span>
                             <span>Prioridad: <strong class="${prioridadColor}">${ticket.prioridad}</strong></span>
                             <span>Apertura: ${ticket.fecha}</span>
                         </div>
@@ -282,6 +287,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Crear un nuevo Ticket
     const formTicket = document.querySelector('#form-ticket');
     if (formTicket) {
+        const categoriaSelect = formTicket.querySelector('[name="categoria"]');
+        const otraCategoriaContainer = document.getElementById('otra-categoria-container');
+        const otraCategoriaInput = formTicket.querySelector('[name="otra_categoria"]');
+
+        function actualizarCampoOtraCategoria() {
+            const mostrarCampo = categoriaSelect && categoriaSelect.value === 'Otro';
+
+            if (otraCategoriaContainer) {
+                otraCategoriaContainer.classList.toggle('hidden', !mostrarCampo);
+            }
+
+            if (otraCategoriaInput) {
+                otraCategoriaInput.required = mostrarCampo;
+                otraCategoriaInput.disabled = !mostrarCampo;
+
+                if (!mostrarCampo) {
+                    otraCategoriaInput.value = '';
+                }
+            }
+        }
+
+        if (categoriaSelect) {
+            categoriaSelect.addEventListener('change', actualizarCampoOtraCategoria);
+        }
+        actualizarCampoOtraCategoria();
+
         formTicket.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(formTicket);
@@ -300,6 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (resultado.status === 'success') {
                     showPortalAlert('success', resultado.message);
                     formTicket.reset();
+                    actualizarCampoOtraCategoria();
                     await cargarTickets();
                 } else if (resultado.status === 'session_expired') {
                     window.location.replace('/pages/Login.php');

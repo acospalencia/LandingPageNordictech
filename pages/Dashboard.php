@@ -248,7 +248,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
         </div>
     </div>
 
-    <script src="/assets/js/dashboard_admin.js?v=1.0.9"></script>
+    <script src="/assets/js/dashboard_admin.js?v=1.0.10"></script>
     <script src="/assets/js/nav.js?v=1.0.1"></script>
 </body>
 

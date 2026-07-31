@@ -208,7 +208,7 @@ $nombreTecnico = $_SESSION['nombre_usuario'] ?? 'Técnico Especialista';
         </div>
     </div>
 
-    <script src="/assets/js/tecnicos.js?v=1.1.0"></script>
+    <script src="/assets/js/tecnicos.js?v=1.1.1"></script>
     <script src="/assets/js/nav.js?v=1.0.1"></script>
 </body>
 

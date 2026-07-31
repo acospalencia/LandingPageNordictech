@@ -71,6 +71,8 @@ try {
                     t.descripcion, 
                     t.estado, 
                     t.prioridad, 
+                    t.categoria,
+                    t.otra_categoria,
                     t.observacion_proceso, 
                     t.observacion_cierre, 
                     t.fecha_creacion, 

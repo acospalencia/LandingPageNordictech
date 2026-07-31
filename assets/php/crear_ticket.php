@@ -13,11 +13,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titulo = trim($_POST['titulo'] ?? '');
     $prioridad = trim($_POST['prioridad'] ?? 'Media');
     $descripcion = trim($_POST['descripcion'] ?? '');
+    $categoria = trim($_POST['categoria'] ?? '');
+    $otra_categoria = trim($_POST['otra_categoria'] ?? '');
     $estado = 'Abierto';
 
-    if (empty($titulo) || empty($descripcion)) {
-        echo json_encode(['status' => 'error', 'message' => 'El título y la descripción técnica son mandatorios.']);
+    $categorias_permitidas = ['CCTV', 'Control de acceso', 'Panel de incendios', 'Otro'];
+
+    if (empty($titulo) || empty($descripcion) || !in_array($categoria, $categorias_permitidas, true)) {
+        echo json_encode(['status' => 'error', 'message' => 'El título, la categoría y la descripción técnica son mandatorios.']);
         exit;
+    }
+
+    if ($categoria === 'Otro') {
+        $otra_categoria = preg_replace('/\s+/', ' ', $otra_categoria);
+
+        if (empty($otra_categoria) || mb_strlen($otra_categoria) > 120) {
+            echo json_encode(['status' => 'error', 'message' => 'Debes especificar la categoría del ticket (máximo 120 caracteres).']);
+            exit;
+        }
+    } else {
+        $otra_categoria = null;
     }
 
     // 2. Extraer parámetros desde wp-config.php de Bluehost
@@ -47,8 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         // 3. Inserción del ticket en la base de datos
-        $query = "INSERT INTO tickets (id_usuario, titulo, descripcion, estado, prioridad, fecha_creacion) 
-                  VALUES (:id_usuario, :titulo, :descripcion, :estado, :prioridad, NOW())";
+        $query = "INSERT INTO tickets (id_usuario, titulo, descripcion, estado, prioridad, categoria, otra_categoria, fecha_creacion)
+                  VALUES (:id_usuario, :titulo, :descripcion, :estado, :prioridad, :categoria, :otra_categoria, NOW())";
 
         $stmt = $pdo->prepare($query);
         $stmt->execute([
@@ -56,7 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':titulo' => $titulo,
             ':prioridad' => $prioridad,
             ':descripcion' => $descripcion,
-            ':estado' => $estado
+            ':estado' => $estado,
+            ':categoria' => $categoria,
+            ':otra_categoria' => $otra_categoria
         ]);
 
         // 4. [NUEVO] Obtener información del usuario para el correo
@@ -69,6 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nombre_usuario = $usuario_info['nombre'] ?? 'Usuario ID: ' . $id_usuario;
         $correo_usuario = $usuario_info['email'] ?? 'No disponible';
         $hora_actual = date('Y-m-d H:i:s');
+        $categoria_mostrada = $categoria === 'Otro' ? "Otro: {$otra_categoria}" : $categoria;
+        $categoria_correo = htmlspecialchars($categoria_mostrada, ENT_QUOTES, 'UTF-8');
 
         // 5. [NUEVO] Lógica de envío de Correo (Formato HTML Corporativo)
         $para = "tickets@nordictech-corp.com"; // <-- Coloca aquí el correo donde quieres recibir las alertas
@@ -144,6 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <tr>
                                     <td style='padding-top: 10px; font-size: 12px; color: #94A3B8; line-height: 1.8;'>
                                         <strong style='color: #ffffff;'>Título:</strong> <span style='color: #ffffff; font-weight: 600;'>" . $titulo . "</span><br>
+                                        <strong style='color: #ffffff;'>Categoría:</strong> <span style='color: #60a5fa; font-weight: bold;'>" . $categoria_correo . "</span><br>
                                         <strong style='color: #ffffff;'>Prioridad asignada:</strong> <span style='color: #f87171; font-weight: bold; text-transform: uppercase;'>" . $prioridad . "</span>
                                     </td>
                                 </tr>

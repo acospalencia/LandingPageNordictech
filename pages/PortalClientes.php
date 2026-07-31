@@ -124,6 +124,24 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 1) {
                         </div>
 
                         <div>
+                            <label for="categoria-ticket" class="nt-form__label nt-form__label--xs">Categoría del Ticket</label>
+                            <select id="categoria-ticket" name="categoria" required class="nt-form__select">
+                                <option value="" selected disabled>Selecciona una categoría</option>
+                                <option value="CCTV">CCTV</option>
+                                <option value="Control de acceso">Control de acceso</option>
+                                <option value="Panel de incendios">Panel de incendios</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div id="otra-categoria-container" class="hidden">
+                            <label for="otra-categoria-ticket" class="nt-form__label nt-form__label--xs">Especifica la Categoría</label>
+                            <input type="text" id="otra-categoria-ticket" name="otra_categoria" maxlength="120"
+                                placeholder="Ej: Redes, intercomunicación o sistema especial"
+                                class="nt-form__input">
+                        </div>
+
+                        <div>
                             <label class="nt-form__label nt-form__label--xs">Prioridad Solicitada</label>
                             <select name="prioridad" class="nt-form__select">
                                 <option value="Baja" selected>Consulta General / Baja</option>
@@ -227,7 +245,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 1) {
         </div>
     </div>
 
-    <script src="/assets/js/portal_clientes.js?v=1.0.7"></script>
+    <script src="/assets/js/portal_clientes.js?v=1.0.9"></script>
     <script src="/assets/js/nav.js?v=1.0.0"></script>
 </body>
 </html>

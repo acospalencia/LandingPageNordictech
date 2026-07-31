@@ -275,6 +275,9 @@ function renderTickets() {
         const notasAsignacion = t.notas_asignacion;
         const bitacoraProceso = t.observacion_proceso || t.notas_tecnico;
         const bitacoraCierre = t.observacion_cierre;
+        const categoriaTicket = t.categoria === 'Otro' && t.otra_categoria
+            ? `Otro: ${t.otra_categoria}`
+            : (t.categoria || 'Sin categoría');
 
         div.innerHTML = `
             <div class="p-5 flex flex-col gap-3">
@@ -370,7 +373,10 @@ function renderTickets() {
                 ` : ''}
 
                 <div class="flex items-center justify-between text-[10px] text-nordic-textMuted/60 pt-1 border-t border-nordic-border/10">
-                    <span>Prioridad: <strong class="text-slate-300">${escapeHTML(t.prioridad || 'Normal')}</strong></span>
+                    <div class="flex flex-wrap gap-x-4 gap-y-1">
+                        <span>Categoría: <strong class="text-blue-400">${escapeHTML(categoriaTicket)}</strong></span>
+                        <span>Prioridad: <strong class="text-slate-300">${escapeHTML(t.prioridad || 'Normal')}</strong></span>
+                    </div>
                     <span>Generado el: ${formattedDate}</span>
                 </div>
             </div>
