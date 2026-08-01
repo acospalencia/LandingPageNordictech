@@ -18,7 +18,7 @@ function obtenerRutaRedireccion($idRol) {
 // Si el usuario ya está autenticado en sesión activa
 if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
     $redirect = obtenerRutaRedireccion($_SESSION['id_rol']);
-    echo json_encode(['status' => 'success', 'message' => 'Sesión activa detectada.', 'redirect' => $redirect]);
+    echo json_encode(['status' => 'success', 'message' => 'Sesión activa detectada.', 'redirect' => $redirect, 'id_rol' => intval($_SESSION['id_rol'])]);
     exit;
 }
 
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
         // 3. Consultar coincidencia por EMAIL o por NOMBRE
-        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, password, verificado, id_rol FROM usuarios WHERE email = :input OR nombre = :input");
+        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, password, verificado, activo, id_rol FROM usuarios WHERE email = :input OR nombre = :input");
         $stmt->execute(['input' => $user_input]);
         $candidatos = $stmt->fetchAll();
 
@@ -78,7 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($usuario) {
             // 4. Comprobar estado de aprobación manual
-            if (intval($usuario['verificado']) === 1) {
+            if (intval($usuario['activo']) !== 1) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Esta cuenta se encuentra desactivada. Contacta a un administrador.'
+                ]);
+                exit;
+            } elseif (intval($usuario['verificado']) === 1) {
                 
                 // Inicializar variables seguras de sesión
                 $_SESSION['id_usuario'] = $usuario['id_usuario'];
@@ -92,7 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode([
                     'status' => 'success',
                     'message' => 'Autenticación concedida. Accediendo al sistema.',
-                    'redirect' => $redirectUrl
+                    'redirect' => $redirectUrl,
+                    'id_rol' => intval($usuario['id_rol'])
                 ]);
                 exit;
                 

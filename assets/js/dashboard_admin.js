@@ -97,20 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sidebar
     const sidebar = document.getElementById('sidebar-clientes');
-    const backdrop = document.getElementById('sidebar-backdrop');
     const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
-
-    if (btnSidebarToggle) {
-        btnSidebarToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (sidebar) sidebar.classList.toggle('nt-sidebar--open');
-            if (backdrop) backdrop.classList.toggle('nt-sidebar__backdrop--visible');
-        });
-    }
-
-    if (backdrop) {
-        backdrop.addEventListener('click', cerrarSidebar);
-    }
 
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.dropdown-container')) {
@@ -129,8 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
 function cerrarSidebar() {
     const sidebar = document.getElementById('sidebar-clientes');
     const backdrop = document.getElementById('sidebar-backdrop');
-    if (sidebar) sidebar.classList.remove('nt-sidebar--open');
-    if (backdrop) backdrop.classList.remove('nt-sidebar__backdrop--visible');
+    const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
+    if (sidebar) sidebar.classList.remove('translate-x-0', 'nt-sidebar--open');
+    if (backdrop) {
+        backdrop.classList.remove('nt-sidebar__backdrop--visible');
+        backdrop.classList.add('hidden');
+        backdrop.style.setProperty('display', 'none', 'important');
+    }
+    if (btnSidebarToggle) btnSidebarToggle.setAttribute('aria-expanded', 'false');
 }
 
 function showAlert(type, text) {

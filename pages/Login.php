@@ -163,7 +163,21 @@ if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
 
     </div>
 
-    <script src="/assets/js/login.js?v=1.0.5"></script>
+    <div id="admin-destination-modal" class="nt-modal-backdrop nt-modal-backdrop--darker hidden" role="dialog" aria-modal="true" aria-labelledby="admin-destination-title">
+        <div class="nt-modal nt-modal--md space-y-5">
+            <div class="nt-modal__header">
+                <span class="nt-text-eyebrow nt-text-eyebrow--xs">Acceso administrativo</span>
+                <h2 id="admin-destination-title" class="nt-modal__title">¿Qué deseas gestionar?</h2>
+                <p class="nt-modal__subtitle">Selecciona el área a la que deseas ingresar.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <a href="/pages/Dashboard.php" class="nt-admin-destination"><strong>Gestionar tickets</strong><span>Clientes, asignaciones y seguimiento.</span></a>
+                <a href="/pages/GestionSistema.php" class="nt-admin-destination"><strong>Dashboard del sistema</strong><span>Usuarios, roles, estado y operación.</span></a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/login.js?v=1.0.6"></script>
     <script src="/assets/js/nav.js?v=1.0.0"></script>
 </body>
 </html>

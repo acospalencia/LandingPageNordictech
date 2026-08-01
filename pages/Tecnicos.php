@@ -126,7 +126,7 @@ $nombreTecnico = $_SESSION['nombre_usuario'] ?? 'Técnico Especialista';
             </aside>
 
             <!-- ÁREA PRINCIPAL DE SEGUIMIENTO -->
-            <main class="nt-main nt-main--with-sidebar">
+            <main class="nt-main nt-main--with-sidebar nt-main--tecnicos">
                 <div class="nt-main__inner">
 
                     <div id="alert-container" class="nt-alert hidden"></div>
@@ -138,6 +138,13 @@ $nombreTecnico = $_SESSION['nombre_usuario'] ?? 'Técnico Especialista';
                             <h1 id="active-client-name" class="text-xl sm:text-2xl font-display font-bold uppercase tracking-tight break-words">Selecciona un cliente</h1>
                             <p id="active-client-meta" class="text-xs text-nordic-textMuted font-light mt-1 break-words">Selecciona un cliente asignado del menú lateral para gestionar sus tickets.</p>
                         </div>
+
+                        <a href="/assets/downloads/AsistenciaNordictech-corregida.apk"
+                            download="AsistenciaNordictech-corregida.apk"
+                            class="nt-btn nt-app-download font-display"
+                            aria-label="Descargar la aplicación Asistencia NordicTech para Android">
+                            <span>Descargar app Android</span>
+                        </a>
                     </div>
 
                     <!-- CONTENEDOR DE TICKETS -->
@@ -208,8 +215,8 @@ $nombreTecnico = $_SESSION['nombre_usuario'] ?? 'Técnico Especialista';
         </div>
     </div>
 
-    <script src="/assets/js/tecnicos.js?v=1.1.1"></script>
-    <script src="/assets/js/nav.js?v=1.0.1"></script>
+    <script src="/assets/js/tecnicos.js?v=1.1.2"></script>
+    <script src="/assets/js/nav.js?v=1.0.2"></script>
 </body>
 
 </html>

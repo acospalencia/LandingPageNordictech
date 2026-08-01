@@ -68,6 +68,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
 
                 <nav class="nt-nav">
                     <a href="/" class="nt-nav__link">Inicio</a>
+                    <a href="/pages/GestionSistema.php" class="nt-nav__link">Sistema</a>
                     <a href="/#servicios" class="nt-nav__link">Servicios</a>
                     <a href="/#contacto" class="nt-nav__link">Contacto</a>
                 </nav>
@@ -96,6 +97,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
                 <!-- Menú móvil desplegable -->
                 <div id="mobile-menu" class="nt-mobile-menu">
                     <a href="/" class="nt-nav__link">Inicio</a>
+                    <a href="/pages/GestionSistema.php" class="nt-nav__link">Sistema</a>
                     <a href="/#servicios" class="nt-nav__link">Servicios</a>
                     <a href="/#contacto" class="nt-nav__link">Contacto</a>
                     <button id="btn-logout-mobile" class="nt-btn">Cerrar Sesión</button>
@@ -104,7 +106,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
         </header>
 
         <!-- Backdrop para drawer con Z-INDEX 40 -->
-        <div id="sidebar-backdrop" class="z-[40]" style="z-index: 40 !important;"></div>
+        <div id="sidebar-backdrop" class=" z-[40]" style="z-index: 40 !important;"></div>
 
         <!-- Distribución del Contenido Principal (Main + Sidebar) -->
         <div class="flex pt-[4.5rem] md:pt-24 min-h-screen overflow-visible relative z-10">
@@ -248,8 +250,8 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 3) {
         </div>
     </div>
 
-    <script src="/assets/js/dashboard_admin.js?v=1.0.10"></script>
-    <script src="/assets/js/nav.js?v=1.0.1"></script>
+    <script src="/assets/js/dashboard_admin.js?v=1.0.11"></script>
+    <script src="/assets/js/nav.js?v=1.0.2"></script>
 </body>
 
 </html>

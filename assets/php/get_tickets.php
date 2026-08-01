@@ -77,6 +77,7 @@ try {
                 DATE_FORMAT(fecha_creacion, '%d/%m/%Y') as fecha 
               FROM tickets 
               WHERE id_usuario = :id_usuario 
+                AND activo = 1
                 AND estado IN ('Abierto', 'En Proceso', 'Resuelto', 'Cerrado')
               ORDER BY fecha_creacion DESC";
               

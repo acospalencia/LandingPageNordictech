@@ -170,6 +170,26 @@ function seleccionarCliente(idCliente) {
     document.getElementById('no-client-selected').classList.add('hidden');
     document.getElementById('tickets-container').classList.remove('hidden');
 
+    // En móvil/tablet liberamos la pantalla después de elegir un cliente.
+    if (window.innerWidth < 1024) {
+        const sidebar = document.getElementById('sidebar-clientes');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        const sidebarToggle = document.getElementById('btn-sidebar-toggle');
+
+        if (sidebar) {
+            sidebar.classList.remove('translate-x-0', 'nt-sidebar--open');
+            sidebar.classList.add('-translate-x-full');
+        }
+
+        if (backdrop) {
+            backdrop.classList.remove('nt-sidebar__backdrop--visible');
+            backdrop.classList.add('hidden');
+            backdrop.style.setProperty('display', 'none', 'important');
+        }
+
+        if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
+    }
+
     renderTickets();
 }
 

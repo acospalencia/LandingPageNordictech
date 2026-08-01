@@ -39,7 +39,7 @@ try {
         SELECT DISTINCT u.id_usuario, u.nombre, u.email
         FROM usuarios u
         INNER JOIN tickets t ON t.id_usuario = u.id_usuario
-        WHERE t.id_tecnico = :id_tecnico
+        WHERE t.id_tecnico = :id_tecnico AND t.activo = 1 AND u.activo = 1
     ";
     $stmtClientes = $pdo->prepare($sqlClientes);
     $stmtClientes->execute(['id_tecnico' => $idTecnico]);
@@ -53,6 +53,7 @@ try {
         INNER JOIN usuarios u ON t.id_usuario = u.id_usuario
         LEFT JOIN asignaciones_tickets a ON a.id_ticket = t.id_ticket AND a.id_tecnico = t.id_tecnico
         WHERE t.id_tecnico = :id_tecnico 
+          AND t.activo = 1
           AND t.estado IN ('En Proceso')
         GROUP BY t.id_ticket
         ORDER BY t.id_ticket DESC
@@ -69,6 +70,7 @@ try {
         INNER JOIN usuarios u ON t.id_usuario = u.id_usuario
         LEFT JOIN asignaciones_tickets a ON a.id_ticket = t.id_ticket AND a.id_tecnico = t.id_tecnico
         WHERE t.id_tecnico = :id_tecnico 
+          AND t.activo = 1
           AND t.estado IN ('Cerrado', 'Resuelto') 
         GROUP BY t.id_ticket
         ORDER BY t.id_ticket DESC

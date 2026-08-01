@@ -36,7 +36,7 @@ try {
 
     if ($action === 'get_clientes') {
         // Filtrar solo clientes (id_rol = 1)
-        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, codigo_empresa FROM usuarios WHERE id_rol = 1 ORDER BY nombre ASC");
+        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, codigo_empresa FROM usuarios WHERE id_rol = 1 AND activo = 1 ORDER BY nombre ASC");
         $stmt->execute();
         $clientes = $stmt->fetchAll();
 
@@ -46,7 +46,7 @@ try {
     
     elseif ($action === 'get_tecnicos') {
         // Filtrar solo técnicos (id_rol = 2) - Se eliminó la columna "identificador" de aquí
-        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email FROM usuarios WHERE id_rol = 2 ORDER BY nombre ASC");
+        $stmt = $pdo->prepare("SELECT id_usuario, nombre, email FROM usuarios WHERE id_rol = 2 AND activo = 1 ORDER BY nombre ASC");
         $stmt->execute();
         $tecnicos = $stmt->fetchAll();
 
@@ -80,7 +80,7 @@ try {
                     tec.nombre AS nombre_tecnico
                 FROM tickets t
                 LEFT JOIN usuarios tec ON t.id_tecnico = tec.id_usuario
-                WHERE t.id_usuario = :id 
+                WHERE t.id_usuario = :id AND t.activo = 1
                 ORDER BY t.id_ticket DESC";
 
         $stmt = $pdo->prepare($sql);

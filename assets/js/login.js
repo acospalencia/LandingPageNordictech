@@ -45,8 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     formulario.reset();
                     
-                    // Redireccionar de inmediato si la respuesta tiene la URL de destino
-                    if (resultado.redirect) {
+                    // Los administradores eligen entre tickets y gestión general.
+                    if (Number(resultado.id_rol) === 3) {
+                        const modal = document.getElementById('admin-destination-modal');
+                        if (modal) {
+                            modal.classList.remove('hidden');
+                            modal.style.display = 'flex';
+                        }
+                    } else if (resultado.redirect) {
                         setTimeout(() => {
                             window.location.href = resultado.redirect;
                         }, 1000); // 1 segundo de retraso para que aprecien la confirmación

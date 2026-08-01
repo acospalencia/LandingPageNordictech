@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function openSidebar() {
             sidebarClientes.classList.remove('-translate-x-full');
             sidebarClientes.classList.add('translate-x-0', 'nt-sidebar--open');
+            btnSidebarToggle.setAttribute('aria-expanded', 'true');
             
             if (sidebarBackdrop) {
                 sidebarBackdrop.classList.remove('hidden');
@@ -71,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function closeSidebar() {
             sidebarClientes.classList.remove('translate-x-0', 'nt-sidebar--open');
             sidebarClientes.classList.add('-translate-x-full');
+            btnSidebarToggle.setAttribute('aria-expanded', 'false');
             
             if (sidebarBackdrop) {
                 sidebarBackdrop.classList.add('hidden');
