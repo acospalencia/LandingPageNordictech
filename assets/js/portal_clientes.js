@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     ${ticket.observacion_proceso ? `
                         <div class="p-3 bg-[#0d162d] border border-blue-500/20 text-xs rounded-none">
-                            <span class="block text-[8px] uppercase tracking-widest text-blue-400 font-bold mb-1">Comentario de Progreso Técnico:</span>
+                            <span class="block text-[8px] uppercase tracking-widest text-blue-400 font-bold mb-1">Bitácora de seguimiento:</span>
                             <p class="text-slate-300 font-light whitespace-pre-wrap">${escapeHTML(ticket.observacion_proceso)}</p>
                         </div>
                     ` : ''}
@@ -214,6 +214,18 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="block text-[8px] uppercase tracking-widest text-emerald-400 font-bold mb-1">Resolución Final del Especialista:</span>
                             <p class="text-slate-300 font-light whitespace-pre-wrap">${escapeHTML(ticket.observacion_cierre)}</p>
                         </div>
+                    ` : ''}
+
+                    ${ticket.estado === 'Abierto' || ticket.estado === 'En Proceso' ? `
+                        <form class="form-comentario-cliente action-btn p-3 bg-[#0d162d] border border-blue-500/20 space-y-3" data-ticket-id="${ticket.id_ticket}">
+                            <label class="block text-[8px] uppercase tracking-widest text-blue-400 font-bold">Agregar comentario al ticket</label>
+                            <textarea name="comentario" maxlength="2000" rows="3" required
+                                class="nt-form__textarea text-xs" placeholder="Comparte información adicional, resultados de pruebas o cambios observados..."></textarea>
+                            <div class="flex justify-between items-center gap-3">
+                                <span class="text-[9px] text-nordic-textMuted">Se notificará al soporte y al técnico asignado.</span>
+                                <button type="submit" class="nt-btn nt-btn--sm shrink-0">Enviar comentario</button>
+                            </div>
+                        </form>
                     ` : ''}
 
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] font-mono text-slate-500 pt-3 border-t border-nordic-border/20 gap-3">
@@ -232,8 +244,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
+            const formComentario = card.querySelector('.form-comentario-cliente');
+            if (formComentario) {
+                formComentario.addEventListener('submit', enviarComentarioCliente);
+            }
+
             contenedorTickets.appendChild(card);
         });
+    }
+
+    async function enviarComentarioCliente(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const form = event.currentTarget;
+        const comentario = form.elements.comentario.value.trim();
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (!comentario || !submitBtn) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'ENVIANDO...';
+
+        const datos = new URLSearchParams();
+        datos.set('id_ticket', form.dataset.ticketId);
+        datos.set('comentario', comentario);
+
+        try {
+            const response = await fetch('/assets/php/comentar_ticket_cliente.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                body: datos.toString()
+            });
+            const resultado = await response.json();
+
+            if (resultado.status === 'success') {
+                showPortalAlert('success', resultado.message);
+                await cargarTickets();
+            } else if (resultado.status === 'session_expired') {
+                window.location.replace('/pages/Login.php');
+            } else {
+                showPortalAlert('error', resultado.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar comentario';
+            }
+        } catch (error) {
+            showPortalAlert('error', 'No se pudo enviar el comentario al servidor.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar comentario';
+        }
     }
 
     // Cambiar de Pestaña activa

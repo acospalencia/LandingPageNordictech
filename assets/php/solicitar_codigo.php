@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/correo.php';
 
 // Cargar parámetros de wp-config.php
 $wp_config_path = __DIR__ . '/../../wp-config.php';
@@ -53,6 +54,7 @@ try {
     $expiracion = date('Y-m-d H:i:s', strtotime('+15 minutes'));
 
     // 3. Guardar código en la tabla usuarios
+    $pdo->beginTransaction();
     $update = $pdo->prepare("UPDATE usuarios SET reset_code = :codigo, reset_expires = :expiracion WHERE email = :email");
     $update->execute([
         ':codigo' => $codigo,
@@ -63,38 +65,36 @@ try {
     // 4. Preparar el correo
     $nombreCliente = !empty($usuario['nombre']) ? $usuario['nombre'] : 'Usuario';
     $asunto = "Código de Verificación - Restablecer Contraseña";
-    $cuerpo = "Hola {$nombreCliente},\n\n"
-            . "Has solicitado restablecer la contraseña de tu cuenta.\n\n"
-            . "Tu código de verificación es: {$codigo}\n\n"
-            . "Este código expira en 15 minutos.\n"
-            . "Si no solicitaste este cambio, puedes ignorar este mensaje de forma segura.";
+    // 5. Enviar directamente mediante mail() en el hosting.
+    $cuerpoHtml = '<!doctype html><html><body style="font-family:Arial,sans-serif;color:#0f172a">'
+        . '<h2>Restablecer contrase&ntilde;a</h2>'
+        . '<p>Hola ' . htmlspecialchars($nombreCliente, ENT_QUOTES, 'UTF-8') . ',</p>'
+        . '<p>Has solicitado restablecer la contrase&ntilde;a de tu cuenta.</p>'
+        . '<p>Tu c&oacute;digo de verificaci&oacute;n es:</p>'
+        . '<p style="font-size:26px;font-weight:bold;letter-spacing:6px">'
+        . htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') . '</p>'
+        . '<p>Este c&oacute;digo expira en 15 minutos.</p>'
+        . '<p>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>'
+        . '</body></html>';
 
-    // 5. Insertar en la cola de correos para el Cron Job
-    $insertQueue = $pdo->prepare("
-        INSERT INTO cola_correos (id_ticket, destinatario, asunto, cuerpo, estado, intentos, fecha_registro) 
-        VALUES (NULL, :destinatario, :asunto, :cuerpo, 'pendiente', 0, NOW())
-    ");
-    $insertQueue->execute([
-        ':destinatario' => $email,
-        ':asunto' => $asunto,
-        ':cuerpo' => $cuerpo
-    ]);
+    if (!enviarCorreoDirecto($email, $asunto, $cuerpoHtml)) {
+        throw new RuntimeException('La función mail() no aceptó el mensaje.');
+    }
+    $pdo->commit();
 
     echo json_encode([
         'status' => 'success',
         'message' => 'El código de verificación ha sido enviado a tu correo.'
     ]);
 
-} catch (PDOException $e) {
+} catch (Throwable $e) {
+    if (isset($pdo) && $pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    error_log('[Landing NordicTech][solicitar_codigo] ' . $e->getMessage());
     echo json_encode([
         'status' => 'error', 
-        'message' => 'Fallo de conexión: ' . $e->getMessage(),
-        'debug' => [
-            'host' => $host,
-            'db' => $database,
-            'user' => $username,
-            'config_existe' => file_exists($wp_config_path)
-        ]
+        'message' => 'No fue posible enviar el código. Intenta nuevamente más tarde.'
     ]);
     exit;
 }

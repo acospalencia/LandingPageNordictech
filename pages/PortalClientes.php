@@ -245,7 +245,7 @@ if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol']) !== 1) {
         </div>
     </div>
 
-    <script src="/assets/js/portal_clientes.js?v=1.0.9"></script>
+    <script src="/assets/js/portal_clientes.js?v=1.1.0"></script>
     <script src="/assets/js/nav.js?v=1.0.0"></script>
 </body>
 </html>

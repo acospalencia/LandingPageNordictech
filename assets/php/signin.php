@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/correo.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -165,10 +166,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </html>
         ";
 
-        $cabeceras  = "MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\n";
-        $cabeceras .= "From: Consola Registro <no-reply@nordictech-corp.com>\r\n";
-
-        @mail($para, $asunto, $mensajeHTML, $cabeceras);
+        if (!enviarCorreoDirecto(
+            $para,
+            $asunto,
+            $mensajeHTML,
+            'no-reply@nordictech-corp.com',
+            'Consola Registro'
+        )) {
+            error_log('[Landing NordicTech][signin] mail() no aceptó la notificación de registro.');
+        }
 
         echo json_encode(['status' => 'success', 'message' => 'Solicitud enviada. Tu cuenta se activará cuando soporte la verifique.']);
         exit;

@@ -1,6 +1,7 @@
 <?php
 session_start();
 header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/correo.php';
 
 // Comprobar privilegios de nivel 3 (Administrador)
 if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol'] ?? 0) !== 3) {
@@ -212,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // -------------------------------------------------------------------------
-        // BLOQUE 3: COLA DE CORREOS
+        // BLOQUE 3: ENVÍO DIRECTO DE CORREO
         // -------------------------------------------------------------------------
         if ($id_cliente > 0) {
             $stmt_usuario = $pdo->prepare("SELECT email, nombre FROM usuarios WHERE id_usuario = ?");
@@ -290,9 +291,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 </html>";
 
-                $sql_cola = "INSERT INTO cola_correos (id_ticket, destinatario, asunto, cuerpo, estado) VALUES (?, ?, ?, ?, 'pendiente')";
-                $stmt_cola = $pdo->prepare($sql_cola);
-                $stmt_cola->execute([$id_ticket, $correo_destino, $asunto, $cuerpo_correo]);
+                if (!enviarCorreoDirecto($correo_destino, $asunto, $cuerpo_correo)) {
+                    throw new RuntimeException('La función mail() no aceptó la notificación del ticket.');
+                }
             }
         }
 

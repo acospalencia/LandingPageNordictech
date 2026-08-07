@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/correo.php';
 session_start();
 header('Content-Type: application/json');
 
@@ -200,14 +201,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </html>
         ";
 
-        // Cabeceras obligatorias para el envío de HTML en Bluehost
-        $cabeceras  = "MIME-Version: 1.0\r\n";
-        $cabeceras .= "Content-type: text/html; charset=utf-8\r\n";
-        $cabeceras .= "From: Consola NordicTech <soporte@nordictech-corp.com>\r\n";
-        $cabeceras .= "Reply-To: $correo_usuario\r\n";
-
-        // Enviar correo
-        @mail($para, $asunto, $mensajeHTML, $cabeceras);
+        // Enviar correo inmediatamente desde el hosting.
+        if (!enviarCorreoDirecto(
+            $para,
+            $asunto,
+            $mensajeHTML,
+            'soporte@nordictech-corp.com',
+            'Consola NordicTech',
+            filter_var($correo_usuario, FILTER_VALIDATE_EMAIL) ? $correo_usuario : null
+        )) {
+            error_log('[Landing NordicTech][crear_ticket] mail() no aceptó la alerta del ticket.');
+        }
 
         // 6. Respuesta al Frontend
         echo json_encode([

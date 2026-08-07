@@ -3,13 +3,23 @@ session_start();
 
 // Si ya tiene sesión activa, redirigir automáticamente según su rol de la base de datos
 if (isset($_SESSION['id_usuario']) && isset($_SESSION['id_rol'])) {
-    if (intval($_SESSION['id_rol']) === 3) {
-        header("Location: /pages/Dashboard.php");
-        exit;
-    } else {
-        header("Location: /pages/PortalClientes.php");
-        exit;
+    switch (intval($_SESSION['id_rol'])) {
+        case 3:
+            header('Location: /pages/Dashboard.php');
+            break;
+        case 2:
+            header('Location: /pages/Tecnicos.php');
+            break;
+        case 1:
+            header('Location: /pages/PortalClientes.php');
+            break;
+        default:
+            $_SESSION = [];
+            session_destroy();
+            header('Location: /pages/Login.php');
+            break;
     }
+    exit;
 }
 ?>
 <!DOCTYPE html>

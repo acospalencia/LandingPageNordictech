@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/correo.php';
 // Configurar cabeceras para responder en formato JSON a la Fetch API
 header('Content-Type: application/json; charset=utf-8');
 
@@ -103,14 +104,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </html>
     ";
 
-    // Cabeceras HTTP obligatorias para el envío seguro de correos HTML
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= "From: soporte@nordictech-corp.com" . "\r\n"; 
-    $headers .= "Reply-To: " . $email . "\r\n";
-
     // Ejecutar el envío usando la función nativa del servidor
-    if (mail($destinatario, $asunto, $cuerpoMensaje, $headers)) {
+    if (enviarCorreoDirecto(
+        $destinatario,
+        $asunto,
+        $cuerpoMensaje,
+        'soporte@nordictech-corp.com',
+        'NordicTech',
+        $email
+    )) {
         echo json_encode(['status' => 'success', 'message' => 'Conexión enviada con éxito al nodo de NordicTech El Salvador.']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'El servidor no pudo procesar el correo nativo. Verifica los servicios de mail corporativo.']);
