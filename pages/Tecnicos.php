@@ -139,7 +139,7 @@ $nombreTecnico = $_SESSION['nombre_usuario'] ?? 'Técnico Especialista';
                             <p id="active-client-meta" class="text-xs text-nordic-textMuted font-light mt-1 break-words">Selecciona un cliente asignado del menú lateral para gestionar sus tickets.</p>
                         </div>
 
-                        <a href="/assets/downloads/AsistenciaNordictech-corregida.apk?v=1.1"
+                        <a href="/assets/downloads/AsistenciaNordictech-corregida.apk?v=1.2"
                             download="AsistenciaNordictech-corregida.apk"
                             class="nt-btn nt-app-download font-display"
                             aria-label="Descargar la aplicación Asistencia NordicTech para Android">

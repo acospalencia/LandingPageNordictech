@@ -76,7 +76,7 @@ No publiques `wp-config.php`, contraseñas ni respaldos de producción.
 El panel técnico descarga:
 
 ```text
-/assets/downloads/AsistenciaNordictech-corregida.apk?v=1.1
+/assets/downloads/AsistenciaNordictech-corregida.apk?v=1.2
 ```
 
 El nombre descargado se conserva como `AsistenciaNordictech-corregida.apk`.
@@ -105,7 +105,7 @@ LandingPageNordictech/
 - Crear un ticket y verificar el correo recibido por soporte.
 - Comentar un ticket y confirmar la notificación al técnico asignado.
 - Probar la recuperación de contraseña.
-- Descargar el APK y verificar que sea la versión `1.1`.
+- Descargar el APK y verificar que sea la versión `1.2`.
 - Confirmar que no se creen filas nuevas en `cola_correos`.
 
 ## Seguridad
