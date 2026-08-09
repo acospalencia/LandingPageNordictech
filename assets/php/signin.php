@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             error_log('[Landing NordicTech][signin] mail() no aceptó la notificación de registro.');
         }
 
-        echo json_encode(['status' => 'success', 'message' => 'Solicitud enviada. Tu cuenta se activará cuando soporte la verifique.']);
+        echo json_encode(['status' => 'success', 'message' => 'Cuenta creada correctamente.']);
         exit;
 
     } catch (PDOException $e) {

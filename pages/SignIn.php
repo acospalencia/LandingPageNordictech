@@ -89,7 +89,6 @@ if (isset($_SESSION['id_usuario'])) {
                 <div class="border-b border-nordic-border pb-4 text-center">
                     <span class="nt-text-eyebrow nt-text-eyebrow--xs nt-text-eyebrow--spaced">Solicitud de Acceso</span>
                     <h1 class="text-lg sm:text-xl font-display font-bold uppercase tracking-wide">Crear cuenta corporativa</h1>
-                    <p class="text-xs text-nordic-textMuted font-light mt-1">Tu cuenta requerirá aprobación manual del staff técnico.</p>
                 </div>
 
                 <form id="form-registro" class="nt-form nt-form--tight">

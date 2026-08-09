@@ -76,7 +76,7 @@ No publiques `wp-config.php`, contraseñas ni respaldos de producción.
 El panel técnico descarga:
 
 ```text
-/assets/downloads/AsistenciaNordictech-corregida.apk?v=1.2
+/assets/downloads/AsistenciaNordictech-corregida.apk?v=1.2.1-release-20260809-1
 ```
 
 El nombre descargado se conserva como `AsistenciaNordictech-corregida.apk`.

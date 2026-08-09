@@ -10,7 +10,6 @@ document.querySelector('#form-registro').addEventListener('submit', async (e) =>
                 const resultado = await response.json();
 
                 if (resultado.status === 'success') {
-                    alert('🎉 ' + resultado.message);
                     window.location.replace('/pages/Login.php');
                 } else {
                     alert('❌ Error: ' + resultado.message);
