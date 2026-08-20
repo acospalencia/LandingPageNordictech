@@ -3,15 +3,23 @@ require_once __DIR__ . '/correo.php';
 session_start();
 header('Content-Type: application/json');
 
-// 1. Protección: Validar que la sesión esté viva
-if (!isset($_SESSION['id_usuario'])) {
+// 1. Protección: clientes crean para sí mismos; administradores pueden crear
+// tickets para un cliente seleccionado.
+$id_usuario_sesion = intval($_SESSION['id_usuario'] ?? 0);
+$id_rol_sesion = intval($_SESSION['id_rol'] ?? 0);
+$es_administrador = $id_rol_sesion === 3;
+$es_cliente = $id_rol_sesion === 1;
+
+if ($id_usuario_sesion <= 0 || (!$es_cliente && !$es_administrador)) {
     echo json_encode(['status' => 'session_expired', 'message' => 'Acceso denegado. Requiere autenticación activa.']);
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_usuario = $_SESSION['id_usuario'];
-    $titulo = trim($_POST['titulo'] ?? '');
+    $id_usuario = $es_administrador
+        ? intval($_POST['id_usuario_cliente'] ?? $_POST['id_usuario'] ?? 0)
+        : $id_usuario_sesion;
+    $titulo = preg_replace('/[\r\n]+/', ' ', trim($_POST['titulo'] ?? ''));
     $prioridad = trim($_POST['prioridad'] ?? 'Media');
     $descripcion = trim($_POST['descripcion'] ?? '');
     $categoria = trim($_POST['categoria'] ?? '');
@@ -19,8 +27,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $estado = 'Abierto';
 
     $categorias_permitidas = ['CCTV', 'Control de acceso', 'Panel de incendios', 'Otro'];
+    $prioridades_permitidas = ['Baja', 'Media', 'Alta', 'Crítica'];
 
-    if (empty($titulo) || empty($descripcion) || !in_array($categoria, $categorias_permitidas, true)) {
+    if (
+        $id_usuario <= 0 ||
+        mb_strlen($titulo) < 4 ||
+        mb_strlen($titulo) > 160 ||
+        mb_strlen($descripcion) < 10 ||
+        !in_array($categoria, $categorias_permitidas, true) ||
+        !in_array($prioridad, $prioridades_permitidas, true)
+    ) {
         echo json_encode(['status' => 'error', 'message' => 'El título, la categoría y la descripción técnica son mandatorios.']);
         exit;
     }
@@ -62,6 +78,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
 
+        $usuario_info = null;
+        if ($es_administrador) {
+            $sql_cliente = "SELECT id_usuario, email, nombre, id_rol, activo FROM usuarios WHERE id_usuario = :id_usuario LIMIT 1";
+            $stmt_cliente = $pdo->prepare($sql_cliente);
+            $stmt_cliente->execute([':id_usuario' => $id_usuario]);
+            $usuario_info = $stmt_cliente->fetch();
+
+            if (!$usuario_info || intval($usuario_info['id_rol']) !== 1) {
+                echo json_encode(['status' => 'error', 'message' => 'El usuario seleccionado no es un cliente válido.']);
+                exit;
+            }
+
+            if (intval($usuario_info['activo']) !== 1) {
+                echo json_encode(['status' => 'error', 'message' => 'No puedes abrir tickets para un cliente inactivo.']);
+                exit;
+            }
+
+            if (!filter_var(trim($usuario_info['email'] ?? ''), FILTER_VALIDATE_EMAIL)) {
+                echo json_encode(['status' => 'error', 'message' => 'El cliente seleccionado no tiene un correo válido para recibir la notificación.']);
+                exit;
+            }
+        }
+
         // 3. Inserción del ticket en la base de datos
         $query = "INSERT INTO tickets (id_usuario, titulo, descripcion, estado, prioridad, categoria, otra_categoria, fecha_creacion)
                   VALUES (:id_usuario, :titulo, :descripcion, :estado, :prioridad, :categoria, :otra_categoria, NOW())";
@@ -76,13 +115,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':categoria' => $categoria,
             ':otra_categoria' => $otra_categoria
         ]);
+        $id_ticket = intval($pdo->lastInsertId());
 
         // 4. [NUEVO] Obtener información del usuario para el correo
-        // Nota: Ajusta 'wp_users' u 'id', 'user_email', 'display_name' según los nombres exactos de tu tabla
-        $sql_user = "SELECT email, nombre FROM usuarios WHERE id_usuario = :id_usuario LIMIT 1";
-        $stmt_user = $pdo->prepare($sql_user);
-        $stmt_user->execute([':id_usuario' => $id_usuario]);
-        $usuario_info = $stmt_user->fetch();
+        if (!$usuario_info) {
+            $sql_user = "SELECT email, nombre FROM usuarios WHERE id_usuario = :id_usuario LIMIT 1";
+            $stmt_user = $pdo->prepare($sql_user);
+            $stmt_user->execute([':id_usuario' => $id_usuario]);
+            $usuario_info = $stmt_user->fetch();
+        }
 
         $nombre_usuario = $usuario_info['nombre'] ?? 'Usuario ID: ' . $id_usuario;
         $correo_usuario = $usuario_info['email'] ?? 'No disponible';
@@ -213,10 +254,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             error_log('[Landing NordicTech][crear_ticket] mail() no aceptó la alerta del ticket.');
         }
 
+        // Cuando administración abre el ticket para otra cuenta, avisar de
+        // inmediato al correo registrado del cliente mediante mail().
+        $correo_cliente_enviado = true;
+        if ($es_administrador) {
+            $nombre_cliente_seguro = htmlspecialchars($nombre_usuario, ENT_QUOTES, 'UTF-8');
+            $titulo_cliente_seguro = htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8');
+            $categoria_cliente_segura = htmlspecialchars($categoria_mostrada, ENT_QUOTES, 'UTF-8');
+            $prioridad_cliente_segura = htmlspecialchars($prioridad, ENT_QUOTES, 'UTF-8');
+            $asunto_cliente = "Nuevo ticket de soporte #TK-{$id_ticket} - {$titulo}";
+            $mensaje_cliente = "
+<!DOCTYPE html>
+<html lang='es'>
+<head><meta charset='UTF-8'><title>Nuevo ticket de soporte</title></head>
+<body style='margin:0;padding:0;background:#060913;font-family:Segoe UI,Arial,sans-serif;color:#ffffff;'>
+  <table border='0' cellpadding='0' cellspacing='0' width='100%' style='background:#060913;padding:36px 18px;'>
+    <tr><td align='center'>
+      <table border='0' cellpadding='0' cellspacing='0' width='100%' style='max-width:600px;background:#0D1425;border:1px solid #1E293B;border-top:4px solid #3B82F6;padding:34px 28px;'>
+        <tr><td style='font-size:10px;font-weight:700;letter-spacing:2px;color:#60A5FA;text-transform:uppercase;'>NordicTech · Centro de soporte</td></tr>
+        <tr><td style='padding-top:10px;font-size:22px;font-weight:700;color:#ffffff;'>Se abrió un ticket para tu cuenta</td></tr>
+        <tr><td style='padding-top:18px;font-size:14px;line-height:1.7;color:#CBD5E1;'>Hola <strong style='color:#ffffff;'>{$nombre_cliente_seguro}</strong>, el equipo de soporte registró una nueva solicitud técnica a nombre de tu cuenta.</td></tr>
+        <tr><td style='padding-top:22px;'>
+          <table border='0' cellpadding='0' cellspacing='0' width='100%' style='background:#07111F;border:1px solid #1E293B;padding:20px;'>
+            <tr><td style='font-size:12px;line-height:1.9;color:#94A3B8;'>
+              <strong style='color:#ffffff;'>Ticket:</strong> #TK-{$id_ticket}<br>
+              <strong style='color:#ffffff;'>Título:</strong> {$titulo_cliente_seguro}<br>
+              <strong style='color:#ffffff;'>Categoría:</strong> {$categoria_cliente_segura}<br>
+              <strong style='color:#ffffff;'>Prioridad:</strong> {$prioridad_cliente_segura}<br>
+              <strong style='color:#ffffff;'>Estado:</strong> Abierto
+            </td></tr>
+          </table>
+        </td></tr>
+        <tr><td style='padding-top:20px;font-size:12px;color:#94A3B8;line-height:1.7;'>Podés consultar el seguimiento, las asignaciones y la resolución ingresando al portal de clientes de NordicTech.</td></tr>
+        <tr><td style='padding-top:24px;'>
+          <a href='https://nordictech-corp.com/portal' style='display:inline-block;background:#3B82F6;color:#ffffff;text-decoration:none;font-size:12px;font-weight:700;padding:12px 18px;border-radius:8px;'>Consultar ticket</a>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>";
+
+            $correo_cliente_enviado = enviarCorreoDirecto(
+                $correo_usuario,
+                $asunto_cliente,
+                $mensaje_cliente,
+                'soporte@nordictech-corp.com',
+                'Soporte NordicTech'
+            );
+
+            if (!$correo_cliente_enviado) {
+                error_log('[Landing NordicTech][crear_ticket] mail() no aceptó la notificación directa al cliente.');
+            }
+        }
+
         // 6. Respuesta al Frontend
+        $mensaje_respuesta = 'Ticket de soporte aperturado y notificación de alerta enviada con éxito.';
+        if ($es_administrador) {
+            $mensaje_respuesta = $correo_cliente_enviado
+                ? 'Ticket abierto correctamente. La notificación fue enviada directamente al cliente.'
+                : 'Ticket abierto correctamente, pero mail() no aceptó la notificación al cliente.';
+        }
+
         echo json_encode([
             'status' => 'success',
-            'message' => 'Ticket de soporte aperturado y notificación de alerta enviada con éxito.'
+            'message' => $mensaje_respuesta,
+            'id_ticket' => $id_ticket
         ]);
         exit;
     } catch (PDOException $e) {

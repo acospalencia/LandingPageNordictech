@@ -3,8 +3,14 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/correo.php';
 
-// Comprobar privilegios de nivel 3 (Administrador)
-if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol'] ?? 0) !== 3) {
+// Administradores gestionan el flujo completo. Los clientes solo pueden cerrar
+// tickets abiertos que les pertenecen; la propiedad se valida nuevamente en BD.
+$id_usuario_sesion = intval($_SESSION['id_usuario'] ?? 0);
+$id_rol_sesion = intval($_SESSION['id_rol'] ?? 0);
+$es_cliente = $id_rol_sesion === 1;
+$es_administrador = $id_rol_sesion === 3;
+
+if ($id_usuario_sesion <= 0 || (!$es_cliente && !$es_administrador)) {
     echo json_encode(['status' => 'error', 'message' => 'Acceso denegado por insuficiencia de privilegios.']);
     exit;
 }
@@ -29,6 +35,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $notas_tecnico      = trim($params['notas_tecnico'] ?? $params['notas_asignacion'] ?? '');
     $comentario_cliente = trim($params['comentario_cliente'] ?? $params['observaciones'] ?? $params['notas'] ?? '');
     $estado_raw         = trim($params['estado'] ?? $params['nuevo_estado'] ?? $params['status'] ?? '');
+
+    // El rol cliente conserva una única operación: cerrar su propio ticket
+    // mientras todavía se encuentre abierto. No se confía en el comentario ni
+    // en otros parámetros enviados por el navegador.
+    if ($es_cliente) {
+        $accion_cliente_valida = $action === '' || $action === 'client_close';
+        $estado_cliente = mb_strtolower($estado_raw);
+        $cierre_cliente_valido = in_array($estado_cliente, ['cerrado', 'closed'], true);
+
+        if (!$accion_cliente_valida || !$cierre_cliente_valido || $id_tecnico > 0) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Como cliente solo puedes cerrar un ticket abierto que te pertenezca.'
+            ]);
+            exit;
+        }
+
+        $action = 'client_close';
+        $estado_raw = 'Cerrado';
+        $comentario_cliente = 'Ticket cerrado directamente por el cliente desde su portal de soporte.';
+    }
 
     // Si la acción es asignación técnica
     if ($action === 'assign_tech' || $id_tecnico > 0) {
@@ -118,13 +145,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // BLOQUE 2: PROCESAMIENTO Y BASE DE DATOS
     // -------------------------------------------------------------------------
     try {
-        $stmt_consulta = $pdo->prepare("SELECT id_usuario, titulo, estado, observacion_proceso, observacion_cierre FROM tickets WHERE id_ticket = ?");
+        $stmt_consulta = $pdo->prepare("SELECT id_usuario, titulo, estado, activo, observacion_proceso, observacion_cierre FROM tickets WHERE id_ticket = ?");
         $stmt_consulta->execute([$id_ticket]);
         $ticket_actual = $stmt_consulta->fetch();
 
         if (!$ticket_actual) {
             echo json_encode(['status' => 'error', 'message' => 'El ticket no existe.']);
             exit;
+        }
+
+        if ($es_cliente) {
+            $ticket_pertenece_al_cliente = intval($ticket_actual['id_usuario']) === $id_usuario_sesion;
+            $ticket_esta_abierto = $ticket_actual['estado'] === 'Abierto';
+            $ticket_esta_activo = intval($ticket_actual['activo']) === 1;
+
+            if (!$ticket_pertenece_al_cliente) {
+                echo json_encode(['status' => 'error', 'message' => 'No tienes permiso para modificar este ticket.']);
+                exit;
+            }
+
+            if (!$ticket_esta_abierto || !$ticket_esta_activo) {
+                echo json_encode(['status' => 'error', 'message' => 'Solo puedes cerrar tus tickets abiertos y activos.']);
+                exit;
+            }
         }
 
         $id_cliente = intval($ticket_actual['id_usuario']);
@@ -205,10 +248,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ? $comentario_nuevo
                     : $observacion_cierre_anterior . "\n" . $comentario_nuevo;
 
-                $sql = "UPDATE tickets SET estado = :estado, observacion_cierre = :observacion_cierre, fecha_actualizacion = NOW() WHERE id_ticket = :id";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([':estado' => $estado, ':observacion_cierre' => $observacion_cierre_final, ':id' => $id_ticket]);
-                $mensaje_db = "Ticket marcado como {$estado} con éxito.";
+                if ($es_cliente) {
+                    // La propiedad y el estado también forman parte del UPDATE
+                    // para evitar cambios concurrentes durante el cierre.
+                    $sql = "UPDATE tickets
+                            SET estado = 'Cerrado', observacion_cierre = :observacion_cierre, fecha_actualizacion = NOW()
+                            WHERE id_ticket = :id AND id_usuario = :id_usuario AND estado = 'Abierto' AND activo = 1";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([
+                        ':observacion_cierre' => $observacion_cierre_final,
+                        ':id' => $id_ticket,
+                        ':id_usuario' => $id_usuario_sesion
+                    ]);
+
+                    if ($stmt->rowCount() !== 1) {
+                        throw new RuntimeException('El ticket cambió de estado antes de completar el cierre.');
+                    }
+
+                    $mensaje_db = 'El ticket fue cerrado correctamente por el cliente.';
+                } else {
+                    $sql = "UPDATE tickets SET estado = :estado, observacion_cierre = :observacion_cierre, fecha_actualizacion = NOW() WHERE id_ticket = :id";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([':estado' => $estado, ':observacion_cierre' => $observacion_cierre_final, ':id' => $id_ticket]);
+                    $mensaje_db = "Ticket marcado como {$estado} con éxito.";
+                }
             }
         }
 
