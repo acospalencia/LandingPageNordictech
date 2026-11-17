@@ -6,8 +6,9 @@ require_once __DIR__ . '/correo.php';
 // -------------------------------------------------------------------------
 // VALIDACIÓN DE SESIÓN
 // -------------------------------------------------------------------------
-if (!isset($_SESSION['id_usuario'])) {
-    echo json_encode(['status' => 'error', 'message' => 'Acceso denegado por falta de sesión activa.']);
+if (!isset($_SESSION['id_usuario']) || intval($_SESSION['id_rol'] ?? 0) !== 2) {
+    http_response_code(403);
+    echo json_encode(['status' => 'error', 'message' => 'Acceso denegado. Se requiere una sesión técnica activa.']);
     exit;
 }
 

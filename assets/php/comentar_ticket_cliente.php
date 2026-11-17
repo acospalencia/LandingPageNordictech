@@ -46,6 +46,16 @@ try {
         $dbPassword[1] ?? '',
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
     );
+
+    $stmtRolActual = $pdo->prepare(
+        'SELECT id_rol, activo FROM usuarios WHERE id_usuario = :id_usuario LIMIT 1'
+    );
+    $stmtRolActual->execute(['id_usuario' => $idUsuario]);
+    $rolActual = $stmtRolActual->fetch();
+    if (!$rolActual || intval($rolActual['id_rol']) !== 1 || intval($rolActual['activo']) !== 1) {
+        responderComentario('error', 'Tu perfil actual es de solo lectura.');
+    }
+
     $pdo->beginTransaction();
 
     $stmt = $pdo->prepare(

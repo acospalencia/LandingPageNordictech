@@ -78,6 +78,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
 
+        if ($es_cliente) {
+            $stmt_rol_actual = $pdo->prepare(
+                "SELECT id_rol, activo FROM usuarios WHERE id_usuario = :id_usuario LIMIT 1"
+            );
+            $stmt_rol_actual->execute([':id_usuario' => $id_usuario_sesion]);
+            $rol_actual = $stmt_rol_actual->fetch();
+            if (!$rol_actual || intval($rol_actual['id_rol']) !== 1 || intval($rol_actual['activo']) !== 1) {
+                echo json_encode(['status' => 'error', 'message' => 'Tu perfil actual no permite crear tickets.']);
+                exit;
+            }
+        }
+
         $usuario_info = null;
         if ($es_administrador) {
             $sql_cliente = "SELECT id_usuario, email, nombre, id_rol, activo FROM usuarios WHERE id_usuario = :id_usuario LIMIT 1";
