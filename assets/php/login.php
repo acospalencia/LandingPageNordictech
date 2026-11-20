@@ -85,6 +85,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
                 exit;
             } elseif (intval($usuario['verificado']) === 1) {
+                $rolPortal = intval($usuario['id_rol']);
+                if ($rolPortal === 4) {
+                    try {
+                        $stmtVisor = $pdo->prepare(
+                            "SELECT 1 FROM visores_tickets_clientes WHERE id_visor = :id LIMIT 1"
+                        );
+                        $stmtVisor->execute(['id' => intval($usuario['id_usuario'])]);
+                        if ($stmtVisor->fetchColumn()) {
+                            $rolPortal = 5;
+                        }
+                    } catch (PDOException $errorVisor) {
+                        error_log('Consulta de perfil combinado: ' . $errorVisor->getMessage());
+                    }
+                }
                 
                 // Inicializar variables seguras de sesión
                 $_SESSION['id_usuario'] = $usuario['id_usuario'];
@@ -99,7 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'status' => 'success',
                     'message' => 'Autenticación concedida. Accediendo al sistema.',
                     'redirect' => $redirectUrl,
-                    'id_rol' => intval($usuario['id_rol'])
+                    'id_rol' => intval($usuario['id_rol']),
+                    'portal_id_rol' => $rolPortal
                 ]);
                 exit;
                 

@@ -79,10 +79,12 @@ try {
         if ($rolSesion === ROL_ADMINISTRADOR && $accion === 'admin') {
             $etapa = 'la consulta de usuarios visores';
             $visores = $pdo->query(
-                "SELECT id_usuario, nombre, email, activo
-                 FROM usuarios
-                 WHERE id_rol = 5
-                 ORDER BY activo DESC, nombre ASC"
+                "SELECT DISTINCT u.id_usuario, u.nombre, u.email, u.activo
+                 FROM usuarios u
+                 INNER JOIN visores_tickets_clientes permiso
+                    ON permiso.id_visor = u.id_usuario
+                 WHERE u.id_rol IN (4, 5)
+                 ORDER BY u.activo DESC, u.nombre ASC"
             )->fetchAll();
             $etapa = 'la consulta de permisos de visores';
             $relaciones = $pdo->query(
@@ -111,7 +113,18 @@ try {
             responderVisores('success', 'Permisos de visores cargados.', ['viewers' => $visores]);
         }
 
-        if ($rolSesion === ROL_VISOR_TICKETS && $accion === 'viewer') {
+        if (in_array($rolSesion, [ROL_ADMIN_CONTEO, ROL_VISOR_TICKETS], true) && $accion === 'viewer') {
+            $stmtAcceso = $pdo->prepare(
+                "SELECT 1
+                 FROM visores_tickets_clientes
+                 WHERE id_visor = :id_visor
+                 LIMIT 1"
+            );
+            $stmtAcceso->execute(['id_visor' => $idUsuarioSesion]);
+            if (!$stmtAcceso->fetchColumn()) {
+                responderVisores('error', 'La cuenta no tiene clientes autorizados para consultar.', null, 403);
+            }
+
             $etapa = 'la consulta de clientes autorizados';
             $stmtClientes = $pdo->prepare(
                 "SELECT u.id_usuario, u.nombre, u.email, u.id_rol, u.verificado, u.activo,
@@ -204,9 +217,6 @@ try {
             responderVisores('error', 'Uno de los clientes seleccionados no está disponible.');
         }
 
-        $pdo->prepare(
-            "UPDATE usuarios SET id_rol = :rol, conteo_center_slug = NULL WHERE id_usuario = :id"
-        )->execute(['rol' => ROL_VISOR_TICKETS, 'id' => $idVisor]);
         $pdo->prepare("DELETE FROM visores_tickets_clientes WHERE id_visor = :id")
             ->execute(['id' => $idVisor]);
         $insertar = $pdo->prepare(
@@ -222,25 +232,17 @@ try {
             ]);
         }
         $pdo->commit();
-        responderVisores('success', 'Permisos guardados. El visor debe volver a iniciar sesión.');
+        responderVisores('success', 'Permisos guardados. La cuenta conserva la administración de conteo y debe volver a iniciar sesión.');
     }
 
     if ($accion === 'revoke_access') {
         $etapa = 'la revocación de permisos del visor';
         $pdo->beginTransaction();
-        $pdo->prepare("DELETE FROM visores_tickets_clientes WHERE id_visor = :id")
-            ->execute(['id' => $idVisor]);
-        $stmt = $pdo->prepare(
-            "UPDATE usuarios SET id_rol = :rol WHERE id_usuario = :id AND id_rol = :rol_visor"
-        );
-        $stmt->execute([
-            'rol' => ROL_ADMIN_CONTEO,
-            'id' => $idVisor,
-            'rol_visor' => ROL_VISOR_TICKETS,
-        ]);
-        if ($stmt->rowCount() !== 1) {
+        $stmt = $pdo->prepare("DELETE FROM visores_tickets_clientes WHERE id_visor = :id");
+        $stmt->execute(['id' => $idVisor]);
+        if ($stmt->rowCount() < 1) {
             $pdo->rollBack();
-            responderVisores('error', 'La cuenta seleccionada ya no es un visor de tickets.');
+            responderVisores('error', 'La cuenta seleccionada ya no tiene permisos de visor.');
         }
         $pdo->commit();
         responderVisores('success', 'Acceso de visor revocado. La cuenta conservará únicamente la administración de conteo.');
