@@ -8,6 +8,27 @@ const ROL_ADMINISTRADOR = 3;
 const ROL_ADMIN_CONTEO = 4;
 const ROL_VISOR_TICKETS = 5;
 
+function mensajeDiagnosticoVisores(PDOException $error, string $etapa): string
+{
+    $codigoMotor = isset($error->errorInfo[1]) ? intval($error->errorInfo[1]) : 0;
+
+    if ($codigoMotor === 1146) {
+        return 'La tabla de permisos de visores no existe en la base de datos usada por el portal.';
+    }
+    if (in_array($codigoMotor, [1044, 1045, 1142], true)) {
+        return 'El usuario de base de datos del portal no tiene permisos suficientes para administrar los visores.';
+    }
+    if ($codigoMotor === 1054) {
+        return 'La estructura de la base de datos no contiene una columna requerida por el visor de tickets.';
+    }
+
+    $codigo = $codigoMotor > 0
+        ? 'SQLSTATE ' . $error->getCode() . ', MySQL ' . $codigoMotor
+        : 'SQLSTATE ' . $error->getCode();
+
+    return 'No fue posible administrar los visores durante ' . $etapa . '. Código: ' . $codigo . '.';
+}
+
 function responderVisores(string $status, string $message, $data = null, int $httpStatus = 200): void
 {
     http_response_code($httpStatus);
@@ -46,19 +67,24 @@ if ($idUsuarioSesion <= 0) {
     responderVisores('session_expired', 'Debes iniciar sesión.', null, 401);
 }
 
+$etapa = 'la conexión con la base de datos';
 try {
     $pdo = conectarVisores();
+
+    $etapa = 'el procesamiento de la solicitud';
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $accion = trim((string) ($_GET['action'] ?? ''));
 
         if ($rolSesion === ROL_ADMINISTRADOR && $accion === 'admin') {
+            $etapa = 'la consulta de usuarios visores';
             $visores = $pdo->query(
                 "SELECT id_usuario, nombre, email, activo
                  FROM usuarios
                  WHERE id_rol = 5
                  ORDER BY activo DESC, nombre ASC"
             )->fetchAll();
+            $etapa = 'la consulta de permisos de visores';
             $relaciones = $pdo->query(
                 "SELECT id_visor, id_cliente
                  FROM visores_tickets_clientes
@@ -86,6 +112,7 @@ try {
         }
 
         if ($rolSesion === ROL_VISOR_TICKETS && $accion === 'viewer') {
+            $etapa = 'la consulta de clientes autorizados';
             $stmtClientes = $pdo->prepare(
                 "SELECT u.id_usuario, u.nombre, u.email, u.id_rol, u.verificado, u.activo,
                         u.codigo_empresa, u.fecha_registro
@@ -99,6 +126,7 @@ try {
             $stmtClientes->execute(['id_visor' => $idUsuarioSesion]);
             $clientes = $stmtClientes->fetchAll();
 
+            $etapa = 'la consulta de tickets autorizados';
             $stmtTickets = $pdo->prepare(
                 "SELECT t.id_ticket, t.id_usuario, t.id_tecnico, t.titulo, t.descripcion,
                         t.estado, t.prioridad, t.categoria, t.otra_categoria,
@@ -149,6 +177,7 @@ try {
             responderVisores('error', 'Selecciona al menos un cliente para el visor.');
         }
 
+        $etapa = 'el guardado de permisos del visor';
         $pdo->beginTransaction();
         $stmtVisor = $pdo->prepare(
             "SELECT id_usuario, id_rol, activo FROM usuarios WHERE id_usuario = :id FOR UPDATE"
@@ -197,6 +226,7 @@ try {
     }
 
     if ($accion === 'revoke_access') {
+        $etapa = 'la revocación de permisos del visor';
         $pdo->beginTransaction();
         $pdo->prepare("DELETE FROM visores_tickets_clientes WHERE id_visor = :id")
             ->execute(['id' => $idVisor]);
@@ -222,9 +252,12 @@ try {
         $pdo->rollBack();
     }
     error_log('Gestion visores tickets: ' . $e->getMessage());
+    $mensaje = $rolSesion === ROL_ADMINISTRADOR
+        ? mensajeDiagnosticoVisores($e, $etapa)
+        : 'No fue posible administrar los visores.';
     responderVisores(
         'error',
-        'No fue posible administrar los visores. Verifica que la migración esté aplicada.',
+        $mensaje,
         null,
         500
     );
